@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Racing Admin Demo</title>
+
+<style>
+:root{
+  --blue:#0B5FFF;
+  --green:#18B36B;
+  --bg:#060913;
+  --card: rgba(16,24,46,.75);
+  --card2: rgba(10,16,34,.82);
+  --line: rgba(130,160,255,.14);
+  --text:#ECF2FF;
+  --muted:#A7B7E6;
+  --danger:#FF4D4D;
+  --warn:#FFB020;
+  --shadow: 0 22px 60px rgba(0,0,0,.45);
+  --r: 22px;
+}
+
+/* Base */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  color:var(--text);
+  background:
+    radial-gradient(900px 520px at 10% 0%, rgba(11,95,255,.22), transparent 60%),
+    radial-gradient(900px 520px at 110% 0%, rgba(24,179,107,.18), transparent 60%),
+    linear-gradient(180deg, #050814, var(--bg));
+}
+
+/* Phone frame on desktop */
+.shell{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 18px 14px 26px;
+}
+.phoneRow{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+@media (min-width: 980px){
+  .phoneRow{
+    grid-template-columns: 420px 1fr;
+    align-items:start;
+  }
+  .phone{
+    position: sticky;
+    top: 18px;
+  }
+}
+.phone{
+  border: 1px solid var(--line);
+  border-radius: 34px;
+  background: rgba(5,8,20,.55);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
+.app{
+  min-height: 760px;
+  display:flex;
+  flex-direction:column;
+}
+
+/* App header */
+.appHeader{
+  padding: 16px 16px 14px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(5,8,20,.62);
+  backdrop-filter: blur(10px);
+}
+.brand{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+}
+.brandLeft{
+  display:flex;
+  gap: 10px;
+  align-items:center;
+  min-width: 0;
+}
+.logo{
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(11,95,255,.95), rgba(24,179,107,.95));
+  box-shadow: 0 16px 46px rgba(11,95,255,.18);
+  flex: 0 0 auto;
+}
+.brandText{min-width:0}
+.brandText h1{
+  margin:0;
+  font-size: 14px;
+  letter-spacing:.2px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.brandText p{
+  margin:3px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border:1px solid var(--line);
+  background: rgba(16,24,46,.50);
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.dot{width:9px;height:9px;border-radius:999px;background:var(--danger)}
+.dot.ok{background:var(--green)}
+
+/* Content area */
+.content{
+  padding: 14px;
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
+}
+
+/* Cards */
+.card{
+  border:1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--card);
+  padding: 14px;
+}
+.cardTitle{
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing:.6px;
+  font-weight: 900;
+  margin: 0 0 10px;
+}
+.meta{
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* Inputs */
+label{
+  display:block;
+  margin: 10px 0 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+input, select{
+  width:100%;
+  padding: 12px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(8,14,30,.88);
+  color: var(--text);
+  outline:none;
+}
+input:focus, select:focus{
+  border-color: rgba(11,95,255,.55);
+  box-shadow: 0 0 0 4px rgba(11,95,255,.14);
+}
+
+/* Buttons */
+.btn{
+  width:100%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(10,16,34,.80);
+  color: var(--text);
+  font-weight: 900;
+  letter-spacing:.2px;
+  cursor:pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+.btn:hover{transform: translateY(-1px); box-shadow: 0 16px 40px rgba(0,0,0,.25)}
+.btn:active{transform: translateY(0px); box-shadow:none}
+.btn.blue{background: linear-gradient(180deg, rgba(11,95,255,.22), rgba(11,95,255,.10)); border-color: rgba(11,95,255,.35)}
+.btn.green{background: linear-gradient(180deg, rgba(24,179,107,.20), rgba(24,179,107,.08)); border-color: rgba(24,179,107,.35)}
+.btn.ghost{background: rgba(10,16,34,.55)}
+.btn.small{width:auto;padding:10px 12px;border-radius:14px;font-size:12px}
+
+/* Bottom tabs (iPhone feel) */
+.tabbar{
+  margin-top:auto;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid var(--line);
+  background: rgba(5,8,20,.62);
+  backdrop-filter: blur(10px);
+}
+.tabBtn{
+  padding: 12px 12px;
+  border-radius: 18px;
+  border:1px solid var(--line);
+  background: rgba(16,24,46,.42);
+  color: var(--muted);
+  font-weight: 900;
+  cursor:pointer;
+}
+.tabBtn.active{
+  color: var(--text);
+  border-color: rgba(24,179,107,.45);
+  background: rgba(24,179,107,.10);
+}
+
+/* Race rows */
+.raceRow{
+  border:1px solid var(--line);
+  background: var(--card2);
+  border-radius: 18px;
+  padding: 14px;
+}
+.raceHead{
+  display:flex;
+  justify-content:space-between;
+  gap: 12px;
+  align-items:flex-start;
+}
+.raceLeft{min-width:0}
+.raceLeft strong{display:block;font-size:13px}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  border:1px solid var(--line);
+  white-space: nowrap;
+}
+.badge.ok{border-color: rgba(24,179,107,.55); background: rgba(24,179,107,.10); color:#bff3d7}
+.badge.bad{border-color: rgba(255,77,77,.55); background: rgba(255,77,77,.10); color:#ffd0d0}
+
+/* Two-column fields (on bigger screens) */
+.row2{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 420px){
+  .row2{grid-template-columns: 1fr;}
+}
+
+.hidden{display:none}
+pre{
+  margin:0;
+  white-space:pre-wrap;
+  background: rgba(8,16,38,.85);
+  border:1px solid var(--line);
+  border-radius: 16px;
+  padding: 10px;
+  font-size: 12px;
+}
+
+/* Right panel (desktop “admin console” view) */
+.console{
+  border:1px solid var(--line);
+  border-radius: 26px;
+  background: rgba(16,24,46,.45);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
+.consoleHead{
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(11,95,255,.10), rgba(24,179,107,.06));
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:12px;
+}
+.consoleHead h2{
+  margin:0;
+  font-size: 16px;
+}
+.consoleHead .meta{margin-top:4px}
+.consoleBody{padding: 16px}
+</style>
+</head>
+
+<body>
+<div class="shell">
+  <div class="phoneRow">
+
+    <!-- iPhone-style app -->
+    <div class="phone">
+      <div class="app">
+        <div class="appHeader">
+          <div class="brand">
+            <div class="brandLeft">
+              <div class="logo"></div>
+              <div class="brandText">
+                <h1>Horse Racing Admin</h1>
+                <p>Mobile-first demo • Auto-close races</p>
+              </div>
+            </div>
+            <div class="pill" id="sessionPill"><span class="dot"></span> Not logged in</div>
+          </div>
+        </div>
+
+        <!-- LOGIN -->
+        <div class="content" id="loginView">
+          <div class="card">
+            <div class="cardTitle">Login</div>
+            <div class="meta">Use: <b>superadmin@example.com</b> / <b>DemoPass123</b></div>
+
+            <label>Email</label>
+            <input id="email" value="superadmin@example.com"/>
+
+            <label>Password</label>
+            <input id="password" type="password" value="DemoPass123"/>
+
+            <div style="height:10px"></div>
+            <button class="btn blue" onclick="login()">Login</button>
+
+            <div style="height:10px"></div>
+            <pre id="loginErr" class="hidden"></pre>
+          </div>
+        </div>
+
+        <!-- APP -->
+        <div class="content hidden" id="appView">
+          <!-- NAV (horse racing selectors) -->
+          <div class="card" id="navCard">
+            <div class="cardTitle">Navigation</div>
+
+            <div id="racingNav">
+              <label>Sport</label>
+              <select id="sportSelect" onchange="onSportChange()"></select>
+
+              <label>Country</label>
+              <select id="countrySelect" onchange="onCountryChange()"></select>
+
+              <label>Course</label>
+              <select id="courseSelect" onchange="refreshPhone()"></select>
+
+              <div style="height:10px"></div>
+              <button class="btn ghost" onclick="refreshPhone()">Refresh</button>
+            </div>
+
+            <div id="usersNav" class="hidden">
+              <div class="meta">Manage players, balances, and place bets.</div>
+              <div style="height:10px"></div>
+              <button class="btn ghost" onclick="refreshPhone()">Refresh</button>
+            </div>
+
+            <div style="height:10px"></div>
+            <pre id="statusBox">Ready.</pre>
+          </div>
+
+          <!-- PHONE MAIN -->
+          <div id="phonePane"></div>
+        </div>
+
+        <!-- Bottom tabs -->
+        <div class="tabbar hidden" id="tabbar">
+          <button class="tabBtn active" id="tabRacing" onclick="setTab('racing')">Horse Racing</button>
+          <button class="tabBtn" id="tabUsers" onclick="setTab('users')">Users</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop console mirror -->
+    <div class="console">
+      <div class="consoleHead">
+        <div>
+          <h2 id="consoleTitle">Dashboard</h2>
+          <div class="meta" id="consoleSub">This mirrors what’s on the phone UI.</div>
+        </div>
+        <button class="btn small green" onclick="refreshPhone()">Refresh</button>
+      </div>
+      <div class="consoleBody">
+        <div id="consolePane"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let token=null;
+let tab="racing";
+let timer=null;
+
+function setStatus(msg){ document.getElementById("statusBox").textContent = msg; }
+
+async function api(path, options={}){
+  const headers = options.headers || {};
+  if (token) headers["Authorization"] = "Bearer " + token;
+  headers["Content-Type"] = "application/json";
+  const res = await fetch(path, { ...options, headers });
+  const txt = await res.text();
+  let data; try { data = JSON.parse(txt); } catch { data = txt; }
+  if (!res.ok) throw data;
+  return data;
+}
+
+function pad2(n){ return String(n).padStart(2,"0"); }
+function msToClock(ms){
+  if (ms <= 0) return "00:00:00";
+  const s = Math.floor(ms/1000);
+  const h = Math.floor(s/3600);
+  const m = Math.floor((s%3600)/60);
+  const ss = s%60;
+  return `${pad2(h)}:${pad2(m)}:${pad2(ss)}`;
+}
+
+function startCountdownLoop(){
+  if (timer) clearInterval(timer);
+  timer = setInterval(() => {
+    const now = Date.now();
+    document.querySelectorAll("[data-countdown='race']").forEach(el => {
+      const raceId = el.getAttribute("data-raceid");
+      const dt = el.getAttribute("data-dt");
+      const status = el.getAttribute("data-status");
+      const t = new Date(dt).getTime();
+      const left = t - now;
+
+      const badge = document.getElementById(`badge-${raceId}`);
+
+      if (status !== "OPEN" || left <= 0){
+        el.textContent = "Closed";
+        if (badge) badge.innerHTML = `<span class="badge bad">CLOSED</span>`;
+        return;
+      }
+
+      el.textContent = `Closes in ${msToClock(left)}`;
+      if (badge) badge.innerHTML = `<span class="badge ok">OPEN</span>`;
+    });
+  }, 1000);
+}
+
+function setTab(t){
+  tab = t;
+  document.getElementById("tabRacing").classList.toggle("active", t==="racing");
+  document.getElementById("tabUsers").classList.toggle("active", t==="users");
+  document.getElementById("racingNav").classList.toggle("hidden", t!=="racing");
+  document.getElementById("usersNav").classList.toggle("hidden", t!=="users");
+  refreshPhone();
+}
+
+async function login(){
+  try{
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const data = await api("/api/auth/login", {
+      method:"POST",
+      body: JSON.stringify({ email, password })
+    });
+    token = data.token;
+
+    document.getElementById("loginView").classList.add("hidden");
+    document.getElementById("appView").classList.remove("hidden");
+    document.getElementById("tabbar").classList.remove("hidden");
+    document.getElementById("sessionPill").innerHTML = `<span class="dot ok"></span> Logged in`;
+    setStatus("Loading...");
+
+    await init();
+    startCountdownLoop();
+  }catch(e){
+    const box = document.getElementById("loginErr");
+    box.classList.remove("hidden");
+    box.textContent = JSON.stringify(e, null, 2);
+  }
+}
+
+async function init(){
+  await loadSports();
+  await loadCountries();
+  await loadCourses();
+  await refreshPhone();
+  setStatus("Ready.");
+}
+
+async function onSportChange(){
+  await loadCountries();
+  await loadCourses();
+  await refreshPhone();
+}
+
+async function onCountryChange(){
+  await loadCourses();
+  await refreshPhone();
+}
+
+async function loadSports(){
+  const sports = await api("/api/admin/sports");
+  const sel = document.getElementById("sportSelect");
+  sel.innerHTML = sports.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+  if (sports.length) sel.value = String(sports[0].id);
+}
+
+async function loadCountries(){
+  const sportId = document.getElementById("sportSelect").value;
+  const countries = await api(`/api/admin/sports/${sportId}/countries`);
+  const sel = document.getElementById("countrySelect");
+  sel.innerHTML = countries.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+  if (countries.length) sel.value = String(countries[0].id);
+}
+
+async function loadCourses(){
+  const countryId = document.getElementById("countrySelect").value;
+  const courses = await api(`/api/admin/countries/${countryId}/courses`);
+  const sel = document.getElementById("courseSelect");
+  sel.innerHTML = courses.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+  if (courses.length) sel.value = String(courses[0].id);
+}
+
+async function refreshPhone(){
+  const phonePane = document.getElementById("phonePane");
+  const consolePane = document.getElementById("consolePane");
+  phonePane.innerHTML = "";
+  consolePane.innerHTML = "";
+
+  if (tab === "racing"){
+    document.getElementById("consoleTitle").textContent = "Horse Racing";
+    document.getElementById("consoleSub").textContent = "Open/closed races with live countdown.";
+
+    const courseId = document.getElementById("courseSelect").value;
+    const days = await api(`/api/admin/courses/${courseId}/race-days`);
+
+    const wrap = document.createElement("div");
+    wrap.className = "card";
+    wrap.innerHTML = `<div class="cardTitle">Races</div><div class="meta">Showing seeded races for this course.</div>`;
+    phonePane.appendChild(wrap);
+
+    const list = document.createElement("div");
+    list.style.display = "flex";
+    list.style.flexDirection = "column";
+    list.style.gap = "12px";
+    wrap.appendChild(list);
+
+    for (const rd of days){
+      const races = await api(`/api/admin/race-days/${rd.id}/races`);
+      for (const r of races){
+        const el = document.createElement("div");
+        el.className = "raceRow";
+        el.innerHTML = `
+          <div class="raceHead">
+            <div class="raceLeft">
+              <strong>Race ${r.race_number}</strong>
+              <div class="meta">${new Date(r.race_datetime).toLocaleString()}</div>
+              <div class="meta"
+                data-countdown="race"
+                data-raceid="${r.id}"
+                data-dt="${r.race_datetime}"
+                data-status="${r.status}"
+              >Loading...</div>
+            </div>
+            <div id="badge-${r.id}"></div>
+          </div>
+        `;
+        list.appendChild(el);
+      }
+    }
+
+    // Mirror to desktop console
+    consolePane.innerHTML = wrap.outerHTML;
+
+    return;
+  }
+
+  // USERS
+  document.getElementById("consoleTitle").textContent = "Users";
+  document.getElementById("consoleSub").textContent = "Players, balances, and demo betting.";
+
+  const users = await api("/api/admin/users");
+  const players = users.filter(u => u.role === "PLAYER");
+
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <div class="cardTitle">Players</div>
+    <div class="meta">Add players + set wallet balances. Demo password is <b>DemoPass123</b>.</div>
+
+    <label>Name</label>
+    <input id="uName" placeholder="e.g. Alyssa"/>
+
+    <label>Email</label>
+    <input id="uEmail" placeholder="e.g. alyssa@example.com"/>
+
+    <label>Starting Balance</label>
+    <input id="uBal" type="number" placeholder="e.g. 10000"/>
+
+    <div style="height:10px"></div>
+    <button class="btn green" onclick="addUser()">Add Player</button>
+  `;
+  phonePane.appendChild(card);
+
+  const list = document.createElement("div");
+  list.className = "card";
+  list.innerHTML = `<div class="cardTitle">Wallets</div>`;
+  phonePane.appendChild(list);
+
+  if (!players.length){
+    const empty = document.createElement("div");
+    empty.className = "meta";
+    empty.textContent = "No players yet. Add one above.";
+    list.appendChild(empty);
+  } else {
+    players.forEach(p => {
+      const row = document.createElement("div");
+      row.className = "raceRow";
+      row.innerHTML = `
+        <div class="raceHead">
+          <div class="raceLeft">
+            <strong>${p.name}</strong>
+            <div class="meta">${p.email}</div>
+            <div class="meta">Balance: R${Number(p.balance).toFixed(2)}</div>
+          </div>
+        </div>
+
+        <div class="row2" style="margin-top:10px">
+          <div>
+            <label>Set balance</label>
+            <input id="bal-${p.id}" type="number" value="${p.balance}"/>
+          </div>
+          <div style="display:flex;align-items:flex-end">
+            <button class="btn green" onclick="saveBalance(${p.id})">Save</button>
+          </div>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  // Place bet
+  const bet = document.createElement("div");
+  bet.className = "card";
+  bet.innerHTML = `
+    <div class="cardTitle">Place Bet</div>
+    <div class="meta">Player → Course → Race → Horse → Stake.</div>
+
+    <label>Player</label>
+    <select id="betUser">
+      ${players.map(u => `<option value="${u.id}">${u.name} (R${Number(u.balance).toFixed(0)})</option>`).join("")}
+    </select>
+
+    <label>Course</label>
+    <select id="betCourse"></select>
+
+    <label>Race</label>
+    <select id="betRace"></select>
+
+    <label>Horse</label>
+    <select id="betHorse"></select>
+
+    <label>Stake</label>
+    <input id="betStake" type="number" placeholder="e.g. 1000"/>
+
+    <div style="height:10px"></div>
+    <button class="btn blue" onclick="placeBet()">Place Bet</button>
+
+    <div class="meta" id="betNote" style="margin-top:10px"></div>
+  `;
+  phonePane.appendChild(bet);
+
+  consolePane.innerHTML = phonePane.innerHTML;
+
+  if (!players.length){
+    document.getElementById("betNote").textContent = "Add a player first.";
+    document.getElementById("betStake").disabled = true;
+    return;
+  }
+
+  await hydrateBetDropdowns();
+}
+
+async function addUser(){
+  try{
+    const name = document.getElementById("uName").value.trim();
+    const email = document.getElementById("uEmail").value.trim();
+    const balance = Number(document.getElementById("uBal").value || 0);
+
+    await api("/api/admin/users", {
+      method:"POST",
+      body: JSON.stringify({ name, email, balance })
+    });
+
+    setStatus("Player added.");
+    await refreshPhone();
+  }catch(e){
+    setStatus("Error: " + (e.error || JSON.stringify(e)));
+  }
+}
+
+async function saveBalance(userId){
+  try{
+    const balance = Number(document.getElementById(`bal-${userId}`).value);
+    await api(`/api/admin/users/${userId}/balance`, {
+      method:"PATCH",
+      body: JSON.stringify({ balance })
+    });
+    setStatus("Balance updated.");
+    await refreshPhone();
+  }catch(e){
+    setStatus("Error: " + (e.error || JSON.stringify(e)));
+  }
+}
+
+async function hydrateBetDropdowns(){
+  const betCourse = document.getElementById("betCourse");
+  const betRace = document.getElementById("betRace");
+  const betHorse = document.getElementById("betHorse");
+  const betNote = document.getElementById("betNote");
+
+  const countryId = document.getElementById("countrySelect").value;
+  const courses = await api(`/api/admin/countries/${countryId}/courses`);
+  if (!courses.length){
+    betCourse.innerHTML = `<option value="">No courses</option>`;
+    betNote.textContent = "Add/select a course in Horse Racing.";
+    return;
+  }
+
+  betCourse.innerHTML = courses.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+  betCourse.value = String(courses[0].id);
+
+  betCourse.onchange = async () => {
+    await loadRaces();
+    await loadHorses();
+  };
+  betRace.onchange = async () => { await loadHorses(); };
+
+  await loadRaces();
+  await loadHorses();
+
+  async function loadRaces(){
+    const courseId = betCourse.value;
+    const races = await api(`/api/admin/courses/${courseId}/races-upcoming`);
+    betRace.innerHTML = races.map(r => {
+      const label = `Race ${r.race_number} • ${new Date(r.race_datetime).toLocaleString()} • ${r.status}`;
+      return `<option value="${r.id}">${label}</option>`;
+    }).join("");
+    betRace.value = races.length ? String(races[0].id) : "";
+    betNote.textContent = "Only OPEN races before their time will accept bets.";
+  }
+
+  async function loadHorses(){
+    const raceId = betRace.value;
+    const horses = await api(`/api/admin/races/${raceId}/horses`);
+    betHorse.innerHTML = horses.map(h => {
+      const label = `#${h.horse_number} ${h.name} • ${h.odds_num}/${h.odds_den}`;
+      return `<option value="${h.id}">${label}</option>`;
+    }).join("");
+    betHorse.value = horses.length ? String(horses[0].id) : "";
+  }
+}
+
+async function placeBet(){
+  try{
+    const user_id = Number(document.getElementById("betUser").value);
+    const horse_id = Number(document.getElementById("betHorse").value);
+    const stake = Number(document.getElementById("betStake").value);
+
+    const data = await api("/api/admin/bets/place", {
+      method:"POST",
+      body: JSON.stringify({ user_id, horse_id, stake })
+    });
+
+    setStatus(`Bet placed. New balance: R${Number(data.new_balance).toFixed(2)}`);
+    await refreshPhone();
+  }catch(e){
+    setStatus("Error: " + (e.error || JSON.stringify(e)));
+  }
+}
+</script>
+</body>
+</html>
