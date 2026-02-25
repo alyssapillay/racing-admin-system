@@ -49,13 +49,10 @@ cron.schedule("*/5 * * * * *", async () => {
   );
 });
 const PORT = process.env.PORT || 3000;
-async function start() {
-  await initDb();
-  await seedIfEmpty();
 
-  app.listen(PORT, () => {
-    console.log(`✅ Racing Admin System running on http://localhost:${PORT}`);
-  });
-}
+app.listen(PORT, () => {
+  console.log("Server running on port", PORT);
+});
+
 
 start();
