@@ -2,7 +2,6 @@ const path = require("path");
 const sqlite3 = require("sqlite3").verbose();
 
 const DB_FILE = process.env.DB_FILE || path.join(__dirname, "demo.sqlite");
-
 const db = new sqlite3.Database(DB_FILE);
 
 function run(sql, params = []) {
@@ -35,9 +34,7 @@ function all(sql, params = []) {
 async function addColumnIfMissing(table, column, typeSql) {
   const cols = await all(`PRAGMA table_info(${table})`);
   const has = cols.some((c) => c.name === column);
-  if (!has) {
-    await run(`ALTER TABLE ${table} ADD COLUMN ${column} ${typeSql}`);
-  }
+  if (!has) await run(`ALTER TABLE ${table} ADD COLUMN ${column} ${typeSql}`);
 }
 
 async function initDb() {
@@ -91,7 +88,7 @@ async function initDb() {
       race_day_id INTEGER NOT NULL,
       race_number INTEGER NOT NULL,
       race_datetime TEXT NOT NULL,
-      status TEXT NOT NULL DEFAULT 'OPEN',   -- OPEN | CLOSED
+      status TEXT NOT NULL DEFAULT 'OPEN',
       closed_at TEXT,
       created_at TEXT NOT NULL,
       UNIQUE(race_day_id, race_number),
@@ -114,6 +111,12 @@ async function initDb() {
       place_num REAL DEFAULT 0,
       place_den REAL DEFAULT 0,
 
+      -- Horse info (for nicer UI)
+      jockey TEXT DEFAULT '',
+      trainer TEXT DEFAULT '',
+      age INTEGER DEFAULT 0,
+      notes TEXT DEFAULT '',
+
       created_at TEXT NOT NULL,
       UNIQUE(race_id, horse_number),
       FOREIGN KEY(race_id) REFERENCES races(id) ON DELETE CASCADE
@@ -126,8 +129,8 @@ async function initDb() {
       name TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
       password_hash TEXT NOT NULL,
-      role TEXT NOT NULL,         -- SUPER_ADMIN | PLAYER
-      status TEXT NOT NULL,       -- ACTIVE | DISABLED
+      role TEXT NOT NULL,
+      status TEXT NOT NULL,
       balance REAL NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL
     )
@@ -145,17 +148,16 @@ async function initDb() {
     )
   `);
 
-  // Safe “migrations” for older DBs (if demo.sqlite already exists)
+  // Safe migrations
   await addColumnIfMissing("horses", "win_num", "REAL DEFAULT 0");
   await addColumnIfMissing("horses", "win_den", "REAL DEFAULT 0");
   await addColumnIfMissing("horses", "place_num", "REAL DEFAULT 0");
   await addColumnIfMissing("horses", "place_den", "REAL DEFAULT 0");
+
+  await addColumnIfMissing("horses", "jockey", "TEXT DEFAULT ''");
+  await addColumnIfMissing("horses", "trainer", "TEXT DEFAULT ''");
+  await addColumnIfMissing("horses", "age", "INTEGER DEFAULT 0");
+  await addColumnIfMissing("horses", "notes", "TEXT DEFAULT ''");
 }
 
-module.exports = {
-  db,
-  run,
-  get,
-  all,
-  initDb,
-};
+module.exports = { db, run, get, all, initDb };

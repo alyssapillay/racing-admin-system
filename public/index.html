@@ -1,353 +1,1869 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Racing Admin Demo</title>
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f0f0f;
-      color: white;
+    :root{
+      --bg0:#05070c;
+      --bg1:rgba(255,255,255,.06);
+      --bg2:rgba(255,255,255,.09);
+      --stroke:rgba(255,255,255,.14);
+      --text:#eaf1ff;
+      --muted:rgba(234,241,255,.70);
+
+      --blue:#2f6bff;
+      --green:#22c55e;
+      --red:#ef4444;
+      --amber:#f59e0b;
+
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --r16:16px; --r20:20px; --r24:24px;
     }
 
-    h2 {
-      margin-top: 30px;
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(900px 600px at 20% 10%, rgba(47,107,255,.18), transparent 60%),
+        radial-gradient(900px 600px at 80% 0%, rgba(34,197,94,.14), transparent 60%),
+        radial-gradient(900px 900px at 50% 120%, rgba(255,255,255,.06), transparent 60%),
+        var(--bg0);
+      overflow-x:hidden;
     }
 
-    .section {
-      padding: 20px;
+    a{color:inherit}
+    button, input, select, textarea{font:inherit}
+    .hidden{display:none !important}
+
+    /* App shell */
+    .app{
+      min-height:100%;
+      display:flex;
+      flex-direction:column;
     }
 
-    .card {
-      background: #1c1c1c;
-      border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 12px;
-      border: 1px solid #2a2a2a;
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(14px);
+      background: rgba(5,7,12,.55);
+      border-bottom: 1px solid rgba(255,255,255,.10);
     }
 
-    button {
-      background: #2a2a2a;
-      color: white;
-      border: none;
-      padding: 12px 16px;
-      margin: 6px 6px 6px 0;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
+    .topbar-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 14px;
+      max-width:1100px;
+      margin:0 auto;
     }
 
-    button:hover {
-      background: #444;
+    .brand{
+      display:flex; align-items:center; gap:10px;
+    }
+    .logo{
+      width:36px;height:36px;border-radius:12px;
+      background: linear-gradient(135deg, rgba(47,107,255,.8), rgba(34,197,94,.75));
+      box-shadow: 0 10px 30px rgba(47,107,255,.20);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+    .brand h1{
+      margin:0;
+      font-size:15px;
+      letter-spacing:.2px;
+      font-weight:800;
+      line-height:1.1;
+    }
+    .brand small{
+      display:block;
+      font-weight:600;
+      color:var(--muted);
+      margin-top:2px;
+      font-size:12px;
     }
 
-    input {
-      padding: 10px;
-      margin: 5px 5px 5px 0;
-      border-radius: 6px;
-      border: none;
-      background: #222;
-      color: white;
+    .top-actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:9px 12px;
+      border-radius:999px;
+      background: var(--bg1);
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--muted);
+      font-weight:700;
+      font-size:12px;
+    }
+    .btn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.08);
+      color:var(--text);
+      border-radius:14px;
+      padding:10px 12px;
+      font-weight:800;
+      cursor:pointer;
+      transition: transform .08s ease, background .18s ease, border-color .18s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .btn:hover{background: rgba(255,255,255,.11)}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{
+      border-color: rgba(47,107,255,.35);
+      background: linear-gradient(135deg, rgba(47,107,255,.95), rgba(47,107,255,.55));
+    }
+    .btn.green{
+      border-color: rgba(34,197,94,.35);
+      background: linear-gradient(135deg, rgba(34,197,94,.95), rgba(34,197,94,.55));
+    }
+    .btn.ghost{
+      background: transparent;
+      border-color: rgba(255,255,255,.16);
+      box-shadow:none;
+    }
+    .btn.small{padding:8px 10px; border-radius:12px; font-size:12px}
+    .btn.danger{
+      border-color: rgba(239,68,68,.35);
+      background: linear-gradient(135deg, rgba(239,68,68,.95), rgba(239,68,68,.55));
     }
 
-    .big-button {
-      width: 100%;
-      padding: 18px;
-      font-size: 16px;
-      border-radius: 10px;
-      margin-bottom: 10px;
+    .container{
+      width:100%;
+      max-width:1100px;
+      margin:0 auto;
+      padding:16px 14px 110px;
     }
 
-    .horse-card {
-      background: #141414;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #333;
+    /* Login */
+    .login-wrap{
+      max-width:520px;
+      margin: 34px auto 0;
+    }
+    .card{
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--r24);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+    .card.pad{padding:16px}
+    .card.pad-lg{padding:20px}
+    .card + .card{margin-top:12px}
+
+    .title{
+      margin:0 0 6px;
+      font-size:20px;
+      letter-spacing:.2px;
+      font-weight:900;
+    }
+    .sub{
+      margin:0;
+      color: var(--muted);
+      font-weight:650;
+      line-height:1.35;
+      font-size:13px;
     }
 
-    .odds-box {
-      display: inline-block;
-      background: #2a2a2a;
-      padding: 8px 12px;
-      border-radius: 6px;
-      margin-right: 6px;
-      font-weight: bold;
+    .field{
+      margin-top:12px;
+    }
+    .label{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      font-size:12px;
+      font-weight:800;
+      color: var(--muted);
+      margin-bottom:6px;
+      letter-spacing:.2px;
+    }
+    .hint{font-weight:750; opacity:.9; font-size:11px}
+    .input{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      color: var(--text);
+      outline:none;
+    }
+    .input:focus{
+      border-color: rgba(47,107,255,.55);
+      box-shadow: 0 0 0 4px rgba(47,107,255,.15);
+    }
+    .row{display:flex; gap:10px}
+    .row > *{flex:1}
+
+    .note{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px dashed rgba(255,255,255,.18);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-weight:650;
+      font-size:12px;
+      line-height:1.35;
     }
 
+    /* Main layout */
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+    @media(min-width: 920px){
+      .grid{
+        grid-template-columns: 420px 1fr; /* roughly half/half feel */
+        gap:14px;
+      }
+      .container{padding-bottom:30px}
+    }
+
+    .side{
+      position:relative;
+    }
+
+    /* Big square nav buttons */
+    .big-nav{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      margin-top:12px;
+    }
+    .tile{
+      border-radius: 22px;
+      padding:14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+      cursor:pointer;
+      transition: transform .08s ease, background .18s ease, border-color .18s ease;
+      min-height:108px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      position:relative;
+      overflow:hidden;
+    }
+    .tile:hover{background: rgba(255,255,255,.08)}
+    .tile:active{transform: translateY(1px)}
+    .tile.disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      filter:saturate(.9);
+    }
+
+    .tile .icon{
+      width:44px;height:44px;border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      display:flex;align-items:center;justify-content:center;
+      background: rgba(0,0,0,.22);
+      font-size:20px;
+    }
+    .tile .t1{font-weight:950; font-size:14px; margin-top:10px}
+    .tile .t2{color:var(--muted); font-weight:700; font-size:12px; margin-top:4px; line-height:1.25}
+    .glow{
+      position:absolute; inset:-40px -40px auto auto;
+      width:140px;height:140px;border-radius:999px;
+      background: radial-gradient(circle at 30% 30%, rgba(47,107,255,.30), transparent 62%);
+      pointer-events:none;
+      filter: blur(2px);
+    }
+    .glow.g2{
+      inset:auto auto -50px -50px;
+      background: radial-gradient(circle at 30% 30%, rgba(34,197,94,.26), transparent 62%);
+    }
+
+    /* List cards */
+    .section-h{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:10px;
+      padding:14px 14px 10px;
+    }
+    .section-h .h{
+      margin:0;
+      font-size:15px;
+      font-weight:950;
+      letter-spacing:.2px;
+    }
+    .section-h .crumb{
+      margin:6px 0 0;
+      font-size:12px;
+      color: var(--muted);
+      font-weight:750;
+      line-height:1.25;
+    }
+    .section-body{padding:0 14px 14px}
+
+    .list{display:flex; flex-direction:column; gap:10px}
+    .item{
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      padding:12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .left{
+      min-width:0;
+      display:flex; align-items:center; gap:10px;
+    }
+    .flag{
+      width:44px; height:44px;
+      border-radius:16px;
+      display:flex; align-items:center; justify-content:center;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      font-size:22px;
+      flex: 0 0 auto;
+    }
+    .meta{min-width:0}
+    .meta .name{
+      font-weight:950; font-size:14px; margin:0;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .meta .desc{
+      margin:3px 0 0;
+      color:var(--muted);
+      font-weight:700;
+      font-size:12px;
+      line-height:1.25;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+
+    .right{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex: 0 0 auto;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .badge{
+      padding:6px 10px;
+      border-radius: 999px;
+      font-weight:900;
+      font-size:11px;
+      letter-spacing:.3px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      white-space:nowrap;
+    }
+    .badge.open{border-color: rgba(34,197,94,.35); color: rgba(203,255,223,.95); background: rgba(34,197,94,.12)}
+    .badge.closed{border-color: rgba(239,68,68,.35); color: rgba(255,214,214,.95); background: rgba(239,68,68,.12)}
+    .badge.soon{border-color: rgba(245,158,11,.35); color: rgba(255,240,210,.95); background: rgba(245,158,11,.12)}
+
+    .divider{
+      height:1px;
+      background: rgba(255,255,255,.10);
+      margin:10px 0;
+    }
+
+    /* Forms compact */
+    .form-grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+    @media(min-width:520px){
+      .form-grid.cols2{grid-template-columns: 1fr 1fr}
+      .form-grid.cols3{grid-template-columns: 1fr 1fr 1fr}
+    }
+    .form-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+    .mini{
+      font-size:11px;
+      color:var(--muted);
+      font-weight:700;
+      line-height:1.35;
+      margin-top:8px;
+    }
+
+    /* Horses layout */
+    .horse-row{
+      align-items:flex-start;
+    }
+    .horse-info .desc{white-space:normal}
+    .odds{
+      display:flex; gap:8px; align-items:center;
+    }
+    .odds-box{
+      min-width:84px;
+      padding:8px 10px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      text-align:center;
+    }
+    .odds-box .k{display:block; font-size:10px; font-weight:900; color:var(--muted); letter-spacing:.25px}
+    .odds-box .v{display:block; margin-top:2px; font-size:13px; font-weight:950}
+    .odds-box.win{border-color: rgba(34,197,94,.28)}
+    .odds-box.place{border-color: rgba(47,107,255,.26)}
+    .odds-box .v.muted{color:var(--muted); font-weight:900}
+
+    /* Bottom nav for mobile */
+    .bottom-nav{
+      position:fixed; left:0; right:0; bottom:0;
+      z-index:60;
+      padding:10px 12px;
+      backdrop-filter: blur(14px);
+      background: rgba(5,7,12,.65);
+      border-top: 1px solid rgba(255,255,255,.10);
+      display:flex;
+      justify-content:center;
+    }
+    .bottom-inner{
+      width: min(1100px, 100%);
+      display:flex; gap:10px;
+    }
+    @media(min-width: 920px){
+      .bottom-nav{display:none}
+    }
+
+    .tabbtn{
+      flex:1;
+      border-radius:18px;
+      padding:12px 12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.08);
+      color: var(--muted);
+      font-weight:950;
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+    }
+    .tabbtn.active{
+      color: var(--text);
+      border-color: rgba(47,107,255,.35);
+      background: rgba(47,107,255,.16);
+    }
+
+    /* Modal */
+    .modal-back{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      padding:12px;
+      z-index:100;
+    }
+    @media(min-width: 560px){
+      .modal-back{align-items:center}
+    }
+    .modal{
+      width:min(640px, 100%);
+      border-radius: 24px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(10,14,24,.90);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modal-h{
+      padding:14px 14px 10px;
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .modal-h h3{margin:0; font-size:14px; font-weight:950}
+    .modal-h p{margin:6px 0 0; color:var(--muted); font-weight:700; font-size:12px; line-height:1.25}
+    .modal-b{padding:14px}
+    .toast{
+      position:fixed;
+      left:50%; transform:translateX(-50%);
+      bottom: 86px;
+      z-index:120;
+      max-width: min(640px, calc(100% - 24px));
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.14);
+      backdrop-filter: blur(14px);
+      border-radius: 16px;
+      padding:10px 12px;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      font-weight:800;
+      font-size:12px;
+      display:none;
+    }
+    .toast.show{display:block}
+    .toast small{display:block; color:var(--muted); font-weight:700; margin-top:2px}
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New";
+      font-weight:800;
+      font-size:11px;
+      color: rgba(234,241,255,.78);
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      padding:2px 6px;
+      border-radius:8px;
+    }
   </style>
 </head>
+
 <body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Racing Admin Demo</h1>
+          <small id="whoami">Not signed in</small>
+        </div>
+      </div>
 
-<div class="section">
-  <h2>Sports</h2>
-  <div id="sports"></div>
+      <div class="top-actions">
+        <span class="pill" id="envPill">API: <span class="kbd" id="apiBase"></span></span>
+        <button class="btn small ghost" id="btnRefresh" type="button">Refresh</button>
+        <button class="btn small danger hidden" id="btnLogout" type="button">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="container" id="loginView">
+    <div class="login-wrap">
+      <div class="card pad-lg">
+        <h2 class="title">Login</h2>
+        <p class="sub">Super Admin only for this demo. Once you’re in, you can add countries, courses, race days, races, horses, and users.</p>
+
+        <div class="field">
+          <div class="label">Email</div>
+          <input class="input" id="loginEmail" type="email" placeholder="you@example.com" autocomplete="username" />
+        </div>
+
+        <div class="field">
+          <div class="label">Password</div>
+          <input class="input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+
+        <div class="form-actions">
+          <button class="btn primary" id="btnLogin" type="button">Sign in</button>
+          <button class="btn ghost" id="btnUseDemo" type="button">Use demo credentials</button>
+        </div>
+
+        <div class="note">
+          Tip: Your Render free instance can take ~30–60 seconds to “wake up” if it was sleeping.
+        </div>
+      </div>
+
+      <div class="card pad">
+        <p class="sub" style="margin:0">
+          Demo flow: Horse Racing → Countries → Courses → Race Days → Races → Horses.
+          Users tab lets you add player balances (e.g. Alyssa, Kiruben).
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div class="container hidden" id="appView">
+    <div class="grid">
+      <!-- LEFT / NAV -->
+      <div class="side">
+        <div class="card">
+          <div class="section-h">
+            <div>
+              <p class="h">Control Panel</p>
+              <p class="crumb">Choose a module, then drill down.</p>
+            </div>
+          </div>
+          <div class="section-body">
+            <div class="big-nav">
+              <div class="tile" id="tileHorse">
+                <div class="glow"></div><div class="glow g2"></div>
+                <div class="icon">🏇</div>
+                <div>
+                  <div class="t1">Horse Racing</div>
+                  <div class="t2">Countries → Courses → Race Days → Races → Horses</div>
+                </div>
+              </div>
+              <div class="tile" id="tileUsers">
+                <div class="glow"></div><div class="glow g2"></div>
+                <div class="icon">👥</div>
+                <div>
+                  <div class="t1">Users</div>
+                  <div class="t2">Add players + set balances for betting demo</div>
+                </div>
+              </div>
+
+              <div class="tile disabled" title="Coming later" aria-disabled="true">
+                <div class="glow"></div><div class="glow g2"></div>
+                <div class="icon">⚽</div>
+                <div>
+                  <div class="t1">Soccer</div>
+                  <div class="t2">Coming later (same structure)</div>
+                </div>
+              </div>
+              <div class="tile disabled" title="Coming later" aria-disabled="true">
+                <div class="glow"></div><div class="glow g2"></div>
+                <div class="icon">🏏</div>
+                <div>
+                  <div class="t1">Cricket</div>
+                  <div class="t2">Coming later (same structure)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="card" style="background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10); box-shadow:none">
+              <div class="section-h" style="padding-bottom:0">
+                <div>
+                  <p class="h" style="font-size:13px">Quick Help</p>
+                  <p class="crumb">Best demo sequence</p>
+                </div>
+              </div>
+              <div class="section-body">
+                <div class="mini">
+                  1) Add a Country (name auto-generates flag if known).<br/>
+                  2) Add a Course under that country (e.g. Turffontein, Greyville).<br/>
+                  3) Add a Race Day (date).<br/>
+                  4) Bulk-add races (count + start time + interval).<br/>
+                  5) Add horses + Win/Place odds per horse.<br/>
+                  6) Add Users + balances for the demo.
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT / CONTENT -->
+      <div class="main">
+        <!-- HORSE RACING VIEW -->
+        <div class="card" id="horseView">
+          <div class="section-h">
+            <div>
+              <p class="h">Horse Racing</p>
+              <p class="crumb" id="crumbHorse">Countries</p>
+            </div>
+            <div class="right">
+              <span class="badge" id="clockBadge">--:--:--</span>
+              <button class="btn small ghost" id="btnBackHorse" type="button">Back</button>
+            </div>
+          </div>
+
+          <div class="section-body">
+            <!-- Countries -->
+            <div id="panelCountries">
+              <div class="card pad" style="box-shadow:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10)">
+                <div class="label">Add Country <span class="hint">Flag auto-fills if name is known (e.g. South Africa → ZA)</span></div>
+                <div class="form-grid cols2">
+                  <input class="input" id="countryName" placeholder="Country name (e.g. South Africa)" />
+                  <input class="input" id="countryCode" placeholder="ISO code (optional, e.g. ZA)" maxlength="2" />
+                </div>
+                <div class="form-actions">
+                  <button class="btn green" id="btnAddCountry" type="button">Add Country</button>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+              <div class="list" id="countriesList"></div>
+            </div>
+
+            <!-- Courses -->
+            <div id="panelCourses" class="hidden">
+              <div class="card pad" style="box-shadow:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10)">
+                <div class="label">Add Course <span class="hint">Example: Turffontein, Greyville, Kenilworth</span></div>
+                <div class="form-grid cols2">
+                  <input class="input" id="courseName" placeholder="Course name" />
+                  <button class="btn green" id="btnAddCourse" type="button">Add Course</button>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+              <div class="list" id="coursesList"></div>
+            </div>
+
+            <!-- Race Days -->
+            <div id="panelRaceDays" class="hidden">
+              <div class="card pad" style="box-shadow:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10)">
+                <div class="label">Add Race Day <span class="hint">Pick a date (YYYY-MM-DD)</span></div>
+                <div class="form-grid cols2">
+                  <input class="input" id="raceDayDate" type="date" />
+                  <button class="btn green" id="btnAddRaceDay" type="button">Add Race Day</button>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+              <div class="list" id="raceDaysList"></div>
+            </div>
+
+            <!-- Races -->
+            <div id="panelRaces" class="hidden">
+              <div class="card pad" style="box-shadow:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10)">
+                <div class="label">Add Races (Bulk) <span class="hint">Times are locked once created</span></div>
+                <div class="form-grid cols3">
+                  <input class="input" id="raceCount" type="number" min="1" max="20" placeholder="Count (e.g. 8)" />
+                  <input class="input" id="raceStart" type="datetime-local" />
+                  <input class="input" id="raceInterval" type="number" min="1" max="180" placeholder="Interval mins (e.g. 35)" />
+                </div>
+                <div class="form-actions">
+                  <button class="btn green" id="btnBulkRaces" type="button">Create Races</button>
+                  <button class="btn ghost" id="btnMakeDemoTimes" type="button">Auto-set: 2 open + 2 closed</button>
+                </div>
+                <div class="mini">
+                  “2 open + 2 closed” sets the bulk start time so two races fall within the next 72 hours, and two are already past.
+                </div>
+              </div>
+
+              <div class="divider"></div>
+              <div class="list" id="racesList"></div>
+            </div>
+
+            <!-- Horses -->
+            <div id="panelHorses" class="hidden">
+              <div class="card pad" style="box-shadow:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10)">
+                <div class="label">Add Horse <span class="hint">Includes Win + Place odds and horse info</span></div>
+
+                <div class="form-grid cols3">
+                  <input class="input" id="horseNum" type="number" min="1" max="99" placeholder="Horse #" />
+                  <input class="input" id="horseName" placeholder="Horse name" />
+                  <input class="input" id="horseAge" type="number" min="0" max="20" placeholder="Age (optional)" />
+                </div>
+
+                <div class="form-grid cols2" style="margin-top:10px">
+                  <input class="input" id="horseJockey" placeholder="Jockey (optional)" />
+                  <input class="input" id="horseTrainer" placeholder="Trainer (optional)" />
+                </div>
+
+                <div class="form-grid" style="margin-top:10px">
+                  <input class="input" id="horseNotes" placeholder="Notes (optional) e.g. 60kgs, good draw, etc." />
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="label">Odds (editable) <span class="hint">Fractional style (Win / Place)</span></div>
+                <div class="form-grid cols4" style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px">
+                  <input class="input" id="winNum" type="number" step="0.01" placeholder="Win num" />
+                  <input class="input" id="winDen" type="number" step="0.01" placeholder="Win den" />
+                  <input class="input" id="placeNum" type="number" step="0.01" placeholder="Place num" />
+                  <input class="input" id="placeDen" type="number" step="0.01" placeholder="Place den" />
+                </div>
+
+                <div class="form-actions">
+                  <button class="btn green" id="btnAddHorse" type="button">Add Horse</button>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+              <div class="list" id="horsesList"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- USERS VIEW -->
+        <div class="card hidden" id="usersView">
+          <div class="section-h">
+            <div>
+              <p class="h">Users</p>
+              <p class="crumb">Add players + balances (demo credit wallet)</p>
+            </div>
+            <div class="right">
+              <button class="btn small ghost" id="btnReloadUsers" type="button">Reload</button>
+            </div>
+          </div>
+
+          <div class="section-body">
+            <div class="card pad" style="box-shadow:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10)">
+              <div class="label">Add User <span class="hint">Example: Alyssa, Kiruben</span></div>
+              <div class="form-grid cols3">
+                <input class="input" id="userName" placeholder="Name (e.g. Alyssa)" />
+                <input class="input" id="userEmail" type="email" placeholder="Email (must be unique)" />
+                <input class="input" id="userBalance" type="number" step="0.01" placeholder="Balance (e.g. 10000)" />
+              </div>
+              <div class="form-actions">
+                <button class="btn green" id="btnAddUser" type="button">Add User</button>
+                <button class="btn ghost" id="btnAddSampleUsers" type="button">Add sample users</button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+            <div class="list" id="usersList"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom nav (mobile) -->
+  <div class="bottom-nav hidden" id="bottomNav">
+    <div class="bottom-inner">
+      <button class="tabbtn active" id="tabHorse" type="button">🏇 Horse Racing</button>
+      <button class="tabbtn" id="tabUsers" type="button">👥 Users</button>
+    </div>
+  </div>
+
 </div>
 
-<div class="section">
-  <h2>Countries</h2>
-  <input id="newCountryName" placeholder="New Country Name">
-  <button onclick="addCountry()">Add Country</button>
-  <div id="countries"></div>
+<!-- Modal -->
+<div class="modal-back hidden" id="modalBack">
+  <div class="modal">
+    <div class="modal-h">
+      <div>
+        <h3 id="modalTitle">Edit</h3>
+        <p id="modalSub">Update details</p>
+      </div>
+      <button class="btn small ghost" id="modalClose" type="button">Close</button>
+    </div>
+    <div class="modal-b" id="modalBody"></div>
+  </div>
 </div>
 
-<div class="section">
-  <h2>Courses</h2>
-  <input id="newCourseName" placeholder="New Course Name">
-  <button onclick="addCourse()">Add Course</button>
-  <div id="courses"></div>
-</div>
-
-<div class="section">
-  <h2>Race Days</h2>
-  <input id="raceDate" type="date">
-  <button onclick="addRaceDay()">Add Race Day</button>
-  <div id="raceDays"></div>
-</div>
-
-<div class="section">
-  <h2>Bulk Add Races</h2>
-  <input id="raceCount" type="number" placeholder="Number of Races (e.g. 8)">
-  <input id="startTime" type="datetime-local">
-  <input id="intervalMins" type="number" placeholder="Interval (mins)">
-  <button onclick="bulkAddRaces()">Add Races</button>
-</div>
-
-<div class="section">
-  <h2>Races</h2>
-  <div id="races"></div>
-</div>
-
-<div class="section">
-  <h2>Add Horse</h2>
-  <input id="horseNumber" type="number" placeholder="Horse Number">
-  <input id="horseName" placeholder="Horse Name">
-  <input id="horseInfo" placeholder="Horse Info (Jockey / Trainer / Weight)">
-  <input id="winNum" type="number" placeholder="Win Odds">
-  <input id="placeNum" type="number" placeholder="Place Odds">
-  <button onclick="addHorse()">Add Horse</button>
-</div>
-
-<div class="section">
-  <h2>Horses</h2>
-  <div id="horses"></div>
-</div>
-
-<div class="section">
-  <h2>Users</h2>
-  <input id="userName" placeholder="User Name">
-  <input id="userEmail" placeholder="User Email">
-  <input id="userBalance" type="number" placeholder="Balance">
-  <button onclick="addUser()">Add User</button>
-  <div id="users"></div>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
+  // ---------- Config ----------
+  const API_BASE = ""; // same origin (Render or local). Leave blank.
+  document.getElementById("apiBase").textContent = API_BASE || window.location.origin;
 
-let selectedSport = null;
-let selectedCountry = null;
-let selectedCourse = null;
-let selectedRaceDay = null;
-let selectedRace = null;
+  // ---------- State ----------
+  const S = {
+    token: localStorage.getItem("token") || "",
+    me: JSON.parse(localStorage.getItem("me") || "null"),
+    sportId: null,
 
-const API = "/api/admin";
+    // selection chain
+    country: null,
+    course: null,
+    raceDay: null,
+    race: null,
 
-async function fetchJSON(url, options = {}) {
-  const res = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
-    ...options
-  });
-  return res.json();
-}
+    // live tick
+    timer: null,
+    clockTimer: null,
+  };
 
-async function loadSports() {
-  const data = await fetchJSON(API + "/sports");
-  const container = document.getElementById("sports");
-  container.innerHTML = "";
-  data.forEach(s => {
-    const btn = document.createElement("button");
-    btn.className = "big-button";
-    btn.innerText = s.name;
-    btn.onclick = () => {
-      selectedSport = s.id;
-      loadCountries();
-    };
-    container.appendChild(btn);
-  });
-}
+  // ---------- Helpers ----------
+  const $ = (id) => document.getElementById(id);
 
-async function loadCountries() {
-  const data = await fetchJSON(API + "/sports/" + selectedSport + "/countries");
-  const container = document.getElementById("countries");
-  container.innerHTML = "";
-  data.forEach(c => {
-    const btn = document.createElement("button");
-    btn.className = "big-button";
-    btn.innerText = c.name;
-    btn.onclick = () => {
-      selectedCountry = c.id;
-      loadCourses();
-    };
-    container.appendChild(btn);
-  });
-}
+  function toast(msg, sub=""){
+    const el = $("toast");
+    el.innerHTML = `${escapeHtml(msg)}${sub ? `<small>${escapeHtml(sub)}</small>` : ""}`;
+    el.classList.add("show");
+    setTimeout(()=>el.classList.remove("show"), 2600);
+  }
 
-async function loadCourses() {
-  const data = await fetchJSON(API + "/countries/" + selectedCountry + "/courses");
-  const container = document.getElementById("courses");
-  container.innerHTML = "";
-  data.forEach(c => {
-    const btn = document.createElement("button");
-    btn.className = "big-button";
-    btn.innerText = c.name;
-    btn.onclick = () => {
-      selectedCourse = c.id;
-      loadRaceDays();
-    };
-    container.appendChild(btn);
-  });
-}
+  function escapeHtml(s){
+    return String(s ?? "").replace(/[&<>"']/g, (c)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[c]));
+  }
 
-async function loadRaceDays() {
-  const data = await fetchJSON(API + "/courses/" + selectedCourse + "/race-days");
-  const container = document.getElementById("raceDays");
-  container.innerHTML = "";
-  data.forEach(rd => {
-    const btn = document.createElement("button");
-    btn.className = "big-button";
-    btn.innerText = rd.race_date;
-    btn.onclick = () => {
-      selectedRaceDay = rd.id;
-      loadRaces();
-    };
-    container.appendChild(btn);
-  });
-}
+  function apiHeaders(){
+    const h = { "Content-Type":"application/json" };
+    if (S.token) h["Authorization"] = "Bearer " + S.token;
+    return h;
+  }
 
-async function loadRaces() {
-  const data = await fetchJSON(API + "/race-days/" + selectedRaceDay + "/races");
-  const container = document.getElementById("races");
-  container.innerHTML = "";
-  data.forEach(r => {
-    const btn = document.createElement("button");
-    btn.className = "big-button";
-    btn.innerText = "Race " + r.race_number + " - " + r.status;
-    btn.onclick = () => {
-      selectedRace = r.id;
-      loadHorses();
-    };
-    container.appendChild(btn);
-  });
-}
+  async function api(path, opts={}){
+    const res = await fetch((API_BASE || "") + path, {
+      ...opts,
+      headers: { ...apiHeaders(), ...(opts.headers||{}) }
+    });
+    const text = await res.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+    if (!res.ok){
+      const msg = (data && data.error) ? data.error : ("Request failed: " + res.status);
+      throw new Error(msg);
+    }
+    return data;
+  }
 
-async function loadHorses() {
-  const data = await fetchJSON(API + "/races/" + selectedRace + "/horses");
-  const container = document.getElementById("horses");
-  container.innerHTML = "";
-  data.forEach(h => {
-    const div = document.createElement("div");
-    div.className = "horse-card";
-    div.innerHTML = `
-      <strong>${h.horse_number}. ${h.name}</strong><br>
-      <small>${h.info}</small><br>
-      <span class="odds-box">Win: ${h.win_num}</span>
-      <span class="odds-box">Place: ${h.place_num}</span>
-    `;
-    container.appendChild(div);
-  });
-}
+  function setAuthUI(){
+    $("btnLogout").classList.toggle("hidden", !S.token);
+    $("whoami").textContent = S.me ? (`Signed in: ${S.me.name} (${S.me.role})`) : "Not signed in";
+  }
 
-async function addCountry() {
-  const name = document.getElementById("newCountryName").value;
-  await fetchJSON(API + "/sports/" + selectedSport + "/countries", {
-    method: "POST",
-    body: JSON.stringify({ name })
-  });
-  loadCountries();
-}
+  function showLogin(){
+    $("loginView").classList.remove("hidden");
+    $("appView").classList.add("hidden");
+    $("bottomNav").classList.add("hidden");
+  }
+  function showApp(){
+    $("loginView").classList.add("hidden");
+    $("appView").classList.remove("hidden");
+    $("bottomNav").classList.remove("hidden");
+  }
 
-async function addCourse() {
-  const name = document.getElementById("newCourseName").value;
-  await fetchJSON(API + "/countries/" + selectedCountry + "/courses", {
-    method: "POST",
-    body: JSON.stringify({ name })
-  });
-  loadCourses();
-}
+  function showHorse(){
+    $("horseView").classList.remove("hidden");
+    $("usersView").classList.add("hidden");
+    $("tabHorse").classList.add("active");
+    $("tabUsers").classList.remove("active");
+  }
+  function showUsers(){
+    $("horseView").classList.add("hidden");
+    $("usersView").classList.remove("hidden");
+    $("tabHorse").classList.remove("active");
+    $("tabUsers").classList.add("active");
+  }
 
-async function addRaceDay() {
-  const race_date = document.getElementById("raceDate").value;
-  await fetchJSON(API + "/courses/" + selectedCourse + "/race-days", {
-    method: "POST",
-    body: JSON.stringify({ race_date })
-  });
-  loadRaceDays();
-}
+  function emojiFlagFromCode(code){
+    const c = String(code || "").trim().toUpperCase();
+    if (!/^[A-Z]{2}$/.test(c)) return "🏳️";
+    const A = 0x1F1E6;
+    const first = c.charCodeAt(0) - 65 + A;
+    const second = c.charCodeAt(1) - 65 + A;
+    return String.fromCodePoint(first, second);
+  }
 
-async function bulkAddRaces() {
-  const count = document.getElementById("raceCount").value;
-  const startISO = document.getElementById("startTime").value;
-  const intervalMins = document.getElementById("intervalMins").value;
-  await fetchJSON(API + "/race-days/" + selectedRaceDay + "/races/bulk", {
-    method: "POST",
-    body: JSON.stringify({ count, startISO, intervalMins })
-  });
-  loadRaces();
-}
+  function fmtMoney(n){
+    const x = Number(n || 0);
+    return new Intl.NumberFormat(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(x);
+  }
 
-async function addHorse() {
-  const horse_number = document.getElementById("horseNumber").value;
-  const name = document.getElementById("horseName").value;
-  const info = document.getElementById("horseInfo").value;
-  const win_num = document.getElementById("winNum").value;
-  const place_num = document.getElementById("placeNum").value;
+  function fmtDT(iso){
+    if (!iso) return "—";
+    const d = new Date(iso);
+    if (!isFinite(d.getTime())) return iso;
+    return d.toLocaleString(undefined, { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+  }
 
-  await fetchJSON(API + "/races/" + selectedRace + "/horses", {
-    method: "POST",
-    body: JSON.stringify({
-      horse_number,
-      name,
-      info,
-      win_num,
-      place_num
-    })
+  function remaining(iso){
+    const t = new Date(iso).getTime();
+    const now = Date.now();
+    const ms = t - now;
+    return ms;
+  }
+
+  function hhmmss(ms){
+    const s = Math.max(0, Math.floor(ms/1000));
+    const h = String(Math.floor(s/3600)).padStart(2,"0");
+    const m = String(Math.floor((s%3600)/60)).padStart(2,"0");
+    const ss = String(s%60).padStart(2,"0");
+    return `${h}:${m}:${ss}`;
+  }
+
+  function setCrumb(){
+    const parts = [];
+    parts.push("Horse Racing");
+    if (S.country) parts.push(S.country.name);
+    if (S.course) parts.push(S.course.name);
+    if (S.raceDay) parts.push(S.raceDay.race_date);
+    if (S.race) parts.push("Race " + S.race.race_number);
+    $("crumbHorse").textContent = parts.join(" → ");
+  }
+
+  function showPanel(name){
+    const panels = ["panelCountries","panelCourses","panelRaceDays","panelRaces","panelHorses"];
+    panels.forEach(p => $(p).classList.add("hidden"));
+    $(name).classList.remove("hidden");
+    setCrumb();
+  }
+
+  function modalOpen({title, sub, bodyHtml}){
+    $("modalTitle").textContent = title || "Edit";
+    $("modalSub").textContent = sub || "";
+    $("modalBody").innerHTML = bodyHtml || "";
+    $("modalBack").classList.remove("hidden");
+  }
+  function modalClose(){
+    $("modalBack").classList.add("hidden");
+    $("modalBody").innerHTML = "";
+  }
+
+  // ---------- Login ----------
+  $("btnUseDemo").addEventListener("click", ()=>{
+    // if you seeded a super admin, put it here
+    $("loginEmail").value = $("loginEmail").value || "admin@demo.com";
+    $("loginPass").value = $("loginPass").value || "admin123";
+    toast("Filled demo credentials", "If these don't work, use your real seeded admin login.");
   });
 
-  loadHorses();
-}
+  $("btnLogin").addEventListener("click", async ()=>{
+    try{
+      const email = $("loginEmail").value.trim();
+      const password = $("loginPass").value;
+      if(!email || !password) return toast("Please enter email + password");
 
-async function addUser() {
-  const name = document.getElementById("userName").value;
-  const email = document.getElementById("userEmail").value;
-  const balance = document.getElementById("userBalance").value;
+      const out = await api("/api/auth/login", {
+        method:"POST",
+        body: JSON.stringify({ email, password })
+      });
 
-  await fetchJSON(API + "/users", {
-    method: "POST",
-    body: JSON.stringify({ name, email, balance })
+      S.token = out.token;
+      S.me = { name: out.name, role: out.role, email };
+      localStorage.setItem("token", S.token);
+      localStorage.setItem("me", JSON.stringify(S.me));
+      setAuthUI();
+      showApp();
+      await boot();
+      toast("Signed in", "Welcome back.");
+    }catch(e){
+      toast("Login failed", e.message);
+    }
   });
 
-  loadUsers();
-}
-
-async function loadUsers() {
-  const data = await fetchJSON(API + "/users");
-  const container = document.getElementById("users");
-  container.innerHTML = "";
-  data.forEach(u => {
-    const div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `
-      ${u.name} (${u.balance}) 
-    `;
-    container.appendChild(div);
+  $("btnLogout").addEventListener("click", ()=>{
+    localStorage.removeItem("token");
+    localStorage.removeItem("me");
+    S.token = "";
+    S.me = null;
+    setAuthUI();
+    showLogin();
   });
-}
 
-loadSports();
-loadUsers();
+  // ---------- Top actions ----------
+  $("btnRefresh").addEventListener("click", async ()=>{
+    if(!S.token) return toast("Not signed in");
+    await refreshCurrent();
+  });
 
+  // ---------- Mobile tabs ----------
+  $("tabHorse").addEventListener("click", showHorse);
+  $("tabUsers").addEventListener("click", async ()=>{
+    showUsers();
+    await loadUsers();
+  });
+
+  // ---------- Left tiles ----------
+  $("tileHorse").addEventListener("click", async ()=>{
+    showHorse();
+    // if user was deep somewhere, keep them; otherwise load countries
+    if (!S.country) await loadCountries();
+  });
+
+  $("tileUsers").addEventListener("click", async ()=>{
+    showUsers();
+    await loadUsers();
+  });
+
+  // ---------- Back button logic ----------
+  $("btnBackHorse").addEventListener("click", async ()=>{
+    if (S.race){
+      S.race = null;
+      showPanel("panelRaces");
+      await loadRaces();
+      return;
+    }
+    if (S.raceDay){
+      S.raceDay = null;
+      showPanel("panelRaceDays");
+      await loadRaceDays();
+      return;
+    }
+    if (S.course){
+      S.course = null;
+      showPanel("panelCourses");
+      await loadCourses();
+      return;
+    }
+    if (S.country){
+      S.country = null;
+      showPanel("panelCountries");
+      await loadCountries();
+      return;
+    }
+    showPanel("panelCountries");
+    await loadCountries();
+  });
+
+  // ---------- Data loaders ----------
+  async function boot(){
+    // sport id for Horse Racing
+    const sports = await api("/api/admin/sports");
+    const hr = sports.find(s => (s.code || "").toUpperCase() === "HORSE_RACING") || sports[0];
+    S.sportId = hr ? hr.id : null;
+
+    // reset selection to top
+    S.country = null; S.course = null; S.raceDay = null; S.race = null;
+    showHorse();
+    showPanel("panelCountries");
+    await loadCountries();
+
+    // live timers
+    if (S.timer) clearInterval(S.timer);
+    S.timer = setInterval(()=>{
+      // update race countdown badges without re-fetch
+      updateRaceCountdowns();
+    }, 1000);
+
+    if (S.clockTimer) clearInterval(S.clockTimer);
+    S.clockTimer = setInterval(()=>{
+      const now = new Date();
+      $("clockBadge").textContent = now.toLocaleTimeString(undefined, { hour12:false });
+    }, 500);
+  }
+
+  async function refreshCurrent(){
+    if ($("usersView").classList.contains("hidden")){
+      if (S.race) return loadHorses();
+      if (S.raceDay) return loadRaces();
+      if (S.course) return loadRaceDays();
+      if (S.country) return loadCourses();
+      return loadCountries();
+    }else{
+      return loadUsers();
+    }
+  }
+
+  // ---------- Countries ----------
+  $("btnAddCountry").addEventListener("click", async ()=>{
+    try{
+      const name = $("countryName").value.trim();
+      const country_code = $("countryCode").value.trim().toUpperCase();
+      if (!name) return toast("Enter a country name");
+      await api(`/api/admin/sports/${S.sportId}/countries`, {
+        method:"POST",
+        body: JSON.stringify({ name, country_code })
+      });
+      $("countryName").value = "";
+      $("countryCode").value = "";
+      toast("Country added");
+      await loadCountries();
+    }catch(e){
+      toast("Could not add country", e.message);
+    }
+  });
+
+  async function loadCountries(){
+    if (!S.sportId) return;
+    const rows = await api(`/api/admin/sports/${S.sportId}/countries`);
+    const list = $("countriesList");
+    list.innerHTML = "";
+    if (!rows.length){
+      list.innerHTML = `<div class="mini">No countries yet. Add one above.</div>`;
+      return;
+    }
+
+    rows.forEach(c=>{
+      const flag = emojiFlagFromCode(c.country_code);
+      const el = document.createElement("div");
+      el.className = "item";
+      el.innerHTML = `
+        <div class="left" style="cursor:pointer">
+          <div class="flag">${flag}</div>
+          <div class="meta">
+            <p class="name">${escapeHtml(c.name)}</p>
+            <p class="desc">Code: <span class="kbd">${escapeHtml((c.country_code||"").toUpperCase() || "—")}</span></p>
+          </div>
+        </div>
+        <div class="right">
+          <button class="btn small ghost" data-edit>Edit</button>
+          <button class="btn small primary" data-open>Open</button>
+        </div>
+      `;
+      el.querySelector("[data-open]").addEventListener("click", async ()=>{
+        S.country = c;
+        S.course = null; S.raceDay = null; S.race = null;
+        showPanel("panelCourses");
+        await loadCourses();
+      });
+      el.querySelector(".left").addEventListener("click", async ()=>{
+        S.country = c;
+        S.course = null; S.raceDay = null; S.race = null;
+        showPanel("panelCourses");
+        await loadCourses();
+      });
+      el.querySelector("[data-edit]").addEventListener("click", ()=>{
+        modalOpen({
+          title: "Edit Country",
+          sub: "Update name and/or ISO code (ZA, GB, US…). Flag updates automatically.",
+          bodyHtml: `
+            <div class="field">
+              <div class="label">Country name</div>
+              <input class="input" id="mCountryName" value="${escapeHtml(c.name)}" />
+            </div>
+            <div class="field">
+              <div class="label">Country code (2 letters)</div>
+              <input class="input" id="mCountryCode" maxlength="2" value="${escapeHtml((c.country_code||"").toUpperCase())}" />
+            </div>
+            <div class="form-actions">
+              <button class="btn green" id="mSaveCountry" type="button">Save</button>
+              <button class="btn ghost" id="mCancel" type="button">Cancel</button>
+            </div>
+          `
+        });
+        $("mCancel").onclick = modalClose;
+        $("mSaveCountry").onclick = async ()=>{
+          try{
+            const name = $("mCountryName").value.trim();
+            const country_code = $("mCountryCode").value.trim().toUpperCase();
+            if(!name) return toast("Name required");
+            await api(`/api/admin/countries/${c.id}`, {
+              method:"PATCH",
+              body: JSON.stringify({ name, country_code })
+            });
+            modalClose();
+            toast("Country updated");
+            await loadCountries();
+          }catch(e){
+            toast("Update failed", e.message);
+          }
+        };
+      });
+
+      list.appendChild(el);
+    });
+  }
+
+  // ---------- Courses ----------
+  $("btnAddCourse").addEventListener("click", async ()=>{
+    try{
+      const name = $("courseName").value.trim();
+      if(!name) return toast("Enter a course name");
+      await api(`/api/admin/countries/${S.country.id}/courses`, {
+        method:"POST",
+        body: JSON.stringify({ name })
+      });
+      $("courseName").value = "";
+      toast("Course added");
+      await loadCourses();
+    }catch(e){
+      toast("Could not add course", e.message);
+    }
+  });
+
+  async function loadCourses(){
+    const rows = await api(`/api/admin/countries/${S.country.id}/courses`);
+    const list = $("coursesList");
+    list.innerHTML = "";
+
+    if(!rows.length){
+      list.innerHTML = `<div class="mini">No courses yet. Add one above (e.g. Turffontein, Greyville).</div>`;
+      return;
+    }
+
+    rows.forEach(course=>{
+      const el = document.createElement("div");
+      el.className = "item";
+      el.innerHTML = `
+        <div class="left" style="cursor:pointer">
+          <div class="flag">🏟️</div>
+          <div class="meta">
+            <p class="name">${escapeHtml(course.name)}</p>
+            <p class="desc">Race meetings for ${escapeHtml(S.country.name)}</p>
+          </div>
+        </div>
+        <div class="right">
+          <button class="btn small ghost" data-edit>Edit</button>
+          <button class="btn small primary" data-open>Open</button>
+        </div>
+      `;
+
+      el.querySelector("[data-open]").addEventListener("click", async ()=>{
+        S.course = course;
+        S.raceDay = null; S.race = null;
+        showPanel("panelRaceDays");
+        await loadRaceDays();
+      });
+      el.querySelector(".left").addEventListener("click", async ()=>{
+        S.course = course;
+        S.raceDay = null; S.race = null;
+        showPanel("panelRaceDays");
+        await loadRaceDays();
+      });
+      el.querySelector("[data-edit]").addEventListener("click", ()=>{
+        modalOpen({
+          title: "Edit Course",
+          sub: "Rename the racecourse / venue.",
+          bodyHtml: `
+            <div class="field">
+              <div class="label">Course name</div>
+              <input class="input" id="mCourseName" value="${escapeHtml(course.name)}" />
+            </div>
+            <div class="form-actions">
+              <button class="btn green" id="mSaveCourse" type="button">Save</button>
+              <button class="btn ghost" id="mCancel" type="button">Cancel</button>
+            </div>
+          `
+        });
+        $("mCancel").onclick = modalClose;
+        $("mSaveCourse").onclick = async ()=>{
+          try{
+            const name = $("mCourseName").value.trim();
+            if(!name) return toast("Name required");
+            await api(`/api/admin/courses/${course.id}`, { method:"PATCH", body: JSON.stringify({ name }) });
+            modalClose();
+            toast("Course updated");
+            await loadCourses();
+          }catch(e){
+            toast("Update failed", e.message);
+          }
+        };
+      });
+
+      list.appendChild(el);
+    });
+  }
+
+  // ---------- Race Days ----------
+  $("btnAddRaceDay").addEventListener("click", async ()=>{
+    try{
+      const race_date = $("raceDayDate").value;
+      if(!race_date) return toast("Choose a date");
+      await api(`/api/admin/courses/${S.course.id}/race-days`, {
+        method:"POST",
+        body: JSON.stringify({ race_date })
+      });
+      toast("Race day added");
+      await loadRaceDays();
+    }catch(e){
+      toast("Could not add race day", e.message);
+    }
+  });
+
+  async function loadRaceDays(){
+    const rows = await api(`/api/admin/courses/${S.course.id}/race-days`);
+    const list = $("raceDaysList");
+    list.innerHTML = "";
+
+    if(!rows.length){
+      list.innerHTML = `<div class="mini">No race days yet. Add one above.</div>`;
+      return;
+    }
+
+    rows.forEach(rd=>{
+      const el = document.createElement("div");
+      el.className = "item";
+      el.innerHTML = `
+        <div class="left" style="cursor:pointer">
+          <div class="flag">📅</div>
+          <div class="meta">
+            <p class="name">${escapeHtml(rd.race_date)}</p>
+            <p class="desc">${escapeHtml(S.course.name)} • ${escapeHtml(S.country.name)}</p>
+          </div>
+        </div>
+        <div class="right">
+          <button class="btn small ghost" data-edit>Edit</button>
+          <button class="btn small primary" data-open>Open</button>
+        </div>
+      `;
+
+      el.querySelector("[data-open]").addEventListener("click", async ()=>{
+        S.raceDay = rd;
+        S.race = null;
+        showPanel("panelRaces");
+        await loadRaces();
+      });
+      el.querySelector(".left").addEventListener("click", async ()=>{
+        S.raceDay = rd;
+        S.race = null;
+        showPanel("panelRaces");
+        await loadRaces();
+      });
+      el.querySelector("[data-edit]").addEventListener("click", ()=>{
+        modalOpen({
+          title: "Edit Race Day",
+          sub: "You can rename the date if needed (demo-friendly).",
+          bodyHtml: `
+            <div class="field">
+              <div class="label">Race day date</div>
+              <input class="input" id="mRaceDayDate" type="date" value="${escapeHtml(rd.race_date)}" />
+            </div>
+            <div class="form-actions">
+              <button class="btn green" id="mSaveRaceDay" type="button">Save</button>
+              <button class="btn ghost" id="mCancel" type="button">Cancel</button>
+            </div>
+          `
+        });
+        $("mCancel").onclick = modalClose;
+        $("mSaveRaceDay").onclick = async ()=>{
+          try{
+            const race_date = $("mRaceDayDate").value;
+            if(!race_date) return toast("Date required");
+            await api(`/api/admin/race-days/${rd.id}`, { method:"PATCH", body: JSON.stringify({ race_date }) });
+            modalClose();
+            toast("Race day updated");
+            await loadRaceDays();
+          }catch(e){
+            toast("Update failed", e.message);
+          }
+        };
+      });
+
+      list.appendChild(el);
+    });
+  }
+
+  // ---------- Races ----------
+  $("btnBulkRaces").addEventListener("click", async ()=>{
+    try{
+      const count = Number($("raceCount").value);
+      const startLocal = $("raceStart").value; // datetime-local
+      const interval_minutes = Number($("raceInterval").value || 35);
+
+      if(!count || count < 1) return toast("Enter race count");
+      if(!startLocal) return toast("Select start date/time");
+      if(!interval_minutes || interval_minutes < 1) return toast("Enter interval minutes");
+
+      // Convert local datetime-local to ISO
+      const start = new Date(startLocal);
+      if(!isFinite(start.getTime())) return toast("Invalid start time");
+
+      await api(`/api/admin/race-days/${S.raceDay.id}/races/bulk`, {
+        method:"POST",
+        body: JSON.stringify({ count, start_datetime: start.toISOString(), interval_minutes })
+      });
+
+      toast("Races created", "Times are locked once created.");
+      await loadRaces();
+    }catch(e){
+      toast("Could not create races", e.message);
+    }
+  });
+
+  $("btnMakeDemoTimes").addEventListener("click", ()=>{
+    // This just sets the form values in a demo-friendly way.
+    // Two closed: start time in the past; two open: within next 72h.
+    const now = new Date();
+    const start = new Date(now.getTime() - (2 * 60 * 60 * 1000)); // 2 hours ago
+    $("raceCount").value = 4;
+    $("raceInterval").value = 30;
+
+    // datetime-local expects local format yyyy-mm-ddThh:mm
+    const pad = (n)=>String(n).padStart(2,"0");
+    const dtLocal = `${start.getFullYear()}-${pad(start.getMonth()+1)}-${pad(start.getDate())}T${pad(start.getHours())}:${pad(start.getMinutes())}`;
+    $("raceStart").value = dtLocal;
+
+    toast("Demo times prepared", "Click “Create Races” to generate 4 races.");
+  });
+
+  async function loadRaces(){
+    const rows = await api(`/api/admin/race-days/${S.raceDay.id}/races`);
+    const list = $("racesList");
+    list.innerHTML = "";
+
+    if(!rows.length){
+      list.innerHTML = `<div class="mini">No races yet. Use “Add Races (Bulk)” above.</div>`;
+      return;
+    }
+
+    rows.forEach(r=>{
+      const ms = remaining(r.race_datetime);
+      const isPast = ms <= 0;
+      const status = (r.status || (isPast ? "CLOSED" : "OPEN")).toUpperCase();
+      const badgeClass = status === "OPEN" ? (ms < 15*60*1000 ? "soon" : "open") : "closed";
+      const badgeText = status === "OPEN" ? (ms < 15*60*1000 ? "OPEN • SOON" : "OPEN") : "CLOSED";
+
+      const el = document.createElement("div");
+      el.className = "item";
+      el.dataset.raceId = r.id;
+      el.dataset.raceTime = r.race_datetime;
+      el.dataset.raceStatus = status;
+
+      el.innerHTML = `
+        <div class="left" style="cursor:pointer">
+          <div class="flag">🏁</div>
+          <div class="meta">
+            <p class="name">Race ${escapeHtml(r.race_number)}</p>
+            <p class="desc">${escapeHtml(fmtDT(r.race_datetime))} • <span data-countdown>${status === "OPEN" ? ("Closes in " + hhmmss(ms)) : "Closed"}</span></p>
+          </div>
+        </div>
+        <div class="right">
+          <span class="badge ${badgeClass}">${badgeText}</span>
+          <button class="btn small ghost" data-toggle>${status === "OPEN" ? "Close" : "Re-open"}</button>
+          <button class="btn small primary" data-open>Horses</button>
+        </div>
+      `;
+
+      el.querySelector("[data-open]").addEventListener("click", async ()=>{
+        S.race = r;
+        showPanel("panelHorses");
+        await loadHorses();
+      });
+      el.querySelector(".left").addEventListener("click", async ()=>{
+        S.race = r;
+        showPanel("panelHorses");
+        await loadHorses();
+      });
+
+      el.querySelector("[data-toggle]").addEventListener("click", async ()=>{
+        try{
+          const next = status === "OPEN" ? "CLOSED" : "OPEN";
+          await api(`/api/admin/races/${r.id}/status`, { method:"PATCH", body: JSON.stringify({ status: next })});
+          toast("Race updated", `Race ${r.race_number} is now ${next}`);
+          await loadRaces();
+        }catch(e){
+          toast("Could not update race", e.message);
+        }
+      });
+
+      list.appendChild(el);
+    });
+
+    updateRaceCountdowns();
+  }
+
+  function updateRaceCountdowns(){
+    const list = $("racesList");
+    if (!list || list.classList.contains("hidden")) return;
+    const items = list.querySelectorAll(".item[data-race-id]");
+    items.forEach(el=>{
+      const iso = el.dataset.raceTime;
+      const status = (el.dataset.raceStatus || "").toUpperCase();
+      const ms = remaining(iso);
+      const cd = el.querySelector("[data-countdown]");
+      if (!cd) return;
+
+      if (status === "OPEN"){
+        if (ms <= 0){
+          cd.textContent = "Closes in 00:00:00";
+        } else {
+          cd.textContent = "Closes in " + hhmmss(ms);
+        }
+      } else {
+        cd.textContent = "Closed";
+      }
+    });
+  }
+
+  // ---------- Horses ----------
+  $("btnAddHorse").addEventListener("click", async ()=>{
+    try{
+      const horse_number = Number($("horseNum").value);
+      const name = $("horseName").value.trim();
+      const age = Number($("horseAge").value || 0);
+      const jockey = $("horseJockey").value.trim();
+      const trainer = $("horseTrainer").value.trim();
+      const notes = $("horseNotes").value.trim();
+
+      const win_num = Number($("winNum").value || 0);
+      const win_den = Number($("winDen").value || 0);
+      const place_num = Number($("placeNum").value || 0);
+      const place_den = Number($("placeDen").value || 0);
+
+      if(!horse_number) return toast("Horse # required");
+      if(!name) return toast("Horse name required");
+
+      await api(`/api/admin/races/${S.race.id}/horses`, {
+        method:"POST",
+        body: JSON.stringify({ horse_number, name, age, jockey, trainer, notes, win_num, win_den, place_num, place_den })
+      });
+
+      // clear
+      $("horseNum").value = "";
+      $("horseName").value = "";
+      $("horseAge").value = "";
+      $("horseJockey").value = "";
+      $("horseTrainer").value = "";
+      $("horseNotes").value = "";
+      $("winNum").value = ""; $("winDen").value = ""; $("placeNum").value = ""; $("placeDen").value = "";
+
+      toast("Horse added");
+      await loadHorses();
+    }catch(e){
+      toast("Could not add horse", e.message);
+    }
+  });
+
+  async function loadHorses(){
+    const rows = await api(`/api/admin/races/${S.race.id}/horses`);
+    const list = $("horsesList");
+    list.innerHTML = "";
+
+    if(!rows.length){
+      list.innerHTML = `<div class="mini">No horses yet. Add one above.</div>`;
+      return;
+    }
+
+    rows.forEach(h=>{
+      const win = (Number(h.win_num)||0) && (Number(h.win_den)||0) ? `${h.win_num}/${h.win_den}` : "—";
+      const place = (Number(h.place_num)||0) && (Number(h.place_den)||0) ? `${h.place_num}/${h.place_den}` : "—";
+
+      const infoBits = [];
+      if (h.jockey) infoBits.push(`Jockey: ${h.jockey}`);
+      if (h.trainer) infoBits.push(`Trainer: ${h.trainer}`);
+      if (Number(h.age||0)) infoBits.push(`Age: ${h.age}`);
+      if (h.notes) infoBits.push(h.notes);
+
+      const desc = infoBits.length ? infoBits.join(" • ") : "No extra info yet";
+
+      const el = document.createElement("div");
+      el.className = "item horse-row";
+      el.innerHTML = `
+        <div class="left horse-info" style="cursor:pointer">
+          <div class="flag">#${escapeHtml(h.horse_number)}</div>
+          <div class="meta">
+            <p class="name">${escapeHtml(h.name)}</p>
+            <p class="desc">${escapeHtml(desc)}</p>
+          </div>
+        </div>
+        <div class="right">
+          <div class="odds">
+            <div class="odds-box win" title="Win">
+              <span class="k">WIN</span>
+              <span class="v ${win==="—" ? "muted":""}">${escapeHtml(win)}</span>
+            </div>
+            <div class="odds-box place" title="Place">
+              <span class="k">PLACE</span>
+              <span class="v ${place==="—" ? "muted":""}">${escapeHtml(place)}</span>
+            </div>
+          </div>
+          <button class="btn small ghost" data-edit>Details</button>
+          <button class="btn small primary" data-odds>Odds</button>
+        </div>
+      `;
+
+      el.querySelector("[data-edit]").addEventListener("click", ()=>{
+        modalOpen({
+          title: "Edit Horse Details",
+          sub: "Update horse number, name, and information (jockey/trainer/age/notes).",
+          bodyHtml: `
+            <div class="form-grid cols2">
+              <div class="field">
+                <div class="label">Horse #</div>
+                <input class="input" id="mHNum" type="number" min="1" max="99" value="${escapeHtml(h.horse_number)}" />
+              </div>
+              <div class="field">
+                <div class="label">Name</div>
+                <input class="input" id="mHName" value="${escapeHtml(h.name)}" />
+              </div>
+            </div>
+
+            <div class="form-grid cols2">
+              <div class="field">
+                <div class="label">Jockey</div>
+                <input class="input" id="mHJockey" value="${escapeHtml(h.jockey||"")}" />
+              </div>
+              <div class="field">
+                <div class="label">Trainer</div>
+                <input class="input" id="mHTrainer" value="${escapeHtml(h.trainer||"")}" />
+              </div>
+            </div>
+
+            <div class="form-grid cols2">
+              <div class="field">
+                <div class="label">Age</div>
+                <input class="input" id="mHAge" type="number" min="0" max="20" value="${escapeHtml(h.age||0)}" />
+              </div>
+              <div class="field">
+                <div class="label">Notes</div>
+                <input class="input" id="mHNotes" value="${escapeHtml(h.notes||"")}" />
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn green" id="mSaveHorse" type="button">Save</button>
+              <button class="btn ghost" id="mCancel" type="button">Cancel</button>
+            </div>
+          `
+        });
+        $("mCancel").onclick = modalClose;
+        $("mSaveHorse").onclick = async ()=>{
+          try{
+            const horse_number = Number($("mHNum").value);
+            const name = $("mHName").value.trim();
+            const jockey = $("mHJockey").value.trim();
+            const trainer = $("mHTrainer").value.trim();
+            const age = Number($("mHAge").value || 0);
+            const notes = $("mHNotes").value.trim();
+
+            if(!horse_number) return toast("Horse # required");
+            if(!name) return toast("Name required");
+
+            await api(`/api/admin/horses/${h.id}`, {
+              method:"PATCH",
+              body: JSON.stringify({ horse_number, name, jockey, trainer, age, notes })
+            });
+            modalClose();
+            toast("Horse updated");
+            await loadHorses();
+          }catch(e){
+            toast("Update failed", e.message);
+          }
+        };
+      });
+
+      el.querySelector("[data-odds]").addEventListener("click", ()=>{
+        modalOpen({
+          title: "Edit Odds (Win / Place)",
+          sub: "These odds show beside each horse. Use fractions (num/den).",
+          bodyHtml: `
+            <div class="form-grid cols2">
+              <div class="field">
+                <div class="label">Win (num / den)</div>
+                <div class="row">
+                  <input class="input" id="mWinNum" type="number" step="0.01" value="${escapeHtml(h.win_num || 0)}" />
+                  <input class="input" id="mWinDen" type="number" step="0.01" value="${escapeHtml(h.win_den || 0)}" />
+                </div>
+              </div>
+              <div class="field">
+                <div class="label">Place (num / den)</div>
+                <div class="row">
+                  <input class="input" id="mPlaceNum" type="number" step="0.01" value="${escapeHtml(h.place_num || 0)}" />
+                  <input class="input" id="mPlaceDen" type="number" step="0.01" value="${escapeHtml(h.place_den || 0)}" />
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn green" id="mSaveOdds" type="button">Save Odds</button>
+              <button class="btn ghost" id="mCancel" type="button">Cancel</button>
+            </div>
+          `
+        });
+        $("mCancel").onclick = modalClose;
+        $("mSaveOdds").onclick = async ()=>{
+          try{
+            const win_num = Number($("mWinNum").value || 0);
+            const win_den = Number($("mWinDen").value || 0);
+            const place_num = Number($("mPlaceNum").value || 0);
+            const place_den = Number($("mPlaceDen").value || 0);
+
+            await api(`/api/admin/horses/${h.id}/odds`, {
+              method:"PATCH",
+              body: JSON.stringify({ win_num, win_den, place_num, place_den })
+            });
+            modalClose();
+            toast("Odds updated");
+            await loadHorses();
+          }catch(e){
+            toast("Update failed", e.message);
+          }
+        };
+      });
+
+      list.appendChild(el);
+    });
+  }
+
+  // ---------- Users ----------
+  $("btnReloadUsers").addEventListener("click", loadUsers);
+
+  $("btnAddUser").addEventListener("click", async ()=>{
+    try{
+      const name = $("userName").value.trim();
+      const email = $("userEmail").value.trim().toLowerCase();
+      const balance = Number($("userBalance").value || 0);
+      if(!name) return toast("Name required");
+      if(!email) return toast("Email required");
+
+      await api("/api/admin/users", {
+        method:"POST",
+        body: JSON.stringify({ name, email, balance })
+      });
+      $("userName").value = "";
+      $("userEmail").value = "";
+      $("userBalance").value = "";
+      toast("User added");
+      await loadUsers();
+    }catch(e){
+      toast("Could not add user", e.message);
+    }
+  });
+
+  $("btnAddSampleUsers").addEventListener("click", async ()=>{
+    const samples = [
+      { name:"Alyssa", email:"alyssa+"+Date.now()+"@demo.local", balance: 10000 },
+      { name:"Kiruben", email:"kiruben+"+Date.now()+"@demo.local", balance: 10000 }
+    ];
+    try{
+      for (const u of samples){
+        await api("/api/admin/users", { method:"POST", body: JSON.stringify(u) });
+      }
+      toast("Sample users added");
+      await loadUsers();
+    }catch(e){
+      toast("Could not add sample users", e.message);
+    }
+  });
+
+  async function loadUsers(){
+    const rows = await api("/api/admin/users");
+    const list = $("usersList");
+    list.innerHTML = "";
+
+    if(!rows.length){
+      list.innerHTML = `<div class="mini">No users yet. Add one above.</div>`;
+      return;
+    }
+
+    rows.forEach(u=>{
+      const el = document.createElement("div");
+      el.className = "item";
+      el.innerHTML = `
+        <div class="left">
+          <div class="flag">👤</div>
+          <div class="meta">
+            <p class="name">${escapeHtml(u.name)}</p>
+            <p class="desc">${escapeHtml(u.email)} • Balance: <span class="kbd">${escapeHtml(fmtMoney(u.balance))}</span></p>
+          </div>
+        </div>
+        <div class="right">
+          <button class="btn small primary" data-edit>Edit</button>
+        </div>
+      `;
+      el.querySelector("[data-edit]").addEventListener("click", ()=>{
+        modalOpen({
+          title: "Edit User Balance",
+          sub: "Adjust the demo wallet balance (super-admin controlled).",
+          bodyHtml: `
+            <div class="field">
+              <div class="label">Name</div>
+              <input class="input" id="mUName" value="${escapeHtml(u.name)}" />
+            </div>
+            <div class="field">
+              <div class="label">Balance</div>
+              <input class="input" id="mUBalance" type="number" step="0.01" value="${escapeHtml(u.balance)}" />
+            </div>
+            <div class="form-actions">
+              <button class="btn green" id="mSaveUser" type="button">Save</button>
+              <button class="btn ghost" id="mCancel" type="button">Cancel</button>
+            </div>
+          `
+        });
+        $("mCancel").onclick = modalClose;
+        $("mSaveUser").onclick = async ()=>{
+          try{
+            const name = $("mUName").value.trim();
+            const balance = Number($("mUBalance").value || 0);
+            if(!name) return toast("Name required");
+            await api(`/api/admin/users/${u.id}`, { method:"PATCH", body: JSON.stringify({ name, balance }) });
+            modalClose();
+            toast("User updated");
+            await loadUsers();
+          }catch(e){
+            toast("Update failed", e.message);
+          }
+        };
+      });
+
+      list.appendChild(el);
+    });
+  }
+
+  // ---------- Modal close ----------
+  $("modalClose").addEventListener("click", modalClose);
+  $("modalBack").addEventListener("click", (e)=>{
+    if (e.target === $("modalBack")) modalClose();
+  });
+
+  // ---------- Init ----------
+  (async function init(){
+    setAuthUI();
+
+    if (!S.token){
+      showLogin();
+      return;
+    }
+
+    try{
+      showApp();
+      await boot();
+    }catch(e){
+      toast("Could not load admin app", e.message);
+      // if token expired
+      showLogin();
+    }
+  })();
 </script>
-
 </body>
 </html>
