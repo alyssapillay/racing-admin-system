@@ -54,6 +54,7 @@ async function initDb() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       sport_id INTEGER NOT NULL,
       name TEXT NOT NULL,
+      country_code TEXT DEFAULT '',
       created_at TEXT NOT NULL,
       UNIQUE(sport_id, name),
       FOREIGN KEY(sport_id) REFERENCES sports(id) ON DELETE CASCADE
@@ -103,15 +104,11 @@ async function initDb() {
       horse_number INTEGER NOT NULL,
       name TEXT NOT NULL,
 
-      -- Win odds
       win_num REAL DEFAULT 0,
       win_den REAL DEFAULT 0,
-
-      -- Place odds
       place_num REAL DEFAULT 0,
       place_den REAL DEFAULT 0,
 
-      -- Horse info (for nicer UI)
       jockey TEXT DEFAULT '',
       trainer TEXT DEFAULT '',
       age INTEGER DEFAULT 0,
@@ -136,24 +133,12 @@ async function initDb() {
     )
   `);
 
-  await run(`
-    CREATE TABLE IF NOT EXISTS bets (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      horse_id INTEGER NOT NULL,
-      stake REAL NOT NULL,
-      created_at TEXT NOT NULL,
-      FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
-      FOREIGN KEY(horse_id) REFERENCES horses(id) ON DELETE CASCADE
-    )
-  `);
-
-  // Safe migrations
+  // safe migrations
+  await addColumnIfMissing("countries", "country_code", "TEXT DEFAULT ''");
   await addColumnIfMissing("horses", "win_num", "REAL DEFAULT 0");
   await addColumnIfMissing("horses", "win_den", "REAL DEFAULT 0");
   await addColumnIfMissing("horses", "place_num", "REAL DEFAULT 0");
   await addColumnIfMissing("horses", "place_den", "REAL DEFAULT 0");
-
   await addColumnIfMissing("horses", "jockey", "TEXT DEFAULT ''");
   await addColumnIfMissing("horses", "trainer", "TEXT DEFAULT ''");
   await addColumnIfMissing("horses", "age", "INTEGER DEFAULT 0");

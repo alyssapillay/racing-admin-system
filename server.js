@@ -2,12 +2,13 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const cron = require("node-cron");
-const bcrypt = require("bcrypt");
 
-const { initDb, get, run } = require("./db");
+const { initDb, run } = require("./db");
 const { seedIfEmpty } = require("./seed");
 const { signToken, authMiddleware, requireRole } = require("./auth");
 const adminRoutes = require("./routes/admin");
+const bcrypt = require("bcrypt");
+const { get } = require("./db");
 
 const app = express();
 
@@ -15,17 +16,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/api/health", (req, res) =>
-  res.json({ ok: true, time: new Date().toISOString() })
-);
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true, time: new Date().toISOString() });
+});
 
-// Login (Super Admin only for this phase)
+// Login
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body || {};
-    if (!email || !password) {
-      return res.status(400).json({ error: "email and password required" });
-    }
+    if (!email || !password) return res.status(400).json({ error: "email and password required" });
 
     const user = await get(
       "SELECT id,name,email,password_hash,role,status FROM users WHERE email=? AND status='ACTIVE'",
@@ -36,47 +35,33 @@ app.post("/api/auth/login", async (req, res) => {
     const ok = await bcrypt.compare(password, user.password_hash);
     if (!ok) return res.status(401).json({ error: "invalid credentials" });
 
-    const token = signToken({
-      userId: user.id,
-      role: user.role,
-      email: user.email,
-      name: user.name,
-    });
-
+    const token = signToken({ userId: user.id, role: user.role, email: user.email, name: user.name });
     res.json({ token, role: user.role, name: user.name });
   } catch (e) {
     res.status(500).json({ error: "login failed" });
   }
 });
 
-// Super Admin API
+// Admin API
 app.use("/api/admin", authMiddleware, requireRole("SUPER_ADMIN"), adminRoutes);
 
-// Auto-close races every 5 seconds (STRICT)
+// Auto-close races every 5 seconds (demo-safe)
 cron.schedule("*/5 * * * * *", async () => {
-  try {
-    const now = new Date().toISOString();
-    await run(
-      "UPDATE races SET status='CLOSED', closed_at=? WHERE status='OPEN' AND race_datetime <= ?",
-      [now, now]
-    );
-  } catch (e) {
-    // Keep cron from crashing the server
-    console.error("Cron error:", e?.message || e);
-  }
+  const now = new Date().toISOString();
+  await run(
+    "UPDATE races SET status='CLOSED', closed_at=? WHERE status='OPEN' AND race_datetime <= ?",
+    [now, now]
+  );
 });
 
 async function start() {
   await initDb();
   await seedIfEmpty();
-
   const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log("Server running on port", PORT);
-  });
+  app.listen(PORT, () => console.log("Server running on port", PORT));
 }
 
 start().catch((e) => {
-  console.error("Startup failed:", e?.message || e);
+  console.error("Startup failed:", e);
   process.exit(1);
 });
