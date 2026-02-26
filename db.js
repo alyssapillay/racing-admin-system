@@ -1,14 +1,15 @@
-const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
+const sqlite3 = require("sqlite3").verbose();
 
-const dbPath = path.join(__dirname, "demo.sqlite");
-const db = new sqlite3.Database(dbPath);
+const DB_FILE = process.env.DB_FILE || path.join(__dirname, "demo.sqlite");
+
+const db = new sqlite3.Database(DB_FILE);
 
 function run(sql, params = []) {
   return new Promise((resolve, reject) => {
     db.run(sql, params, function (err) {
-      if (err) reject(err);
-      else resolve(this);
+      if (err) return reject(err);
+      resolve({ lastID: this.lastID, changes: this.changes });
     });
   });
 }
@@ -16,8 +17,8 @@ function run(sql, params = []) {
 function get(sql, params = []) {
   return new Promise((resolve, reject) => {
     db.get(sql, params, (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
+      if (err) return reject(err);
+      resolve(row);
     });
   });
 }
@@ -25,101 +26,136 @@ function get(sql, params = []) {
 function all(sql, params = []) {
   return new Promise((resolve, reject) => {
     db.all(sql, params, (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
+      if (err) return reject(err);
+      resolve(rows);
     });
   });
 }
 
-function exec(sql) {
-  return new Promise((resolve, reject) => {
-    db.exec(sql, (err) => (err ? reject(err) : resolve()));
-  });
+async function addColumnIfMissing(table, column, typeSql) {
+  const cols = await all(`PRAGMA table_info(${table})`);
+  const has = cols.some((c) => c.name === column);
+  if (!has) {
+    await run(`ALTER TABLE ${table} ADD COLUMN ${column} ${typeSql}`);
+  }
 }
 
 async function initDb() {
-  await exec(`
-    PRAGMA foreign_keys = ON;
+  await run("PRAGMA foreign_keys = ON");
 
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
-      role TEXT NOT NULL CHECK (role IN ('SUPER_ADMIN','PLAYER')),
-      balance REAL NOT NULL DEFAULT 0,
-      status TEXT NOT NULL DEFAULT 'ACTIVE',
-      created_at TEXT NOT NULL
-    );
-
+  await run(`
     CREATE TABLE IF NOT EXISTS sports (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      code TEXT UNIQUE NOT NULL, -- e.g. HORSE_RACING
+      code TEXT NOT NULL UNIQUE,
       name TEXT NOT NULL,
       created_at TEXT NOT NULL
-    );
+    )
+  `);
 
+  await run(`
     CREATE TABLE IF NOT EXISTS countries (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       sport_id INTEGER NOT NULL,
       name TEXT NOT NULL,
       created_at TEXT NOT NULL,
-      FOREIGN KEY (sport_id) REFERENCES sports(id) ON DELETE CASCADE
-    );
+      UNIQUE(sport_id, name),
+      FOREIGN KEY(sport_id) REFERENCES sports(id) ON DELETE CASCADE
+    )
+  `);
 
+  await run(`
     CREATE TABLE IF NOT EXISTS courses (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       country_id INTEGER NOT NULL,
       name TEXT NOT NULL,
       created_at TEXT NOT NULL,
-      FOREIGN KEY (country_id) REFERENCES countries(id) ON DELETE CASCADE
-    );
+      UNIQUE(country_id, name),
+      FOREIGN KEY(country_id) REFERENCES countries(id) ON DELETE CASCADE
+    )
+  `);
 
+  await run(`
     CREATE TABLE IF NOT EXISTS race_days (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       course_id INTEGER NOT NULL,
-      race_date TEXT NOT NULL, -- YYYY-MM-DD
-      total_races INTEGER NOT NULL,
+      race_date TEXT NOT NULL,
       created_at TEXT NOT NULL,
-      FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
-    );
+      UNIQUE(course_id, race_date),
+      FOREIGN KEY(course_id) REFERENCES courses(id) ON DELETE CASCADE
+    )
+  `);
 
+  await run(`
     CREATE TABLE IF NOT EXISTS races (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       race_day_id INTEGER NOT NULL,
       race_number INTEGER NOT NULL,
-      race_datetime TEXT NOT NULL, -- ISO datetime; auto-close uses this
-      status TEXT NOT NULL DEFAULT 'OPEN' CHECK (status IN ('OPEN','CLOSED')),
-      created_at TEXT NOT NULL,
+      race_datetime TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'OPEN',   -- OPEN | CLOSED
       closed_at TEXT,
-      FOREIGN KEY (race_day_id) REFERENCES race_days(id) ON DELETE CASCADE
-    );
+      created_at TEXT NOT NULL,
+      UNIQUE(race_day_id, race_number),
+      FOREIGN KEY(race_day_id) REFERENCES race_days(id) ON DELETE CASCADE
+    )
+  `);
 
+  await run(`
     CREATE TABLE IF NOT EXISTS horses (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       race_id INTEGER NOT NULL,
       horse_number INTEGER NOT NULL,
       name TEXT NOT NULL,
-      odds_num INTEGER NOT NULL,
-      odds_den INTEGER NOT NULL,
-      created_at TEXT NOT NULL,
-      FOREIGN KEY (race_id) REFERENCES races(id) ON DELETE CASCADE
-    );
 
+      -- Win odds
+      win_num REAL DEFAULT 0,
+      win_den REAL DEFAULT 0,
+
+      -- Place odds
+      place_num REAL DEFAULT 0,
+      place_den REAL DEFAULT 0,
+
+      created_at TEXT NOT NULL,
+      UNIQUE(race_id, horse_number),
+      FOREIGN KEY(race_id) REFERENCES races(id) ON DELETE CASCADE
+    )
+  `);
+
+  await run(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      role TEXT NOT NULL,         -- SUPER_ADMIN | PLAYER
+      status TEXT NOT NULL,       -- ACTIVE | DISABLED
+      balance REAL NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL
+    )
+  `);
+
+  await run(`
     CREATE TABLE IF NOT EXISTS bets (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
-      race_id INTEGER NOT NULL,
       horse_id INTEGER NOT NULL,
       stake REAL NOT NULL,
-      odds_num INTEGER NOT NULL,
-      odds_den INTEGER NOT NULL,
       created_at TEXT NOT NULL,
-      FOREIGN KEY (user_id) REFERENCES users(id),
-      FOREIGN KEY (race_id) REFERENCES races(id),
-      FOREIGN KEY (horse_id) REFERENCES horses(id)
-    );
+      FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY(horse_id) REFERENCES horses(id) ON DELETE CASCADE
+    )
   `);
+
+  // Safe “migrations” for older DBs (if demo.sqlite already exists)
+  await addColumnIfMissing("horses", "win_num", "REAL DEFAULT 0");
+  await addColumnIfMissing("horses", "win_den", "REAL DEFAULT 0");
+  await addColumnIfMissing("horses", "place_num", "REAL DEFAULT 0");
+  await addColumnIfMissing("horses", "place_den", "REAL DEFAULT 0");
 }
 
-module.exports = { db, run, get, all, initDb };
+module.exports = {
+  db,
+  run,
+  get,
+  all,
+  initDb,
+};
