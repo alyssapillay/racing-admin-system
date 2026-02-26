@@ -1,1038 +1,353 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Racing Admin Demo</title>
+  <meta charset="UTF-8" />
+  <title>Racing Admin Demo</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f0f0f;
+      color: white;
+    }
 
-<style>
-:root{
-  --bg:#05070f;
-  --glass: rgba(18, 22, 38, .62);
-  --line: rgba(255,255,255,.10);
-  --text:#ECF2FF;
-  --muted:#AAB7E9;
-  --good:#24d18f;
-  --bad:#ff4f59;
-  --accent:#8f6bff;
-  --shadow: 0 22px 65px rgba(0,0,0,.55);
-  --r: 18px;
-  --r2: 22px;
-}
+    h2 {
+      margin-top: 30px;
+    }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  color: var(--text);
-  background:
-    radial-gradient(900px 520px at 10% 0%, rgba(143,107,255,.18), transparent 60%),
-    radial-gradient(900px 520px at 110% 0%, rgba(36,209,143,.12), transparent 60%),
-    linear-gradient(180deg, #040614, var(--bg));
-}
+    .section {
+      padding: 20px;
+    }
 
-.shell{max-width:520px;margin:0 auto;padding:12px 12px 18px}
+    .card {
+      background: #1c1c1c;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 12px;
+      border: 1px solid #2a2a2a;
+    }
 
-.topbar{
-  position: sticky; top:0; z-index:50;
-  padding:10px 10px 12px;
-  background: rgba(5,7,15,.72);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
-}
-.toprow{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.brand{display:flex;align-items:center;gap:10px;min-width:0}
-.logo{
-  width:36px;height:36px;border-radius:14px;
-  background: linear-gradient(135deg, rgba(143,107,255,.95), rgba(36,209,143,.85));
-  box-shadow: 0 18px 55px rgba(143,107,255,.18);
-  flex:0 0 auto;
-}
-.brand h1{font-size:14px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.brand p{margin:3px 0 0;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    button {
+      background: #2a2a2a;
+      color: white;
+      border: none;
+      padding: 12px 16px;
+      margin: 6px 6px 6px 0;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-.pill{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:8px 10px;border-radius:999px;
-  border:1px solid var(--line);
-  background: rgba(18,22,38,.55);
-  color: var(--muted);font-size:12px;white-space:nowrap;
-}
-.dot{width:9px;height:9px;border-radius:999px;background:var(--bad)}
-.dot.ok{background:var(--good)}
+    button:hover {
+      background: #444;
+    }
 
-.crumbs{margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.breadcrumb{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.iconbtn{
-  border:1px solid var(--line);
-  background: rgba(18,22,38,.55);
-  color: var(--text);
-  border-radius: 14px;
-  padding: 10px 12px;
-  font-weight: 800;
-  cursor:pointer;
-}
-.iconbtn:active{transform: translateY(1px)}
+    input {
+      padding: 10px;
+      margin: 5px 5px 5px 0;
+      border-radius: 6px;
+      border: none;
+      background: #222;
+      color: white;
+    }
 
-.card{
-  border:1px solid var(--line);
-  border-radius: var(--r2);
-  background: var(--glass);
-  box-shadow: var(--shadow);
-  overflow:hidden;
-}
-.section{padding:12px}
-.sectionTitle{
-  font-size:12px;color:var(--muted);
-  text-transform: uppercase;
-  letter-spacing:.7px;
-  font-weight: 900;
-  margin: 0 0 10px;
-}
-.note{font-size:12px;color:var(--muted);line-height:1.4}
+    .big-button {
+      width: 100%;
+      padding: 18px;
+      font-size: 16px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
 
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.tile{
-  border:1px solid var(--line);
-  background: rgba(12,16,30,.75);
-  border-radius: 20px;
-  padding: 14px 12px;
-  cursor:pointer;
-  transition: transform .12s ease;
-}
-.tile:hover{transform: translateY(-1px)}
-.tileTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.tileIcon{
-  width:44px;height:44px;border-radius:16px;
-  display:flex;align-items:center;justify-content:center;
-  background: rgba(143,107,255,.16);
-  border: 1px solid rgba(143,107,255,.22);
-  font-size: 22px;
-}
-.tile h3{margin:10px 0 0;font-size:14px}
-.tile p{margin:4px 0 0;color: var(--muted);font-size:12px}
-.badge{
-  display:inline-flex;align-items:center;justify-content:center;
-  padding:6px 10px;border-radius:999px;
-  border:1px solid var(--line);
-  font-size:12px;
-  white-space: nowrap;
-}
-.badge.good{border-color: rgba(36,209,143,.45); background: rgba(36,209,143,.10); color:#c9ffe6}
-.badge.bad{border-color: rgba(255,79,89,.45); background: rgba(255,79,89,.10); color:#ffd0d3}
-.badge.purp{border-color: rgba(143,107,255,.45); background: rgba(143,107,255,.10); color:#e7ddff}
+    .horse-card {
+      background: #141414;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #333;
+    }
 
-.list{display:flex;flex-direction:column}
-.row{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:14px;border-top: 1px solid var(--line);
-  background: rgba(12,16,30,.58);
-  cursor:pointer;
-}
-.row:first-child{border-top:none}
-.left{display:flex;align-items:center;gap:12px;min-width:0}
-.flag{
-  width:38px;height:38px;border-radius:14px;
-  border:1px solid var(--line);
-  background: rgba(255,255,255,.06);
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;flex:0 0 auto;
-}
-.rowTitle{font-weight:900;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rowSub{font-size:12px;color: var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.right{display:flex;align-items:center;gap:10px;flex:0 0 auto}
-.timeChip{
-  padding:8px 10px;border-radius:14px;
-  background: rgba(143,107,255,.15);
-  border:1px solid rgba(143,107,255,.25);
-  font-weight: 900;font-size:12px;white-space:nowrap;
-}
-.chev{color: rgba(255,255,255,.45);font-size:18px}
+    .odds-box {
+      display: inline-block;
+      background: #2a2a2a;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-right: 6px;
+      font-weight: bold;
+    }
 
-.raceCard{
-  border: 1px solid var(--line);
-  background: rgba(12,16,30,.70);
-  border-radius: 18px;
-  padding: 14px;
-  cursor:pointer;
-}
-.raceTop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.raceName{font-weight:900;font-size:14px}
-.raceMeta{margin-top:5px;font-size:12px;color: var(--muted)}
-.raceGrid{display:flex;flex-direction:column;gap:10px}
-
-label{display:block;margin:10px 0 6px;font-size:12px;color: var(--muted)}
-input, select{
-  width:100%;
-  padding:12px 12px;
-  border-radius:16px;
-  border:1px solid var(--line);
-  background: rgba(7,10,22,.75);
-  color: var(--text);
-  outline:none;
-}
-input:focus, select:focus{
-  border-color: rgba(143,107,255,.45);
-  box-shadow: 0 0 0 4px rgba(143,107,255,.12);
-}
-
-.btn{
-  border:1px solid var(--line);
-  background: rgba(18,22,38,.55);
-  color: var(--text);
-  border-radius: 14px;
-  padding: 10px 12px;
-  font-weight: 900;
-  cursor:pointer;
-  white-space: nowrap;
-}
-.btn.green{background: rgba(36,209,143,.14); border-color: rgba(36,209,143,.30)}
-.btn.purp{background: rgba(143,107,255,.14); border-color: rgba(143,107,255,.30)}
-.btn:active{transform: translateY(1px)}
-
-.horseRow{
-  border:1px solid var(--line);
-  background: rgba(12,16,30,.62);
-  border-radius: 16px;
-  padding: 12px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 10px;
-}
-.horseLeft{display:flex;align-items:center;gap:10px;min-width:0}
-.hNo{
-  width:34px;height:34px;border-radius:14px;
-  background: rgba(36,209,143,.12);
-  border:1px solid rgba(36,209,143,.22);
-  display:flex;align-items:center;justify-content:center;
-  font-weight: 900;
-}
-.hName{font-weight:900;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
-.hOdds{font-size:12px;color: var(--muted)}
-
-.oddsWrap{display:flex; gap:10px; align-items:center;}
-.oddsBox{
-  width: 76px;
-  padding: 10px 8px;
-  border-radius: 14px;
-  border:1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.06);
-  text-align:center;
-  cursor:pointer;
-}
-.oddsLabel{font-size:11px; color: var(--muted); font-weight:900; margin-bottom:6px;}
-.oddsVal{font-size:14px; font-weight:900;}
-
-.nav{
-  position: sticky; bottom:0; z-index:40;
-  margin-top:14px;
-  padding:10px 10px 12px;
-  border-top: 1px solid var(--line);
-  background: rgba(5,7,15,.72);
-  backdrop-filter: blur(10px);
-}
-.navrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.tab{
-  padding:12px;border-radius:18px;
-  border:1px solid var(--line);
-  background: rgba(18,22,38,.55);
-  color: var(--muted);
-  font-weight: 900;
-  cursor:pointer;
-}
-.tab.active{
-  color: var(--text);
-  border-color: rgba(143,107,255,.42);
-  background: rgba(143,107,255,.12);
-}
-
-.hidden{display:none}
-pre{
-  margin:10px 0 0;white-space:pre-wrap;
-  background: rgba(7,10,22,.75);
-  border:1px solid var(--line);
-  border-radius: 16px;
-  padding:10px;font-size:12px;
-}
-</style>
+  </style>
 </head>
-
 <body>
-<div class="shell">
 
-  <div class="topbar">
-    <div class="toprow">
-      <div class="brand">
-        <div class="logo"></div>
-        <div style="min-width:0">
-          <h1>Glass Black Betting Demo</h1>
-          <p>Super Admin • Horse Racing first</p>
-        </div>
-      </div>
-      <div class="pill" id="sessionPill"><span class="dot"></span> Not logged in</div>
-    </div>
+<div class="section">
+  <h2>Sports</h2>
+  <div id="sports"></div>
+</div>
 
-    <div class="crumbs">
-      <div class="breadcrumb" id="breadcrumb">Login</div>
-      <button class="iconbtn hidden" id="backBtn" onclick="navBack()">Back</button>
-    </div>
-  </div>
+<div class="section">
+  <h2>Countries</h2>
+  <input id="newCountryName" placeholder="New Country Name">
+  <button onclick="addCountry()">Add Country</button>
+  <div id="countries"></div>
+</div>
 
-  <!-- LOGIN -->
-  <div class="card" id="loginView" style="margin-top:12px">
-    <div class="section">
-      <div class="sectionTitle">Login</div>
-      <div class="note">Use: <b>superadmin@example.com</b> / <b>DemoPass123</b></div>
+<div class="section">
+  <h2>Courses</h2>
+  <input id="newCourseName" placeholder="New Course Name">
+  <button onclick="addCourse()">Add Course</button>
+  <div id="courses"></div>
+</div>
 
-      <label>Email</label>
-      <input id="email" value="superadmin@example.com" />
+<div class="section">
+  <h2>Race Days</h2>
+  <input id="raceDate" type="date">
+  <button onclick="addRaceDay()">Add Race Day</button>
+  <div id="raceDays"></div>
+</div>
 
-      <label>Password</label>
-      <input id="password" type="password" value="DemoPass123" />
+<div class="section">
+  <h2>Bulk Add Races</h2>
+  <input id="raceCount" type="number" placeholder="Number of Races (e.g. 8)">
+  <input id="startTime" type="datetime-local">
+  <input id="intervalMins" type="number" placeholder="Interval (mins)">
+  <button onclick="bulkAddRaces()">Add Races</button>
+</div>
 
-      <div style="height:10px"></div>
-      <button class="btn purp" style="width:100%" onclick="login()">Login</button>
-      <pre id="loginErr" class="hidden"></pre>
-    </div>
-  </div>
+<div class="section">
+  <h2>Races</h2>
+  <div id="races"></div>
+</div>
 
-  <!-- APP -->
-  <div id="appView" class="hidden">
-    <div class="card" style="margin-top:12px">
-      <div class="section" id="viewHost"></div>
-    </div>
+<div class="section">
+  <h2>Add Horse</h2>
+  <input id="horseNumber" type="number" placeholder="Horse Number">
+  <input id="horseName" placeholder="Horse Name">
+  <input id="horseInfo" placeholder="Horse Info (Jockey / Trainer / Weight)">
+  <input id="winNum" type="number" placeholder="Win Odds">
+  <input id="placeNum" type="number" placeholder="Place Odds">
+  <button onclick="addHorse()">Add Horse</button>
+</div>
 
-    <div class="nav">
-      <div class="navrow">
-        <button class="tab active" id="tabBrowse" onclick="setTab('browse')">Browse</button>
-        <button class="tab" id="tabUsers" onclick="setTab('users')">Users</button>
-      </div>
-    </div>
-  </div>
+<div class="section">
+  <h2>Horses</h2>
+  <div id="horses"></div>
+</div>
 
+<div class="section">
+  <h2>Users</h2>
+  <input id="userName" placeholder="User Name">
+  <input id="userEmail" placeholder="User Email">
+  <input id="userBalance" type="number" placeholder="Balance">
+  <button onclick="addUser()">Add User</button>
+  <div id="users"></div>
 </div>
 
 <script>
-let token = null;
-let tab = "browse";
-let timer = null;
 
-const FLAGS = {
-  "South Africa":"🇿🇦",
-  "United Kingdom":"🇬🇧",
-  "United States":"🇺🇸",
-  "Australia":"🇦🇺",
-  "France":"🇫🇷",
-  "Ireland":"🇮🇪",
-  "United Arab Emirates":"🇦🇪",
-};
+let selectedSport = null;
+let selectedCountry = null;
+let selectedCourse = null;
+let selectedRaceDay = null;
+let selectedRace = null;
 
-const nav = []; // stack of {screen,data}
+const API = "/api/admin";
 
-async function api(path, options={}){
-  const headers = options.headers || {};
-  if (token) headers["Authorization"] = "Bearer " + token;
-  headers["Content-Type"] = "application/json";
-  const res = await fetch(path, { ...options, headers });
-  const txt = await res.text();
-  let data; try { data = JSON.parse(txt); } catch { data = txt; }
-  if (!res.ok) throw data;
-  return data;
+async function fetchJSON(url, options = {}) {
+  const res = await fetch(url, {
+    headers: { "Content-Type": "application/json" },
+    ...options
+  });
+  return res.json();
 }
 
-function setSession(isOn){
-  const pill = document.getElementById("sessionPill");
-  pill.innerHTML = isOn
-    ? `<span class="dot ok"></span> Logged in`
-    : `<span class="dot"></span> Not logged in`;
-}
-
-function setBreadcrumb(text){
-  document.getElementById("breadcrumb").textContent = text;
-  document.getElementById("backBtn").classList.toggle("hidden", nav.length <= 1 || tab !== "browse");
-}
-
-function pad2(n){ return String(n).padStart(2,"0"); }
-function msToClock(ms){
-  if (ms <= 0) return "00:00:00";
-  const s = Math.floor(ms/1000);
-  const h = Math.floor(s/3600);
-  const m = Math.floor((s%3600)/60);
-  const ss = s%60;
-  return `${pad2(h)}:${pad2(m)}:${pad2(ss)}`;
-}
-
-function startCountdownLoop(){
-  if (timer) clearInterval(timer);
-  timer = setInterval(() => {
-    const now = Date.now();
-    document.querySelectorAll("[data-countdown='race']").forEach(el => {
-      const dt = el.getAttribute("data-dt");
-      const status = el.getAttribute("data-status");
-      const t = new Date(dt).getTime();
-      const left = t - now;
-      if (status !== "OPEN" || left <= 0){
-        el.textContent = "Closed";
-        return;
-      }
-      el.textContent = "Closes in " + msToClock(left);
-    });
-  }, 1000);
-}
-
-async function login(){
-  try{
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const data = await api("/api/auth/login", {
-      method:"POST",
-      body: JSON.stringify({ email, password })
-    });
-    token = data.token;
-
-    document.getElementById("loginView").classList.add("hidden");
-    document.getElementById("appView").classList.remove("hidden");
-    setSession(true);
-
-    clearNavAndGoHome();
-    startCountdownLoop();
-  }catch(e){
-    const box = document.getElementById("loginErr");
-    box.classList.remove("hidden");
-    box.textContent = JSON.stringify(e, null, 2);
-  }
-}
-
-function setTab(next){
-  tab = next;
-  document.getElementById("tabBrowse").classList.toggle("active", tab==="browse");
-  document.getElementById("tabUsers").classList.toggle("active", tab==="users");
-  if (tab === "browse") renderCurrent();
-  else renderUsers();
-}
-
-function navTo(screen, data={}){
-  nav.push({screen, data});
-  renderCurrent();
-}
-
-function navBack(){
-  if (nav.length > 1) nav.pop();
-  renderCurrent();
-}
-
-function clearNavAndGoHome(){
-  nav.length = 0;
-  navTo("sports", {});
-}
-
-async function renderCurrent(){
-  if (tab !== "browse") return;
-  const host = document.getElementById("viewHost");
-  host.innerHTML = "";
-  const cur = nav[nav.length - 1];
-  if (!cur) return;
-
-  if (cur.screen === "sports") return renderSports(host);
-  if (cur.screen === "countries") return renderCountries(host, cur.data);
-  if (cur.screen === "courses") return renderCourses(host, cur.data);
-  if (cur.screen === "races") return renderRaces(host, cur.data);
-  if (cur.screen === "horses") return renderHorses(host, cur.data);
-}
-
-async function renderSports(host){
-  setBreadcrumb("Browse");
-  const sports = await api("/api/admin/sports");
-  const horse = sports.find(s => (s.code||"").toUpperCase()==="HORSE_RACING") || sports[0];
-
-  host.innerHTML = `
-    <div class="sectionTitle">Choose a category</div>
-    <div class="grid" id="sportGrid"></div>
-    <div style="height:12px"></div>
-    <div class="note">Horse Racing is the first module. Soccer/Cricket can follow the exact same structure.</div>
-  `;
-
-  const grid = host.querySelector("#sportGrid");
-
-  const t1 = document.createElement("div");
-  t1.className = "tile";
-  t1.onclick = () => navTo("countries", { sportId: horse.id });
-  t1.innerHTML = `
-    <div class="tileTop">
-      <div class="tileIcon">🏇</div>
-      <span class="badge purp">Live</span>
-    </div>
-    <h3>Horse Racing</h3>
-    <p>Countries → Courses → Races → Horses</p>
-  `;
-  grid.appendChild(t1);
-
-  const t2 = document.createElement("div");
-  t2.className = "tile";
-  t2.onclick = () => alert("Soccer module will be added in the next phase.");
-  t2.innerHTML = `
-    <div class="tileTop">
-      <div class="tileIcon">⚽</div>
-      <span class="badge">Soon</span>
-    </div>
-    <h3>Soccer</h3>
-    <p>Same structure next phase</p>
-  `;
-  grid.appendChild(t2);
-}
-
-async function renderCountries(host, { sportId }){
-  setBreadcrumb(`Horse Racing › Countries`);
-  const countries = await api(`/api/admin/sports/${sportId}/countries`);
-
-  host.innerHTML = `
-    <div class="sectionTitle">Countries</div>
-    <div class="note">Tap a country to view courses. Add countries dynamically.</div>
-
-    <label>Add Country</label>
-    <input id="newCountryName" placeholder="e.g. Ireland" />
-    <div style="display:flex; gap:10px; margin-top:10px">
-      <button class="btn green" style="flex:1" onclick="addCountry(${sportId})">Add</button>
-      <button class="btn" style="flex:1" onclick="renderCurrent()">Refresh</button>
-    </div>
-
-    <div style="height:12px"></div>
-    <div class="card" style="border:none; background:none; box-shadow:none">
-      <div class="list" id="countryList"></div>
-    </div>
-  `;
-
-  const list = host.querySelector("#countryList");
-
-  if (!countries.length){
-    const empty = document.createElement("div");
-    empty.className = "note";
-    empty.textContent = "No countries yet. Add your first country above.";
-    list.appendChild(empty);
-    return;
-  }
-
-  countries.forEach(c => {
-    const flag = FLAGS[c.name] || "🏳️";
-    const row = document.createElement("div");
-    row.className = "row";
-    row.onclick = () => navTo("courses", { countryId: c.id, countryName: c.name });
-    row.innerHTML = `
-      <div class="left">
-        <div class="flag">${flag}</div>
-        <div style="min-width:0">
-          <div class="rowTitle">${c.name}</div>
-          <div class="rowSub">View courses</div>
-        </div>
-      </div>
-      <div class="right"><div class="chev">›</div></div>
-    `;
-    list.appendChild(row);
+async function loadSports() {
+  const data = await fetchJSON(API + "/sports");
+  const container = document.getElementById("sports");
+  container.innerHTML = "";
+  data.forEach(s => {
+    const btn = document.createElement("button");
+    btn.className = "big-button";
+    btn.innerText = s.name;
+    btn.onclick = () => {
+      selectedSport = s.id;
+      loadCountries();
+    };
+    container.appendChild(btn);
   });
 }
 
-async function addCountry(sportId){
-  const input = document.getElementById("newCountryName");
-  const name = (input.value||"").trim();
-  if (!name) return alert("Type a country name first.");
-  try{
-    await api(`/api/admin/sports/${sportId}/countries`, {
-      method:"POST",
-      body: JSON.stringify({ name })
-    });
-    input.value = "";
-    renderCurrent();
-  }catch(e){
-    alert(e.error || "Failed to add country.");
-  }
-}
-
-async function renderCourses(host, { countryId, countryName }){
-  setBreadcrumb(`Horse Racing › ${countryName} › Courses`);
-  const courses = await api(`/api/admin/countries/${countryId}/courses`);
-
-  host.innerHTML = `
-    <div class="sectionTitle">${countryName}</div>
-    <div class="note">Tap a course to view races. Add courses dynamically.</div>
-
-    <label>Add Course</label>
-    <input id="newCourseName" placeholder="e.g. Turffontein Inside" />
-    <div style="display:flex; gap:10px; margin-top:10px">
-      <button class="btn green" style="flex:1" onclick="addCourse(${countryId})">Add</button>
-      <button class="btn" style="flex:1" onclick="renderCurrent()">Refresh</button>
-    </div>
-
-    <div style="height:12px"></div>
-    <div class="list" id="courseList"></div>
-  `;
-
-  const list = host.querySelector("#courseList");
-
-  if (!courses.length){
-    const empty = document.createElement("div");
-    empty.className = "note";
-    empty.textContent = "No courses yet. Add your first course above.";
-    list.appendChild(empty);
-    return;
-  }
-
-  for (const course of courses){
-    let nextTime = "";
-    try{
-      const upcoming = await api(`/api/admin/courses/${course.id}/races-upcoming`);
-      const first = upcoming.find(r => r.status === "OPEN") || upcoming[0];
-      if (first) nextTime = new Date(first.race_datetime).toLocaleString();
-    }catch{}
-
-    const row = document.createElement("div");
-    row.className = "row";
-    row.onclick = () => navTo("races", { courseId: course.id, courseName: course.name, countryName });
-    row.innerHTML = `
-      <div class="left">
-        <div class="flag">🏟️</div>
-        <div style="min-width:0">
-          <div class="rowTitle">${course.name}</div>
-          <div class="rowSub">${nextTime ? ("Next: " + nextTime) : "View races"}</div>
-        </div>
-      </div>
-      <div class="right">
-        ${nextTime ? `<div class="timeChip">${new Date(nextTime).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>` : ""}
-        <div class="chev">›</div>
-      </div>
-    `;
-    list.appendChild(row);
-  }
-}
-
-async function addCourse(countryId){
-  const input = document.getElementById("newCourseName");
-  const name = (input.value||"").trim();
-  if (!name) return alert("Type a course name first.");
-  try{
-    await api(`/api/admin/countries/${countryId}/courses`, {
-      method:"POST",
-      body: JSON.stringify({ name })
-    });
-    input.value = "";
-    renderCurrent();
-  }catch(e){
-    alert(e.error || "Failed to add course.");
-  }
-}
-
-async function renderRaces(host, { courseId, courseName, countryName }){
-  setBreadcrumb(`Horse Racing › ${countryName} › ${courseName}`);
-  const days = await api(`/api/admin/courses/${courseId}/race-days`);
-
-  host.innerHTML = `
-    <div class="sectionTitle">${courseName}</div>
-    <div class="note">Open races show a live countdown. Closed races are locked automatically at race time.</div>
-    <div style="height:12px"></div>
-    <div class="raceGrid" id="raceGrid"></div>
-  `;
-
-  const wrap = host.querySelector("#raceGrid");
-  let anyRace = false;
-
-  for (const rd of days){
-    const races = await api(`/api/admin/race-days/${rd.id}/races`);
-    for (const r of races){
-      anyRace = true;
-      const when = new Date(r.race_datetime);
-      const badge = r.status === "OPEN"
-        ? `<span class="badge good">OPEN</span>`
-        : `<span class="badge bad">CLOSED</span>`;
-
-      const card = document.createElement("div");
-      card.className = "raceCard";
-      card.onclick = () => navTo("horses", { raceId: r.id, raceNumber: r.race_number, courseName, countryName, dt: r.race_datetime, status: r.status });
-      card.innerHTML = `
-        <div class="raceTop">
-          <div>
-            <div class="raceName">Race ${r.race_number}</div>
-            <div class="raceMeta">${when.toLocaleString()}</div>
-            <div class="raceMeta" data-countdown="race" data-dt="${r.race_datetime}" data-status="${r.status}">
-              ${r.status === "OPEN" ? "Loading..." : "Closed"}
-            </div>
-          </div>
-          <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-end">
-            <div class="timeChip">${when.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
-            ${badge}
-          </div>
-        </div>
-      `;
-      wrap.appendChild(card);
-    }
-  }
-
-  if (!anyRace){
-    const empty = document.createElement("div");
-    empty.className = "note";
-    empty.textContent = "No races found for this course yet.";
-    host.appendChild(empty);
-  }
-}
-
-function fmtOdds(n,d){
-  n = Number(n||0);
-  d = Number(d||0);
-  if (!n && !d) return "-";
-  if (d === 0) return String(n);
-  return `${n}.${d}`;
-}
-
-async function renderHorses(host, { raceId, raceNumber, courseName, countryName, dt, status }){
-  setBreadcrumb(`Horse Racing › ${countryName} › ${courseName} › Race ${raceNumber}`);
-
-  const horses = await api(`/api/admin/races/${raceId}/horses`);
-
-  host.innerHTML = `
-    <div class="sectionTitle">Race ${raceNumber}</div>
-    <div class="note">${new Date(dt).toLocaleString()} • Status: <b>${status}</b></div>
-
-    <div style="height:12px"></div>
-
-    <div class="sectionTitle">Add Horse</div>
-    <div class="note">Everything must be addable. Add a horse with Win/Place odds below.</div>
-
-    <label>Horse Number</label>
-    <input id="hNum" type="number" placeholder="e.g. 6" />
-
-    <label>Horse Name</label>
-    <input id="hName" placeholder="e.g. Royale Jacket" />
-
-    <div style="display:flex; gap:10px">
-      <div style="flex:1">
-        <label>Win (num)</label>
-        <input id="winNum" type="number" placeholder="e.g. 3.57" />
-      </div>
-      <div style="flex:1">
-        <label>Win (den)</label>
-        <input id="winDen" type="number" placeholder="e.g. 0" />
-      </div>
-    </div>
-
-    <div style="display:flex; gap:10px">
-      <div style="flex:1">
-        <label>Place (num)</label>
-        <input id="plNum" type="number" placeholder="e.g. 0.46" />
-      </div>
-      <div style="flex:1">
-        <label>Place (den)</label>
-        <input id="plDen" type="number" placeholder="e.g. 0" />
-      </div>
-    </div>
-
-    <div style="height:10px"></div>
-    <button class="btn green" style="width:100%" onclick="addHorse(${raceId})">Add Horse</button>
-
-    <div style="height:14px"></div>
-
-    <div class="sectionTitle">Horses (Win / Place)</div>
-    <div class="note">Tap Win/Place box to edit odds.</div>
-
-    <div style="height:10px"></div>
-    <div id="horseList" style="display:flex; flex-direction:column; gap:10px"></div>
-  `;
-
-  const list = host.querySelector("#horseList");
-
-  if (!horses.length){
-    const empty = document.createElement("div");
-    empty.className = "note";
-    empty.textContent = "No horses for this race yet. Add one above.";
-    list.appendChild(empty);
-    return;
-  }
-
-  horses.forEach(h => {
-    const row = document.createElement("div");
-    row.className = "horseRow";
-    row.innerHTML = `
-      <div class="horseLeft">
-        <div class="hNo">${h.horse_number}</div>
-        <div style="min-width:0">
-          <div class="hName">${h.name}</div>
-          <div class="hOdds">Tap odds to edit</div>
-        </div>
-      </div>
-
-      <div class="oddsWrap">
-        <div class="oddsBox" onclick="editOdds(event, ${h.id}, 'win')">
-          <div class="oddsLabel">Win</div>
-          <div class="oddsVal">${fmtOdds(h.win_num, h.win_den)}</div>
-        </div>
-        <div class="oddsBox" onclick="editOdds(event, ${h.id}, 'place')">
-          <div class="oddsLabel">Place</div>
-          <div class="oddsVal">${fmtOdds(h.place_num, h.place_den)}</div>
-        </div>
-      </div>
-    `;
-    list.appendChild(row);
+async function loadCountries() {
+  const data = await fetchJSON(API + "/sports/" + selectedSport + "/countries");
+  const container = document.getElementById("countries");
+  container.innerHTML = "";
+  data.forEach(c => {
+    const btn = document.createElement("button");
+    btn.className = "big-button";
+    btn.innerText = c.name;
+    btn.onclick = () => {
+      selectedCountry = c.id;
+      loadCourses();
+    };
+    container.appendChild(btn);
   });
 }
 
-async function addHorse(raceId){
-  const horse_number = Number(document.getElementById("hNum").value);
-  const name = document.getElementById("hName").value.trim();
-
-  const win_num = Number(document.getElementById("winNum").value || 0);
-  const win_den = Number(document.getElementById("winDen").value || 0);
-  const place_num = Number(document.getElementById("plNum").value || 0);
-  const place_den = Number(document.getElementById("plDen").value || 0);
-
-  if (!horse_number || !name) return alert("Horse number and name are required.");
-
-  try{
-    await api(`/api/admin/races/${raceId}/horses`, {
-      method:"POST",
-      body: JSON.stringify({ horse_number, name, win_num, win_den, place_num, place_den })
-    });
-    renderCurrent();
-  }catch(e){
-    alert(e.error || "Failed to add horse.");
-  }
+async function loadCourses() {
+  const data = await fetchJSON(API + "/countries/" + selectedCountry + "/courses");
+  const container = document.getElementById("courses");
+  container.innerHTML = "";
+  data.forEach(c => {
+    const btn = document.createElement("button");
+    btn.className = "big-button";
+    btn.innerText = c.name;
+    btn.onclick = () => {
+      selectedCourse = c.id;
+      loadRaceDays();
+    };
+    container.appendChild(btn);
+  });
 }
 
-async function editOdds(evt, horseId, type){
-  evt.stopPropagation();
-  try{
-    const horse = await api(`/api/admin/horses/${horseId}`);
-
-    let win_num = Number(horse.win_num || 0);
-    let win_den = Number(horse.win_den || 0);
-    let place_num = Number(horse.place_num || 0);
-    let place_den = Number(horse.place_den || 0);
-
-    if (type === "win"){
-      const n = prompt("WIN odds (num)", String(win_num));
-      if (n === null) return;
-      const d = prompt("WIN odds (den)", String(win_den));
-      if (d === null) return;
-      win_num = Number(n); win_den = Number(d);
-    } else {
-      const n = prompt("PLACE odds (num)", String(place_num));
-      if (n === null) return;
-      const d = prompt("PLACE odds (den)", String(place_den));
-      if (d === null) return;
-      place_num = Number(n); place_den = Number(d);
-    }
-
-    await api(`/api/admin/horses/${horseId}/odds`, {
-      method:"PATCH",
-      body: JSON.stringify({ win_num, win_den, place_num, place_den })
-    });
-
-    renderCurrent();
-  }catch(e){
-    alert(e.error || "Failed to update odds.");
-  }
+async function loadRaceDays() {
+  const data = await fetchJSON(API + "/courses/" + selectedCourse + "/race-days");
+  const container = document.getElementById("raceDays");
+  container.innerHTML = "";
+  data.forEach(rd => {
+    const btn = document.createElement("button");
+    btn.className = "big-button";
+    btn.innerText = rd.race_date;
+    btn.onclick = () => {
+      selectedRaceDay = rd.id;
+      loadRaces();
+    };
+    container.appendChild(btn);
+  });
 }
 
-/* USERS TAB */
-async function renderUsers(){
-  setBreadcrumb("Users");
-  document.getElementById("backBtn").classList.add("hidden");
-
-  const host = document.getElementById("viewHost");
-  host.innerHTML = "";
-
-  const users = await api("/api/admin/users");
-  const players = users.filter(u => u.role === "PLAYER");
-
-  const form = document.createElement("div");
-  form.innerHTML = `
-    <div class="sectionTitle">Add Player</div>
-    <div class="note">Create demo users and set wallet balances instantly.</div>
-
-    <label>Name</label>
-    <input id="uName" placeholder="e.g. Alyssa" />
-
-    <label>Email</label>
-    <input id="uEmail" placeholder="e.g. alyssa@example.com" />
-
-    <label>Starting Balance</label>
-    <input id="uBal" type="number" placeholder="e.g. 10000" />
-
-    <div style="height:10px"></div>
-    <button class="btn green" style="width:100%" onclick="addUser()">Add Player</button>
-  `;
-  host.appendChild(form);
-
-  const wallets = document.createElement("div");
-  wallets.style.marginTop = "14px";
-  wallets.innerHTML = `<div class="sectionTitle">Wallets</div>`;
-  host.appendChild(wallets);
-
-  if (!players.length){
-    const empty = document.createElement("div");
-    empty.className = "note";
-    empty.textContent = "No players yet. Add one above.";
-    wallets.appendChild(empty);
-  }else{
-    players.forEach(p => {
-      const row = document.createElement("div");
-      row.className = "horseRow";
-      row.style.cursor = "default";
-      row.innerHTML = `
-        <div class="horseLeft">
-          <div class="hNo">R</div>
-          <div style="min-width:0">
-            <div class="hName">${p.name}</div>
-            <div class="hOdds">${p.email} • Balance: R${Number(p.balance).toFixed(2)}</div>
-          </div>
-        </div>
-        <div>
-          <button class="btn green" onclick="promptBalance(${p.id}, ${p.balance})">Edit</button>
-        </div>
-      `;
-      wallets.appendChild(row);
-    });
-  }
-
-  const bet = document.createElement("div");
-  bet.style.marginTop = "14px";
-  bet.innerHTML = `
-    <div class="sectionTitle">Place Bet</div>
-    <div class="note">Select player, course, open race, horse, stake. Wallet drops instantly.</div>
-
-    <label>Player</label>
-    <select id="betUser">
-      ${players.map(u => `<option value="${u.id}">${u.name} (R${Number(u.balance).toFixed(0)})</option>`).join("")}
-    </select>
-
-    <label>Country</label>
-    <select id="betCountry"></select>
-
-    <label>Course</label>
-    <select id="betCourse"></select>
-
-    <label>Race</label>
-    <select id="betRace"></select>
-
-    <label>Horse</label>
-    <select id="betHorse"></select>
-
-    <label>Stake</label>
-    <input id="betStake" type="number" placeholder="e.g. 1000" />
-
-    <div style="height:10px"></div>
-    <button class="btn purp" style="width:100%" onclick="placeBet()">Place Bet</button>
-  `;
-  host.appendChild(bet);
-
-  if (!players.length) return;
-  await hydrateBetDropdowns();
+async function loadRaces() {
+  const data = await fetchJSON(API + "/race-days/" + selectedRaceDay + "/races");
+  const container = document.getElementById("races");
+  container.innerHTML = "";
+  data.forEach(r => {
+    const btn = document.createElement("button");
+    btn.className = "big-button";
+    btn.innerText = "Race " + r.race_number + " - " + r.status;
+    btn.onclick = () => {
+      selectedRace = r.id;
+      loadHorses();
+    };
+    container.appendChild(btn);
+  });
 }
 
-async function addUser(){
-  try{
-    const name = document.getElementById("uName").value.trim();
-    const email = document.getElementById("uEmail").value.trim();
-    const balance = Number(document.getElementById("uBal").value || 0);
-
-    await api("/api/admin/users", {
-      method:"POST",
-      body: JSON.stringify({ name, email, balance })
-    });
-
-    renderUsers();
-  }catch(e){
-    alert(e.error || "Failed to add user.");
-  }
+async function loadHorses() {
+  const data = await fetchJSON(API + "/races/" + selectedRace + "/horses");
+  const container = document.getElementById("horses");
+  container.innerHTML = "";
+  data.forEach(h => {
+    const div = document.createElement("div");
+    div.className = "horse-card";
+    div.innerHTML = `
+      <strong>${h.horse_number}. ${h.name}</strong><br>
+      <small>${h.info}</small><br>
+      <span class="odds-box">Win: ${h.win_num}</span>
+      <span class="odds-box">Place: ${h.place_num}</span>
+    `;
+    container.appendChild(div);
+  });
 }
 
-async function promptBalance(userId, current){
-  const next = prompt("Enter new balance:", String(current));
-  if (next === null) return;
-  const balance = Number(next);
-  if (Number.isNaN(balance)) return alert("Please enter a valid number.");
-
-  try{
-    await api(`/api/admin/users/${userId}/balance`, {
-      method:"PATCH",
-      body: JSON.stringify({ balance })
-    });
-    renderUsers();
-  }catch(e){
-    alert(e.error || "Failed to update balance.");
-  }
+async function addCountry() {
+  const name = document.getElementById("newCountryName").value;
+  await fetchJSON(API + "/sports/" + selectedSport + "/countries", {
+    method: "POST",
+    body: JSON.stringify({ name })
+  });
+  loadCountries();
 }
 
-async function hydrateBetDropdowns(){
-  const betCountry = document.getElementById("betCountry");
-  const betCourse = document.getElementById("betCourse");
-  const betRace = document.getElementById("betRace");
-  const betHorse = document.getElementById("betHorse");
-
-  const sports = await api("/api/admin/sports");
-  const horse = sports.find(s => (s.code||"").toUpperCase()==="HORSE_RACING") || sports[0];
-
-  const countries = await api(`/api/admin/sports/${horse.id}/countries`);
-  betCountry.innerHTML = countries.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
-  betCountry.value = countries[0]?.id || "";
-
-  betCountry.onchange = async () => { await loadCourses(); await loadRaces(); await loadHorses(); };
-  betCourse.onchange = async () => { await loadRaces(); await loadHorses(); };
-  betRace.onchange = async () => { await loadHorses(); };
-
-  await loadCourses();
-  await loadRaces();
-  await loadHorses();
-
-  async function loadCourses(){
-    const countryId = betCountry.value;
-    const courses = await api(`/api/admin/countries/${countryId}/courses`);
-    betCourse.innerHTML = courses.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
-    betCourse.value = courses[0]?.id || "";
-  }
-
-  async function loadRaces(){
-    const courseId = betCourse.value;
-    const races = await api(`/api/admin/courses/${courseId}/races-upcoming`);
-    betRace.innerHTML = races.map(r => {
-      const label = `Race ${r.race_number} • ${new Date(r.race_datetime).toLocaleString()} • ${r.status}`;
-      return `<option value="${r.id}">${label}</option>`;
-    }).join("");
-    betRace.value = races[0]?.id || "";
-  }
-
-  async function loadHorses(){
-    const raceId = betRace.value;
-    if (!raceId){
-      betHorse.innerHTML = `<option value="">No race</option>`;
-      return;
-    }
-    const horses = await api(`/api/admin/races/${raceId}/horses`);
-    betHorse.innerHTML = horses.map(h => {
-      const label = `#${h.horse_number} ${h.name} • Win ${fmtOdds(h.win_num,h.win_den)} • Place ${fmtOdds(h.place_num,h.place_den)}`;
-      return `<option value="${h.id}">${label}</option>`;
-    }).join("");
-    betHorse.value = horses[0]?.id || "";
-  }
+async function addCourse() {
+  const name = document.getElementById("newCourseName").value;
+  await fetchJSON(API + "/countries/" + selectedCountry + "/courses", {
+    method: "POST",
+    body: JSON.stringify({ name })
+  });
+  loadCourses();
 }
 
-async function placeBet(){
-  try{
-    const user_id = Number(document.getElementById("betUser").value);
-    const horse_id = Number(document.getElementById("betHorse").value);
-    const stake = Number(document.getElementById("betStake").value);
-
-    const data = await api("/api/admin/bets/place", {
-      method:"POST",
-      body: JSON.stringify({ user_id, horse_id, stake })
-    });
-
-    alert(`Bet placed. New balance: R${Number(data.new_balance).toFixed(2)}`);
-    renderUsers();
-  }catch(e){
-    alert(e.error || "Failed to place bet. Make sure the race is OPEN.");
-  }
+async function addRaceDay() {
+  const race_date = document.getElementById("raceDate").value;
+  await fetchJSON(API + "/courses/" + selectedCourse + "/race-days", {
+    method: "POST",
+    body: JSON.stringify({ race_date })
+  });
+  loadRaceDays();
 }
 
-setSession(false);
+async function bulkAddRaces() {
+  const count = document.getElementById("raceCount").value;
+  const startISO = document.getElementById("startTime").value;
+  const intervalMins = document.getElementById("intervalMins").value;
+  await fetchJSON(API + "/race-days/" + selectedRaceDay + "/races/bulk", {
+    method: "POST",
+    body: JSON.stringify({ count, startISO, intervalMins })
+  });
+  loadRaces();
+}
+
+async function addHorse() {
+  const horse_number = document.getElementById("horseNumber").value;
+  const name = document.getElementById("horseName").value;
+  const info = document.getElementById("horseInfo").value;
+  const win_num = document.getElementById("winNum").value;
+  const place_num = document.getElementById("placeNum").value;
+
+  await fetchJSON(API + "/races/" + selectedRace + "/horses", {
+    method: "POST",
+    body: JSON.stringify({
+      horse_number,
+      name,
+      info,
+      win_num,
+      place_num
+    })
+  });
+
+  loadHorses();
+}
+
+async function addUser() {
+  const name = document.getElementById("userName").value;
+  const email = document.getElementById("userEmail").value;
+  const balance = document.getElementById("userBalance").value;
+
+  await fetchJSON(API + "/users", {
+    method: "POST",
+    body: JSON.stringify({ name, email, balance })
+  });
+
+  loadUsers();
+}
+
+async function loadUsers() {
+  const data = await fetchJSON(API + "/users");
+  const container = document.getElementById("users");
+  container.innerHTML = "";
+  data.forEach(u => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      ${u.name} (${u.balance}) 
+    `;
+    container.appendChild(div);
+  });
+}
+
+loadSports();
+loadUsers();
+
 </script>
+
 </body>
 </html>
