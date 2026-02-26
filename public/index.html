@@ -7,112 +7,85 @@
 
 <style>
 :root{
-  --blue:#0B5FFF;
-  --green:#18B36B;
-  --bg:#060913;
-  --card: rgba(16,24,46,.75);
-  --card2: rgba(10,16,34,.82);
-  --line: rgba(130,160,255,.14);
+  --bg:#05070f;
+  --glass: rgba(18, 22, 38, .62);
+  --glass2: rgba(12, 16, 30, .75);
+  --line: rgba(255,255,255,.10);
   --text:#ECF2FF;
-  --muted:#A7B7E6;
-  --danger:#FF4D4D;
-  --warn:#FFB020;
-  --shadow: 0 22px 60px rgba(0,0,0,.45);
-  --r: 22px;
+  --muted:#AAB7E9;
+  --good:#24d18f;
+  --bad:#ff4f59;
+  --accent:#8f6bff;         /* purple highlight like your reference */
+  --chip:#2b355b;
+  --shadow: 0 22px 65px rgba(0,0,0,.55);
+  --r: 18px;
+  --r2: 22px;
 }
 
-/* Base */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  color:var(--text);
+  color: var(--text);
   background:
-    radial-gradient(900px 520px at 10% 0%, rgba(11,95,255,.22), transparent 60%),
-    radial-gradient(900px 520px at 110% 0%, rgba(24,179,107,.18), transparent 60%),
-    linear-gradient(180deg, #050814, var(--bg));
+    radial-gradient(900px 520px at 10% 0%, rgba(143,107,255,.18), transparent 60%),
+    radial-gradient(900px 520px at 110% 0%, rgba(36,209,143,.12), transparent 60%),
+    linear-gradient(180deg, #040614, var(--bg));
 }
 
-/* Phone frame on desktop */
+/* Phone-like shell */
 .shell{
-  max-width: 1100px;
+  max-width: 520px;
   margin: 0 auto;
-  padding: 18px 14px 26px;
-}
-.phoneRow{
-  display:grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
-}
-@media (min-width: 980px){
-  .phoneRow{
-    grid-template-columns: 420px 1fr;
-    align-items:start;
-  }
-  .phone{
-    position: sticky;
-    top: 18px;
-  }
-}
-.phone{
-  border: 1px solid var(--line);
-  border-radius: 34px;
-  background: rgba(5,8,20,.55);
-  box-shadow: var(--shadow);
-  overflow:hidden;
-}
-.app{
-  min-height: 760px;
-  display:flex;
-  flex-direction:column;
+  padding: 12px 12px 18px;
 }
 
-/* App header */
-.appHeader{
-  padding: 16px 16px 14px;
-  border-bottom: 1px solid var(--line);
-  background: rgba(5,8,20,.62);
+/* Top App Bar */
+.topbar{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 10px 10px 12px;
+  background: rgba(5,7,15,.72);
   backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.toprow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
 }
 .brand{
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  gap: 12px;
-}
-.brandLeft{
-  display:flex;
-  gap: 10px;
-  align-items:center;
-  min-width: 0;
+  gap:10px;
+  min-width:0;
 }
 .logo{
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(11,95,255,.95), rgba(24,179,107,.95));
-  box-shadow: 0 16px 46px rgba(11,95,255,.18);
+  background: linear-gradient(135deg, rgba(143,107,255,.95), rgba(36,209,143,.85));
+  box-shadow: 0 18px 55px rgba(143,107,255,.18);
   flex: 0 0 auto;
 }
-.brandText{min-width:0}
-.brandText h1{
-  margin:0;
+.brand h1{
   font-size: 14px;
-  letter-spacing:.2px;
-  white-space:nowrap;
+  margin: 0;
+  white-space: nowrap;
   overflow:hidden;
-  text-overflow:ellipsis;
+  text-overflow: ellipsis;
 }
-.brandText p{
-  margin:3px 0 0;
+.brand p{
+  margin: 3px 0 0;
   font-size: 12px;
   color: var(--muted);
-  white-space:nowrap;
+  white-space: nowrap;
   overflow:hidden;
-  text-overflow:ellipsis;
+  text-overflow: ellipsis;
 }
-
 .pill{
   display:inline-flex;
   align-items:center;
@@ -120,44 +93,272 @@ body{
   padding: 8px 10px;
   border-radius: 999px;
   border:1px solid var(--line);
-  background: rgba(16,24,46,.50);
+  background: rgba(18,22,38,.55);
   color: var(--muted);
   font-size: 12px;
   white-space: nowrap;
 }
-.dot{width:9px;height:9px;border-radius:999px;background:var(--danger)}
-.dot.ok{background:var(--green)}
+.dot{width:9px;height:9px;border-radius:999px;background:var(--bad)}
+.dot.ok{background:var(--good)}
 
-/* Content area */
-.content{
-  padding: 14px;
+/* Breadcrumb row */
+.crumbs{
+  margin-top: 10px;
   display:flex;
-  flex-direction:column;
-  gap: 12px;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
 }
+.breadcrumb{
+  font-size: 12px;
+  color: var(--muted);
+  overflow:hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.iconbtn{
+  border:1px solid var(--line);
+  background: rgba(18,22,38,.55);
+  color: var(--text);
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-weight: 800;
+  cursor:pointer;
+}
+.iconbtn:active{transform: translateY(1px)}
 
-/* Cards */
+/* Cards / Lists */
 .card{
   border:1px solid var(--line);
-  border-radius: var(--r);
-  background: var(--card);
-  padding: 14px;
+  border-radius: var(--r2);
+  background: var(--glass);
+  box-shadow: var(--shadow);
+  overflow:hidden;
 }
-.cardTitle{
+.section{
+  padding: 12px;
+}
+.sectionTitle{
   font-size: 12px;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing:.6px;
+  letter-spacing:.7px;
   font-weight: 900;
   margin: 0 0 10px;
 }
-.meta{
+.grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.tile{
+  border:1px solid var(--line);
+  background: rgba(12,16,30,.75);
+  border-radius: 20px;
+  padding: 14px 12px;
+  cursor:pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.tile:hover{transform: translateY(-1px)}
+.tileTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border:1px solid var(--line);
   font-size: 12px;
+  white-space: nowrap;
+}
+.badge.good{border-color: rgba(36,209,143,.45); background: rgba(36,209,143,.10); color:#c9ffe6}
+.badge.bad{border-color: rgba(255,79,89,.45); background: rgba(255,79,89,.10); color:#ffd0d3}
+.badge.purp{border-color: rgba(143,107,255,.45); background: rgba(143,107,255,.10); color:#e7ddff}
+
+.tileIcon{
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(143,107,255,.16);
+  border: 1px solid rgba(143,107,255,.22);
+  font-size: 22px;
+}
+.tile h3{
+  margin: 10px 0 0;
+  font-size: 14px;
+}
+.tile p{
+  margin: 4px 0 0;
   color: var(--muted);
-  line-height: 1.4;
+  font-size: 12px;
 }
 
-/* Inputs */
+/* List rows like Hollywoodbets */
+.list{
+  display:flex;
+  flex-direction:column;
+}
+.row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding: 14px 14px;
+  border-top: 1px solid var(--line);
+  background: rgba(12,16,30,.58);
+  cursor:pointer;
+}
+.row:first-child{border-top:none}
+.left{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  min-width:0;
+}
+.flag{
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  border:1px solid var(--line);
+  background: rgba(255,255,255,.06);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 18px;
+  flex: 0 0 auto;
+}
+.rowTitle{
+  font-weight: 900;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+.rowSub{
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+.right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex: 0 0 auto;
+}
+.timeChip{
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: rgba(143,107,255,.15);
+  border:1px solid rgba(143,107,255,.25);
+  font-weight: 900;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.chev{
+  color: rgba(255,255,255,.45);
+  font-size: 18px;
+}
+
+/* Race cards */
+.raceCard{
+  border: 1px solid var(--line);
+  background: rgba(12,16,30,.70);
+  border-radius: 18px;
+  padding: 14px;
+  cursor:pointer;
+}
+.raceTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.raceName{
+  font-weight: 900;
+  font-size: 14px;
+}
+.raceMeta{
+  margin-top: 5px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.raceGrid{
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+}
+
+/* Horse list */
+.horseRow{
+  border:1px solid var(--line);
+  background: rgba(12,16,30,.62);
+  border-radius: 16px;
+  padding: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+}
+.horseLeft{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+.hNo{
+  width: 34px;
+  height: 34px;
+  border-radius: 14px;
+  background: rgba(36,209,143,.12);
+  border:1px solid rgba(36,209,143,.22);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight: 900;
+}
+.hName{
+  font-weight: 900;
+  font-size: 13px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+.hOdds{
+  font-size: 12px;
+  color: var(--muted);
+}
+.btn{
+  border:1px solid var(--line);
+  background: rgba(18,22,38,.55);
+  color: var(--text);
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-weight: 900;
+  cursor:pointer;
+  white-space: nowrap;
+}
+.btn.green{
+  background: rgba(36,209,143,.14);
+  border-color: rgba(36,209,143,.30);
+}
+.btn.purp{
+  background: rgba(143,107,255,.14);
+  border-color: rgba(143,107,255,.30);
+}
+.btn:active{transform: translateY(1px)}
+
+/* Forms */
 label{
   display:block;
   margin: 10px 0 6px;
@@ -165,246 +366,147 @@ label{
   color: var(--muted);
 }
 input, select{
-  width:100%;
+  width: 100%;
   padding: 12px 12px;
   border-radius: 16px;
-  border: 1px solid var(--line);
-  background: rgba(8,14,30,.88);
+  border:1px solid var(--line);
+  background: rgba(7,10,22,.75);
   color: var(--text);
   outline:none;
 }
 input:focus, select:focus{
-  border-color: rgba(11,95,255,.55);
-  box-shadow: 0 0 0 4px rgba(11,95,255,.14);
+  border-color: rgba(143,107,255,.45);
+  box-shadow: 0 0 0 4px rgba(143,107,255,.12);
+}
+.note{
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
 }
 
-/* Buttons */
-.btn{
-  width:100%;
-  padding: 12px 14px;
-  border-radius: 16px;
-  border: 1px solid var(--line);
-  background: rgba(10,16,34,.80);
-  color: var(--text);
-  font-weight: 900;
-  letter-spacing:.2px;
-  cursor:pointer;
-  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+/* Bottom Nav */
+.nav{
+  position: sticky;
+  bottom: 0;
+  z-index: 40;
+  margin-top: 14px;
+  padding: 10px 10px 12px;
+  border-top: 1px solid var(--line);
+  background: rgba(5,7,15,.72);
+  backdrop-filter: blur(10px);
 }
-.btn:hover{transform: translateY(-1px); box-shadow: 0 16px 40px rgba(0,0,0,.25)}
-.btn:active{transform: translateY(0px); box-shadow:none}
-.btn.blue{background: linear-gradient(180deg, rgba(11,95,255,.22), rgba(11,95,255,.10)); border-color: rgba(11,95,255,.35)}
-.btn.green{background: linear-gradient(180deg, rgba(24,179,107,.20), rgba(24,179,107,.08)); border-color: rgba(24,179,107,.35)}
-.btn.ghost{background: rgba(10,16,34,.55)}
-.btn.small{width:auto;padding:10px 12px;border-radius:14px;font-size:12px}
-
-/* Bottom tabs (iPhone feel) */
-.tabbar{
-  margin-top:auto;
+.navrow{
   display:grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  padding: 12px;
-  border-top: 1px solid var(--line);
-  background: rgba(5,8,20,.62);
-  backdrop-filter: blur(10px);
 }
-.tabBtn{
-  padding: 12px 12px;
+.tab{
+  padding: 12px;
   border-radius: 18px;
   border:1px solid var(--line);
-  background: rgba(16,24,46,.42);
+  background: rgba(18,22,38,.55);
   color: var(--muted);
   font-weight: 900;
   cursor:pointer;
 }
-.tabBtn.active{
+.tab.active{
   color: var(--text);
-  border-color: rgba(24,179,107,.45);
-  background: rgba(24,179,107,.10);
+  border-color: rgba(143,107,255,.42);
+  background: rgba(143,107,255,.12);
 }
 
-/* Race rows */
-.raceRow{
-  border:1px solid var(--line);
-  background: var(--card2);
-  border-radius: 18px;
-  padding: 14px;
+/* Login */
+.loginWrap{
+  margin-top: 12px;
 }
-.raceHead{
-  display:flex;
-  justify-content:space-between;
-  gap: 12px;
-  align-items:flex-start;
-}
-.raceLeft{min-width:0}
-.raceLeft strong{display:block;font-size:13px}
-.badge{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  border:1px solid var(--line);
-  white-space: nowrap;
-}
-.badge.ok{border-color: rgba(24,179,107,.55); background: rgba(24,179,107,.10); color:#bff3d7}
-.badge.bad{border-color: rgba(255,77,77,.55); background: rgba(255,77,77,.10); color:#ffd0d0}
-
-/* Two-column fields (on bigger screens) */
-.row2{
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-@media (max-width: 420px){
-  .row2{grid-template-columns: 1fr;}
-}
-
 .hidden{display:none}
 pre{
-  margin:0;
-  white-space:pre-wrap;
-  background: rgba(8,16,38,.85);
+  margin: 10px 0 0;
+  white-space: pre-wrap;
+  background: rgba(7,10,22,.75);
   border:1px solid var(--line);
   border-radius: 16px;
   padding: 10px;
   font-size: 12px;
 }
-
-/* Right panel (desktop “admin console” view) */
-.console{
-  border:1px solid var(--line);
-  border-radius: 26px;
-  background: rgba(16,24,46,.45);
-  box-shadow: var(--shadow);
-  overflow:hidden;
-}
-.consoleHead{
-  padding: 16px;
-  border-bottom: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(11,95,255,.10), rgba(24,179,107,.06));
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-  gap:12px;
-}
-.consoleHead h2{
-  margin:0;
-  font-size: 16px;
-}
-.consoleHead .meta{margin-top:4px}
-.consoleBody{padding: 16px}
 </style>
 </head>
 
 <body>
 <div class="shell">
-  <div class="phoneRow">
 
-    <!-- iPhone-style app -->
-    <div class="phone">
-      <div class="app">
-        <div class="appHeader">
-          <div class="brand">
-            <div class="brandLeft">
-              <div class="logo"></div>
-              <div class="brandText">
-                <h1>Horse Racing Admin</h1>
-                <p>Mobile-first demo • Auto-close races</p>
-              </div>
-            </div>
-            <div class="pill" id="sessionPill"><span class="dot"></span> Not logged in</div>
-          </div>
-        </div>
-
-        <!-- LOGIN -->
-        <div class="content" id="loginView">
-          <div class="card">
-            <div class="cardTitle">Login</div>
-            <div class="meta">Use: <b>superadmin@example.com</b> / <b>DemoPass123</b></div>
-
-            <label>Email</label>
-            <input id="email" value="superadmin@example.com"/>
-
-            <label>Password</label>
-            <input id="password" type="password" value="DemoPass123"/>
-
-            <div style="height:10px"></div>
-            <button class="btn blue" onclick="login()">Login</button>
-
-            <div style="height:10px"></div>
-            <pre id="loginErr" class="hidden"></pre>
-          </div>
-        </div>
-
-        <!-- APP -->
-        <div class="content hidden" id="appView">
-          <!-- NAV (horse racing selectors) -->
-          <div class="card" id="navCard">
-            <div class="cardTitle">Navigation</div>
-
-            <div id="racingNav">
-              <label>Sport</label>
-              <select id="sportSelect" onchange="onSportChange()"></select>
-
-              <label>Country</label>
-              <select id="countrySelect" onchange="onCountryChange()"></select>
-
-              <label>Course</label>
-              <select id="courseSelect" onchange="refreshPhone()"></select>
-
-              <div style="height:10px"></div>
-              <button class="btn ghost" onclick="refreshPhone()">Refresh</button>
-            </div>
-
-            <div id="usersNav" class="hidden">
-              <div class="meta">Manage players, balances, and place bets.</div>
-              <div style="height:10px"></div>
-              <button class="btn ghost" onclick="refreshPhone()">Refresh</button>
-            </div>
-
-            <div style="height:10px"></div>
-            <pre id="statusBox">Ready.</pre>
-          </div>
-
-          <!-- PHONE MAIN -->
-          <div id="phonePane"></div>
-        </div>
-
-        <!-- Bottom tabs -->
-        <div class="tabbar hidden" id="tabbar">
-          <button class="tabBtn active" id="tabRacing" onclick="setTab('racing')">Horse Racing</button>
-          <button class="tabBtn" id="tabUsers" onclick="setTab('users')">Users</button>
+  <div class="topbar">
+    <div class="toprow">
+      <div class="brand">
+        <div class="logo"></div>
+        <div style="min-width:0">
+          <h1>Glass Black Betting Demo</h1>
+          <p id="subTitle">Super Admin • Horse Racing first</p>
         </div>
       </div>
+      <div class="pill" id="sessionPill"><span class="dot"></span> Not logged in</div>
     </div>
 
-    <!-- Desktop console mirror -->
-    <div class="console">
-      <div class="consoleHead">
-        <div>
-          <h2 id="consoleTitle">Dashboard</h2>
-          <div class="meta" id="consoleSub">This mirrors what’s on the phone UI.</div>
-        </div>
-        <button class="btn small green" onclick="refreshPhone()">Refresh</button>
-      </div>
-      <div class="consoleBody">
-        <div id="consolePane"></div>
-      </div>
+    <div class="crumbs">
+      <div class="breadcrumb" id="breadcrumb">Login</div>
+      <button class="iconbtn hidden" id="backBtn" onclick="navBack()">Back</button>
     </div>
-
   </div>
+
+  <!-- LOGIN -->
+  <div class="card loginWrap" id="loginView">
+    <div class="section">
+      <div class="sectionTitle">Login</div>
+      <div class="note">Use: <b>superadmin@example.com</b> / <b>DemoPass123</b></div>
+
+      <label>Email</label>
+      <input id="email" value="superadmin@example.com" />
+
+      <label>Password</label>
+      <input id="password" type="password" value="DemoPass123" />
+
+      <div style="height:10px"></div>
+      <button class="btn purp" style="width:100%" onclick="login()">Login</button>
+      <pre id="loginErr" class="hidden"></pre>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="appView" class="hidden">
+    <div class="card">
+      <div class="section" id="viewHost"></div>
+    </div>
+
+    <div class="nav">
+      <div class="navrow">
+        <button class="tab active" id="tabBrowse" onclick="setTab('browse')">Browse</button>
+        <button class="tab" id="tabUsers" onclick="setTab('users')">Users</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-let token=null;
-let tab="racing";
-let timer=null;
+let token = null;
+let tab = "browse";
+let timer = null;
 
-function setStatus(msg){ document.getElementById("statusBox").textContent = msg; }
+/* Simple flag mapping (fallback to emoji) */
+const FLAGS = {
+  "South Africa":"🇿🇦",
+  "United Kingdom":"🇬🇧",
+  "United States":"🇺🇸",
+  "Australia":"🇦🇺",
+  "France":"🇫🇷",
+  "Ireland":"🇮🇪",
+  "United Arab Emirates":"🇦🇪",
+};
 
+/* Navigation stack: screens like Hollywoodbets */
+const nav = []; // each item: {screen, data}
+
+/* API helper */
 async function api(path, options={}){
   const headers = options.headers || {};
   if (token) headers["Authorization"] = "Bearer " + token;
@@ -414,6 +516,18 @@ async function api(path, options={}){
   let data; try { data = JSON.parse(txt); } catch { data = txt; }
   if (!res.ok) throw data;
   return data;
+}
+
+function setSession(isOn){
+  const pill = document.getElementById("sessionPill");
+  pill.innerHTML = isOn
+    ? `<span class="dot ok"></span> Logged in`
+    : `<span class="dot"></span> Not logged in`;
+}
+
+function setBreadcrumb(text){
+  document.getElementById("breadcrumb").textContent = text;
+  document.getElementById("backBtn").classList.toggle("hidden", nav.length <= 1 || tab !== "browse");
 }
 
 function pad2(n){ return String(n).padStart(2,"0"); }
@@ -431,33 +545,18 @@ function startCountdownLoop(){
   timer = setInterval(() => {
     const now = Date.now();
     document.querySelectorAll("[data-countdown='race']").forEach(el => {
-      const raceId = el.getAttribute("data-raceid");
       const dt = el.getAttribute("data-dt");
       const status = el.getAttribute("data-status");
       const t = new Date(dt).getTime();
       const left = t - now;
 
-      const badge = document.getElementById(`badge-${raceId}`);
-
       if (status !== "OPEN" || left <= 0){
         el.textContent = "Closed";
-        if (badge) badge.innerHTML = `<span class="badge bad">CLOSED</span>`;
         return;
       }
-
-      el.textContent = `Closes in ${msToClock(left)}`;
-      if (badge) badge.innerHTML = `<span class="badge ok">OPEN</span>`;
+      el.textContent = "Closes in " + msToClock(left);
     });
   }, 1000);
-}
-
-function setTab(t){
-  tab = t;
-  document.getElementById("tabRacing").classList.toggle("active", t==="racing");
-  document.getElementById("tabUsers").classList.toggle("active", t==="users");
-  document.getElementById("racingNav").classList.toggle("hidden", t!=="racing");
-  document.getElementById("usersNav").classList.toggle("hidden", t!=="users");
-  refreshPhone();
 }
 
 async function login(){
@@ -472,11 +571,9 @@ async function login(){
 
     document.getElementById("loginView").classList.add("hidden");
     document.getElementById("appView").classList.remove("hidden");
-    document.getElementById("tabbar").classList.remove("hidden");
-    document.getElementById("sessionPill").innerHTML = `<span class="dot ok"></span> Logged in`;
-    setStatus("Loading...");
+    setSession(true);
 
-    await init();
+    await initBrowse();
     startCountdownLoop();
   }catch(e){
     const box = document.getElementById("loginErr");
@@ -485,177 +582,439 @@ async function login(){
   }
 }
 
-async function init(){
-  await loadSports();
-  await loadCountries();
-  await loadCourses();
-  await refreshPhone();
-  setStatus("Ready.");
+function setTab(next){
+  tab = next;
+  document.getElementById("tabBrowse").classList.toggle("active", tab==="browse");
+  document.getElementById("tabUsers").classList.toggle("active", tab==="users");
+
+  if (tab === "browse") renderCurrent();
+  else renderUsers();
 }
 
-async function onSportChange(){
-  await loadCountries();
-  await loadCourses();
-  await refreshPhone();
+function navTo(screen, data={}){
+  nav.push({screen, data});
+  renderCurrent();
 }
 
-async function onCountryChange(){
-  await loadCourses();
-  await refreshPhone();
+function navBack(){
+  if (nav.length > 1) nav.pop();
+  renderCurrent();
 }
 
-async function loadSports(){
+function clearNavAndGoHome(){
+  nav.length = 0;
+  navTo("sports", {});
+}
+
+/* BROWSE INIT */
+async function initBrowse(){
+  clearNavAndGoHome();
+}
+
+/* Render current browse screen */
+async function renderCurrent(){
+  if (tab !== "browse") return;
+
+  const host = document.getElementById("viewHost");
+  host.innerHTML = "";
+
+  const cur = nav[nav.length - 1];
+  if (!cur) return;
+
+  if (cur.screen === "sports") return renderSports(host);
+  if (cur.screen === "countries") return renderCountries(host, cur.data);
+  if (cur.screen === "courses") return renderCourses(host, cur.data);
+  if (cur.screen === "races") return renderRaces(host, cur.data);
+  if (cur.screen === "horses") return renderHorses(host, cur.data);
+}
+
+/* Screen 1: Sport tiles */
+async function renderSports(host){
+  setBreadcrumb("Browse");
+
   const sports = await api("/api/admin/sports");
-  const sel = document.getElementById("sportSelect");
-  sel.innerHTML = sports.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
-  if (sports.length) sel.value = String(sports[0].id);
+  const horse = sports.find(s => (s.code || "").toUpperCase() === "HORSE_RACING") || sports[0];
+
+  const wrap = document.createElement("div");
+  wrap.innerHTML = `
+    <div class="sectionTitle">Choose a category</div>
+    <div class="grid" id="sportGrid"></div>
+  `;
+  host.appendChild(wrap);
+
+  const grid = wrap.querySelector("#sportGrid");
+
+  // Tile: Horse Racing (active)
+  const tile1 = document.createElement("div");
+  tile1.className = "tile";
+  tile1.onclick = () => navTo("countries", { sportId: horse.id, sportName: horse.name || "Horse Racing" });
+  tile1.innerHTML = `
+    <div class="tileTop">
+      <div class="tileIcon">🏇</div>
+      <span class="badge purp">Live</span>
+    </div>
+    <h3>Horse Racing</h3>
+    <p>Countries → Courses → Races → Horses</p>
+  `;
+  grid.appendChild(tile1);
+
+  // Tile: Soccer (placeholder for future)
+  const tile2 = document.createElement("div");
+  tile2.className = "tile";
+  tile2.onclick = () => alert("Soccer module will be added in the next phase.");
+  tile2.innerHTML = `
+    <div class="tileTop">
+      <div class="tileIcon">⚽</div>
+      <span class="badge">Soon</span>
+    </div>
+    <h3>Soccer</h3>
+    <p>Same structure, next build phase</p>
+  `;
+  grid.appendChild(tile2);
+
+  // Add country quick access note
+  const note = document.createElement("div");
+  note.style.marginTop = "12px";
+  note.className = "note";
+  note.textContent = "Tip: Start with Horse Racing, then expand to other sports later using the same structure.";
+  host.appendChild(note);
 }
 
-async function loadCountries(){
-  const sportId = document.getElementById("sportSelect").value;
+/* Screen 2: Countries (with flags) + Add Country */
+async function renderCountries(host, { sportId, sportName }){
+  setBreadcrumb(`Horse Racing › Countries`);
+
   const countries = await api(`/api/admin/sports/${sportId}/countries`);
-  const sel = document.getElementById("countrySelect");
-  sel.innerHTML = countries.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
-  if (countries.length) sel.value = String(countries[0].id);
-}
 
-async function loadCourses(){
-  const countryId = document.getElementById("countrySelect").value;
-  const courses = await api(`/api/admin/countries/${countryId}/courses`);
-  const sel = document.getElementById("courseSelect");
-  sel.innerHTML = courses.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
-  if (courses.length) sel.value = String(courses[0].id);
-}
+  const header = document.createElement("div");
+  header.innerHTML = `
+    <div class="sectionTitle">Countries</div>
+    <div class="note">Tap a country to view courses. You can add new countries below.</div>
 
-async function refreshPhone(){
-  const phonePane = document.getElementById("phonePane");
-  const consolePane = document.getElementById("consolePane");
-  phonePane.innerHTML = "";
-  consolePane.innerHTML = "";
+    <label>Add Country</label>
+    <input id="newCountryName" placeholder="e.g. Ireland" />
+    <div style="display:flex; gap:10px; margin-top:10px">
+      <button class="btn green" style="flex:1" onclick="addCountry(${sportId})">Add</button>
+      <button class="btn" style="flex:1" onclick="renderCurrent()">Refresh</button>
+    </div>
+    <div style="height:12px"></div>
+  `;
+  host.appendChild(header);
 
-  if (tab === "racing"){
-    document.getElementById("consoleTitle").textContent = "Horse Racing";
-    document.getElementById("consoleSub").textContent = "Open/closed races with live countdown.";
+  const list = document.createElement("div");
+  list.className = "list";
+  host.appendChild(list);
 
-    const courseId = document.getElementById("courseSelect").value;
-    const days = await api(`/api/admin/courses/${courseId}/race-days`);
-
-    const wrap = document.createElement("div");
-    wrap.className = "card";
-    wrap.innerHTML = `<div class="cardTitle">Races</div><div class="meta">Showing seeded races for this course.</div>`;
-    phonePane.appendChild(wrap);
-
-    const list = document.createElement("div");
-    list.style.display = "flex";
-    list.style.flexDirection = "column";
-    list.style.gap = "12px";
-    wrap.appendChild(list);
-
-    for (const rd of days){
-      const races = await api(`/api/admin/race-days/${rd.id}/races`);
-      for (const r of races){
-        const el = document.createElement("div");
-        el.className = "raceRow";
-        el.innerHTML = `
-          <div class="raceHead">
-            <div class="raceLeft">
-              <strong>Race ${r.race_number}</strong>
-              <div class="meta">${new Date(r.race_datetime).toLocaleString()}</div>
-              <div class="meta"
-                data-countdown="race"
-                data-raceid="${r.id}"
-                data-dt="${r.race_datetime}"
-                data-status="${r.status}"
-              >Loading...</div>
-            </div>
-            <div id="badge-${r.id}"></div>
-          </div>
-        `;
-        list.appendChild(el);
-      }
-    }
-
-    // Mirror to desktop console
-    consolePane.innerHTML = wrap.outerHTML;
-
+  if (!countries.length){
+    const empty = document.createElement("div");
+    empty.className = "note";
+    empty.textContent = "No countries yet. Add your first country above.";
+    list.appendChild(empty);
     return;
   }
 
-  // USERS
-  document.getElementById("consoleTitle").textContent = "Users";
-  document.getElementById("consoleSub").textContent = "Players, balances, and demo betting.";
+  countries.forEach(c => {
+    const flag = FLAGS[c.name] || "🏳️";
+    const row = document.createElement("div");
+    row.className = "row";
+    row.onclick = () => navTo("courses", { countryId: c.id, countryName: c.name });
+    row.innerHTML = `
+      <div class="left">
+        <div class="flag">${flag}</div>
+        <div style="min-width:0">
+          <div class="rowTitle">${c.name}</div>
+          <div class="rowSub">View courses</div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="chev">›</div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+async function addCountry(sportId){
+  const input = document.getElementById("newCountryName");
+  const name = (input.value || "").trim();
+  if (!name) return alert("Type a country name first.");
+
+  try{
+    await api(`/api/admin/sports/${sportId}/countries`, {
+      method:"POST",
+      body: JSON.stringify({ name })
+    });
+    input.value = "";
+    renderCurrent();
+  }catch(e){
+    alert(e.error || "Failed to add country.");
+  }
+}
+
+/* Screen 3: Courses (expand like reference) + Add Course */
+async function renderCourses(host, { countryId, countryName }){
+  setBreadcrumb(`Horse Racing › ${countryName} › Courses`);
+
+  const courses = await api(`/api/admin/countries/${countryId}/courses`);
+
+  const header = document.createElement("div");
+  header.innerHTML = `
+    <div class="sectionTitle">${countryName}</div>
+    <div class="note">Tap a course to view races. Add courses below.</div>
+
+    <label>Add Course</label>
+    <input id="newCourseName" placeholder="e.g. Turffontein Inside" />
+    <div style="display:flex; gap:10px; margin-top:10px">
+      <button class="btn green" style="flex:1" onclick="addCourse(${countryId})">Add</button>
+      <button class="btn" style="flex:1" onclick="renderCurrent()">Refresh</button>
+    </div>
+    <div style="height:12px"></div>
+  `;
+  host.appendChild(header);
+
+  const list = document.createElement("div");
+  list.className = "list";
+  host.appendChild(list);
+
+  if (!courses.length){
+    const empty = document.createElement("div");
+    empty.className = "note";
+    empty.textContent = "No courses yet. Add your first course above.";
+    list.appendChild(empty);
+    return;
+  }
+
+  // Show a “next time” chip if we can find an upcoming race
+  for (const course of courses){
+    let nextTime = "";
+    try{
+      const upcoming = await api(`/api/admin/courses/${course.id}/races-upcoming`);
+      const firstOpen = upcoming.find(r => r.status === "OPEN") || upcoming[0];
+      if (firstOpen) nextTime = new Date(firstOpen.race_datetime).toLocaleString();
+    }catch{}
+
+    const row = document.createElement("div");
+    row.className = "row";
+    row.onclick = () => navTo("races", { courseId: course.id, courseName: course.name, countryName });
+    row.innerHTML = `
+      <div class="left">
+        <div class="flag">🏟️</div>
+        <div style="min-width:0">
+          <div class="rowTitle">${course.name}</div>
+          <div class="rowSub">${nextTime ? ("Next: " + nextTime) : "View races"}</div>
+        </div>
+      </div>
+      <div class="right">
+        ${nextTime ? `<div class="timeChip">${new Date(nextTime).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>` : ""}
+        <div class="chev">›</div>
+      </div>
+    `;
+    list.appendChild(row);
+  }
+}
+
+async function addCourse(countryId){
+  const input = document.getElementById("newCourseName");
+  const name = (input.value || "").trim();
+  if (!name) return alert("Type a course name first.");
+
+  try{
+    await api(`/api/admin/countries/${countryId}/courses`, {
+      method:"POST",
+      body: JSON.stringify({ name })
+    });
+    input.value = "";
+    renderCurrent();
+  }catch(e){
+    alert(e.error || "Failed to add course.");
+  }
+}
+
+/* Screen 4: Races for a course */
+async function renderRaces(host, { courseId, courseName, countryName }){
+  setBreadcrumb(`Horse Racing › ${countryName} › ${courseName}`);
+
+  const days = await api(`/api/admin/courses/${courseId}/race-days`);
+
+  const header = document.createElement("div");
+  header.innerHTML = `
+    <div class="sectionTitle">${courseName}</div>
+    <div class="note">Open races show a live countdown. Closed races are locked automatically at race time.</div>
+    <div style="height:12px"></div>
+  `;
+  host.appendChild(header);
+
+  const wrap = document.createElement("div");
+  wrap.className = "raceGrid";
+  host.appendChild(wrap);
+
+  let anyRace = false;
+
+  for (const rd of days){
+    const races = await api(`/api/admin/race-days/${rd.id}/races`);
+    for (const r of races){
+      anyRace = true;
+      const when = new Date(r.race_datetime);
+      const badge = r.status === "OPEN"
+        ? `<span class="badge good">OPEN</span>`
+        : `<span class="badge bad">CLOSED</span>`;
+
+      const card = document.createElement("div");
+      card.className = "raceCard";
+      card.onclick = () => navTo("horses", { raceId: r.id, raceNumber: r.race_number, courseName, countryName, dt: r.race_datetime, status: r.status });
+      card.innerHTML = `
+        <div class="raceTop">
+          <div>
+            <div class="raceName">Race ${r.race_number}</div>
+            <div class="raceMeta">${when.toLocaleString()}</div>
+            <div class="raceMeta" data-countdown="race" data-dt="${r.race_datetime}" data-status="${r.status}">
+              ${r.status === "OPEN" ? "Loading..." : "Closed"}
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px; align-items:flex-end">
+            <div class="timeChip">${when.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
+            ${badge}
+          </div>
+        </div>
+      `;
+      wrap.appendChild(card);
+    }
+  }
+
+  if (!anyRace){
+    const empty = document.createElement("div");
+    empty.className = "note";
+    empty.textContent = "No races found for this course yet.";
+    host.appendChild(empty);
+  }
+}
+
+/* Screen 5: Horses for a race */
+async function renderHorses(host, { raceId, raceNumber, courseName, countryName, dt, status }){
+  setBreadcrumb(`Horse Racing › ${countryName} › ${courseName} › Race ${raceNumber}`);
+
+  const horses = await api(`/api/admin/races/${raceId}/horses`);
+
+  const header = document.createElement("div");
+  header.innerHTML = `
+    <div class="sectionTitle">Race ${raceNumber}</div>
+    <div class="note">${new Date(dt).toLocaleString()} • Status: <b>${status}</b></div>
+    <div style="height:12px"></div>
+  `;
+  host.appendChild(header);
+
+  const list = document.createElement("div");
+  list.style.display = "flex";
+  list.style.flexDirection = "column";
+  list.style.gap = "10px";
+  host.appendChild(list);
+
+  if (!horses.length){
+    const empty = document.createElement("div");
+    empty.className = "note";
+    empty.textContent = "No horses for this race yet.";
+    list.appendChild(empty);
+    return;
+  }
+
+  horses.forEach(h => {
+    const row = document.createElement("div");
+    row.className = "horseRow";
+    row.innerHTML = `
+      <div class="horseLeft">
+        <div class="hNo">${h.horse_number}</div>
+        <div style="min-width:0">
+          <div class="hName">${h.name}</div>
+          <div class="hOdds">Odds: ${h.odds_num}/${h.odds_den}</div>
+        </div>
+      </div>
+      <div>
+        <button class="btn purp" onclick="quickBet(event, ${h.id})">Bet</button>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function quickBet(evt, horseId){
+  evt.stopPropagation();
+  alert("Demo tip: Place bets from the Users tab (Alyssa → open race → horse). This button is for the future player slip UX.");
+}
+
+/* USERS TAB */
+async function renderUsers(){
+  setBreadcrumb("Users");
+  document.getElementById("backBtn").classList.add("hidden");
+
+  const host = document.getElementById("viewHost");
+  host.innerHTML = "";
 
   const users = await api("/api/admin/users");
   const players = users.filter(u => u.role === "PLAYER");
 
-  const card = document.createElement("div");
-  card.className = "card";
-  card.innerHTML = `
-    <div class="cardTitle">Players</div>
-    <div class="meta">Add players + set wallet balances. Demo password is <b>DemoPass123</b>.</div>
+  const form = document.createElement("div");
+  form.innerHTML = `
+    <div class="sectionTitle">Add Player</div>
+    <div class="note">Create demo users and set wallet balances instantly.</div>
 
     <label>Name</label>
-    <input id="uName" placeholder="e.g. Alyssa"/>
+    <input id="uName" placeholder="e.g. Alyssa" />
 
     <label>Email</label>
-    <input id="uEmail" placeholder="e.g. alyssa@example.com"/>
+    <input id="uEmail" placeholder="e.g. alyssa@example.com" />
 
     <label>Starting Balance</label>
-    <input id="uBal" type="number" placeholder="e.g. 10000"/>
+    <input id="uBal" type="number" placeholder="e.g. 10000" />
 
     <div style="height:10px"></div>
-    <button class="btn green" onclick="addUser()">Add Player</button>
+    <button class="btn green" style="width:100%" onclick="addUser()">Add Player</button>
   `;
-  phonePane.appendChild(card);
+  host.appendChild(form);
 
-  const list = document.createElement("div");
-  list.className = "card";
-  list.innerHTML = `<div class="cardTitle">Wallets</div>`;
-  phonePane.appendChild(list);
+  const wallets = document.createElement("div");
+  wallets.style.marginTop = "14px";
+  wallets.innerHTML = `<div class="sectionTitle">Wallets</div>`;
+  host.appendChild(wallets);
 
   if (!players.length){
     const empty = document.createElement("div");
-    empty.className = "meta";
+    empty.className = "note";
     empty.textContent = "No players yet. Add one above.";
-    list.appendChild(empty);
-  } else {
+    wallets.appendChild(empty);
+  }else{
     players.forEach(p => {
       const row = document.createElement("div");
-      row.className = "raceRow";
+      row.className = "horseRow";
+      row.style.cursor = "default";
       row.innerHTML = `
-        <div class="raceHead">
-          <div class="raceLeft">
-            <strong>${p.name}</strong>
-            <div class="meta">${p.email}</div>
-            <div class="meta">Balance: R${Number(p.balance).toFixed(2)}</div>
+        <div class="horseLeft">
+          <div class="hNo">R</div>
+          <div style="min-width:0">
+            <div class="hName">${p.name}</div>
+            <div class="hOdds">${p.email} • Balance: R${Number(p.balance).toFixed(2)}</div>
           </div>
         </div>
-
-        <div class="row2" style="margin-top:10px">
-          <div>
-            <label>Set balance</label>
-            <input id="bal-${p.id}" type="number" value="${p.balance}"/>
-          </div>
-          <div style="display:flex;align-items:flex-end">
-            <button class="btn green" onclick="saveBalance(${p.id})">Save</button>
-          </div>
+        <div>
+          <button class="btn green" onclick="promptBalance(${p.id}, ${p.balance})">Edit</button>
         </div>
       `;
-      list.appendChild(row);
+      wallets.appendChild(row);
     });
   }
 
-  // Place bet
   const bet = document.createElement("div");
-  bet.className = "card";
+  bet.style.marginTop = "14px";
   bet.innerHTML = `
-    <div class="cardTitle">Place Bet</div>
-    <div class="meta">Player → Course → Race → Horse → Stake.</div>
+    <div class="sectionTitle">Place Bet</div>
+    <div class="note">Select player, course, open race, horse, stake. Wallet drops instantly.</div>
 
     <label>Player</label>
     <select id="betUser">
       ${players.map(u => `<option value="${u.id}">${u.name} (R${Number(u.balance).toFixed(0)})</option>`).join("")}
     </select>
+
+    <label>Country</label>
+    <select id="betCountry"></select>
 
     <label>Course</label>
     <select id="betCourse"></select>
@@ -667,22 +1026,14 @@ async function refreshPhone(){
     <select id="betHorse"></select>
 
     <label>Stake</label>
-    <input id="betStake" type="number" placeholder="e.g. 1000"/>
+    <input id="betStake" type="number" placeholder="e.g. 1000" />
 
     <div style="height:10px"></div>
-    <button class="btn blue" onclick="placeBet()">Place Bet</button>
-
-    <div class="meta" id="betNote" style="margin-top:10px"></div>
+    <button class="btn purp" style="width:100%" onclick="placeBet()">Place Bet</button>
   `;
-  phonePane.appendChild(bet);
+  host.appendChild(bet);
 
-  consolePane.innerHTML = phonePane.innerHTML;
-
-  if (!players.length){
-    document.getElementById("betNote").textContent = "Add a player first.";
-    document.getElementById("betStake").disabled = true;
-    return;
-  }
+  if (!players.length) return;
 
   await hydrateBetDropdowns();
 }
@@ -698,52 +1049,65 @@ async function addUser(){
       body: JSON.stringify({ name, email, balance })
     });
 
-    setStatus("Player added.");
-    await refreshPhone();
+    renderUsers();
   }catch(e){
-    setStatus("Error: " + (e.error || JSON.stringify(e)));
+    alert(e.error || "Failed to add user.");
   }
 }
 
-async function saveBalance(userId){
+async function promptBalance(userId, current){
+  const next = prompt("Enter new balance:", String(current));
+  if (next === null) return;
+  const balance = Number(next);
+  if (Number.isNaN(balance)) return alert("Please enter a valid number.");
+
   try{
-    const balance = Number(document.getElementById(`bal-${userId}`).value);
     await api(`/api/admin/users/${userId}/balance`, {
       method:"PATCH",
       body: JSON.stringify({ balance })
     });
-    setStatus("Balance updated.");
-    await refreshPhone();
+    renderUsers();
   }catch(e){
-    setStatus("Error: " + (e.error || JSON.stringify(e)));
+    alert(e.error || "Failed to update balance.");
   }
 }
 
 async function hydrateBetDropdowns(){
+  const betCountry = document.getElementById("betCountry");
   const betCourse = document.getElementById("betCourse");
   const betRace = document.getElementById("betRace");
   const betHorse = document.getElementById("betHorse");
-  const betNote = document.getElementById("betNote");
 
-  const countryId = document.getElementById("countrySelect").value;
-  const courses = await api(`/api/admin/countries/${countryId}/courses`);
-  if (!courses.length){
-    betCourse.innerHTML = `<option value="">No courses</option>`;
-    betNote.textContent = "Add/select a course in Horse Racing.";
-    return;
-  }
+  const sports = await api("/api/admin/sports");
+  const horse = sports.find(s => (s.code || "").toUpperCase() === "HORSE_RACING") || sports[0];
 
-  betCourse.innerHTML = courses.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
-  betCourse.value = String(courses[0].id);
+  const countries = await api(`/api/admin/sports/${horse.id}/countries`);
+  betCountry.innerHTML = countries.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+  betCountry.value = countries[0]?.id || "";
 
+  betCountry.onchange = async () => {
+    await loadCourses();
+    await loadRaces();
+    await loadHorses();
+  };
   betCourse.onchange = async () => {
     await loadRaces();
     await loadHorses();
   };
-  betRace.onchange = async () => { await loadHorses(); };
+  betRace.onchange = async () => {
+    await loadHorses();
+  };
 
+  await loadCourses();
   await loadRaces();
   await loadHorses();
+
+  async function loadCourses(){
+    const countryId = betCountry.value;
+    const courses = await api(`/api/admin/countries/${countryId}/courses`);
+    betCourse.innerHTML = courses.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+    betCourse.value = courses[0]?.id || "";
+  }
 
   async function loadRaces(){
     const courseId = betCourse.value;
@@ -752,18 +1116,21 @@ async function hydrateBetDropdowns(){
       const label = `Race ${r.race_number} • ${new Date(r.race_datetime).toLocaleString()} • ${r.status}`;
       return `<option value="${r.id}">${label}</option>`;
     }).join("");
-    betRace.value = races.length ? String(races[0].id) : "";
-    betNote.textContent = "Only OPEN races before their time will accept bets.";
+    betRace.value = races[0]?.id || "";
   }
 
   async function loadHorses(){
     const raceId = betRace.value;
+    if (!raceId){
+      betHorse.innerHTML = `<option value="">No race</option>`;
+      return;
+    }
     const horses = await api(`/api/admin/races/${raceId}/horses`);
     betHorse.innerHTML = horses.map(h => {
       const label = `#${h.horse_number} ${h.name} • ${h.odds_num}/${h.odds_den}`;
       return `<option value="${h.id}">${label}</option>`;
     }).join("");
-    betHorse.value = horses.length ? String(horses[0].id) : "";
+    betHorse.value = horses[0]?.id || "";
   }
 }
 
@@ -778,10 +1145,10 @@ async function placeBet(){
       body: JSON.stringify({ user_id, horse_id, stake })
     });
 
-    setStatus(`Bet placed. New balance: R${Number(data.new_balance).toFixed(2)}`);
-    await refreshPhone();
+    alert(`Bet placed. New balance: R${Number(data.new_balance).toFixed(2)}`);
+    renderUsers();
   }catch(e){
-    setStatus("Error: " + (e.error || JSON.stringify(e)));
+    alert(e.error || "Failed to place bet. Make sure the race is OPEN.");
   }
 }
 </script>
