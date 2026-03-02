@@ -3,12 +3,14 @@ const cors = require("cors");
 const path = require("path");
 const cron = require("node-cron");
 
-const { initDb, run } = require("./db");
+const { initDb, run, get } = require("./db");
 const { seedIfEmpty } = require("./seed");
 const { signToken, authMiddleware, requireRole } = require("./auth");
+
 const adminRoutes = require("./routes/admin");
+const bookerRoutes = require("./routes/booker"); // ✅ ADD THIS
+
 const bcrypt = require("bcrypt");
-const { get } = require("./db");
 
 const app = express();
 
@@ -44,6 +46,9 @@ app.post("/api/auth/login", async (req, res) => {
 
 // Admin API
 app.use("/api/admin", authMiddleware, requireRole("SUPER_ADMIN"), adminRoutes);
+
+// ✅ Booker API (wallet betting endpoints)
+app.use("/api/booker", authMiddleware, requireRole("SUPER_ADMIN"), bookerRoutes);
 
 // Auto-close races every 5 seconds (demo-safe)
 cron.schedule("*/5 * * * * *", async () => {
