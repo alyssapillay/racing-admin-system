@@ -133,6 +133,19 @@ async function initDb() {
     )
   `);
 
+  // ✅ MISSING TABLE (needed for wallet betting)
+  await run(`
+    CREATE TABLE IF NOT EXISTS bets (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      horse_id INTEGER NOT NULL,
+      stake REAL NOT NULL,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY(horse_id) REFERENCES horses(id) ON DELETE CASCADE
+    )
+  `);
+
   // safe migrations
   await addColumnIfMissing("countries", "country_code", "TEXT DEFAULT ''");
   await addColumnIfMissing("horses", "win_num", "REAL DEFAULT 0");
