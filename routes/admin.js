@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+<<<<<<< HEAD
 const bcrypt = require("bcrypt");
 const { requireRole, requirePerm } = require("../auth");
 
@@ -116,6 +117,8 @@ router.patch("/races/:raceId/datetime", requireRole("SUPER_ADMIN"), async (req, 
     res.status(500).json({ error: "Failed to update race time" });
   }
 });
+=======
+>>>>>>> 89dd2c76ad1d3d904330befbf4d1100e97157183
 const { get, all, run } = require("../db");
 
 function normalizeCode(code) {

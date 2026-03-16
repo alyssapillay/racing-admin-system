@@ -19,15 +19,23 @@ function authMiddleware(req, res, next) {
   }
 }
 
+<<<<<<< HEAD
 function requireRole(...roles) {
   return (req, res, next) => {
     const r = req.user?.role;
     if (!r) return res.status(401).json({ error: "unauthorized" });
     if (!roles.includes(r)) return res.status(403).json({ error: "forbidden" });
+=======
+function requireRole(role) {
+  return (req, res, next) => {
+    if (!req.user?.role) return res.status(401).json({ error: "unauthorized" });
+    if (req.user.role !== role) return res.status(403).json({ error: "forbidden" });
+>>>>>>> 89dd2c76ad1d3d904330befbf4d1100e97157183
     next();
   };
 }
 
+<<<<<<< HEAD
 function hasPerm(user, perm) {
   if (!user) return false;
   if (user.role === "SUPER_ADMIN") return true;
@@ -44,3 +52,6 @@ function requirePerm(perm) {
 }
 
 module.exports = { signToken, authMiddleware, requireRole, requirePerm, hasPerm };
+=======
+module.exports = { signToken, authMiddleware, requireRole };
+>>>>>>> 89dd2c76ad1d3d904330befbf4d1100e97157183

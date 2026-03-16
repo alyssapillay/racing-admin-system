@@ -129,12 +129,19 @@ async function initDb() {
       role TEXT NOT NULL,
       status TEXT NOT NULL,
       balance REAL NOT NULL DEFAULT 0,
+<<<<<<< HEAD
       permissions TEXT NOT NULL DEFAULT '[]',
+=======
+>>>>>>> 89dd2c76ad1d3d904330befbf4d1100e97157183
       created_at TEXT NOT NULL
     )
   `);
 
+<<<<<<< HEAD
   // bets table (wallet deductions)
+=======
+  // ✅ MISSING TABLE (needed for wallet betting)
+>>>>>>> 89dd2c76ad1d3d904330befbf4d1100e97157183
   await run(`
     CREATE TABLE IF NOT EXISTS bets (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -149,8 +156,11 @@ async function initDb() {
 
   // safe migrations
   await addColumnIfMissing("countries", "country_code", "TEXT DEFAULT ''");
+<<<<<<< HEAD
   await addColumnIfMissing("users", "permissions", "TEXT NOT NULL DEFAULT '[]'");
 
+=======
+>>>>>>> 89dd2c76ad1d3d904330befbf4d1100e97157183
   await addColumnIfMissing("horses", "win_num", "REAL DEFAULT 0");
   await addColumnIfMissing("horses", "win_den", "REAL DEFAULT 0");
   await addColumnIfMissing("horses", "place_num", "REAL DEFAULT 0");

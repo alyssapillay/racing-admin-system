@@ -1,17 +1,26 @@
 const express = require("express");
 const router = express.Router();
 const { get, all, run } = require("../db");
+<<<<<<< HEAD
 const { requirePerm } = require("../auth");
 
 // list players for bet dropdown
 router.get("/users", requirePerm("PLACE_BET"), async (req, res) => {
+=======
+
+router.get("/users", async (req, res) => {
+>>>>>>> 89dd2c76ad1d3d904330befbf4d1100e97157183
   const rows = await all(
     "SELECT id, name, email, balance FROM users WHERE role='PLAYER' AND status='ACTIVE' ORDER BY id ASC"
   );
   res.json(rows);
 });
 
+<<<<<<< HEAD
 router.get("/bets/recent", requirePerm("VIEW_BETS"), async (req, res) => {
+=======
+router.get("/bets/recent", async (req, res) => {
+>>>>>>> 89dd2c76ad1d3d904330befbf4d1100e97157183
   const rows = await all(
     `
     SELECT
@@ -30,8 +39,12 @@ router.get("/bets/recent", requirePerm("VIEW_BETS"), async (req, res) => {
   res.json(rows);
 });
 
+<<<<<<< HEAD
 // place bet and deduct wallet
 router.post("/bets", requirePerm("PLACE_BET"), async (req, res) => {
+=======
+router.post("/bets", async (req, res) => {
+>>>>>>> 89dd2c76ad1d3d904330befbf4d1100e97157183
   try {
     const user_id = Number(req.body?.user_id);
     const horse_id = Number(req.body?.horse_id);
