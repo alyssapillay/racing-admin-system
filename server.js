@@ -21,7 +21,6 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true, time: new Date().toISOString() });
 });
 
-// Login
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body || {};
@@ -69,13 +68,9 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
-// Admin API
 app.use("/api/admin", authMiddleware, requireRole("SUPER_ADMIN", "SUB_ADMIN"), adminRoutes);
-
-// Booker API
 app.use("/api/booker", authMiddleware, requireRole("SUPER_ADMIN", "SUB_ADMIN"), bookerRoutes);
 
-// Auto-close races every 5 seconds
 cron.schedule("*/5 * * * * *", async () => {
   try {
     const now = new Date().toISOString();

@@ -1,10 +1,40 @@
 const express = require("express");
 const router = express.Router();
-<<<<<<< HEAD
 const bcrypt = require("bcrypt");
-const { requireRole, requirePerm } = require("../auth");
 
-// Permissions list (front-end can reuse this)
+const { get, all, run } = require("../db");
+const { requireRole } = require("../auth");
+
+function normalizeCode(code) {
+  const c = String(code || "").trim().toUpperCase();
+  if (/^[A-Z]{2}$/.test(c)) return c;
+  return "";
+}
+
+function inferCountryCodeFromName(name) {
+  const n = String(name || "").trim().toLowerCase();
+  const map = {
+    "south africa": "ZA",
+    "sa": "ZA",
+    "united kingdom": "GB",
+    "uk": "GB",
+    "united states": "US",
+    "usa": "US",
+    "australia": "AU",
+    "ireland": "IE",
+    "france": "FR",
+    "qatar": "QA",
+    "new zealand": "NZ",
+    "canada": "CA",
+    "india": "IN",
+    "united arab emirates": "AE",
+    "uae": "AE",
+  };
+  return map[n] || "";
+}
+
+/* ---------------- PERMISSIONS / SUB ADMINS ---------------- */
+
 router.get("/permissions", requireRole("SUPER_ADMIN"), (req, res) => {
   res.json([
     "VIEW_RACING",
@@ -22,7 +52,6 @@ router.get("/permissions", requireRole("SUPER_ADMIN"), (req, res) => {
   ]);
 });
 
-// Create Sub Admin with checkbox permissions
 router.post("/subadmins", requireRole("SUPER_ADMIN"), async (req, res) => {
   try {
     const name = (req.body?.name || "").trim();
@@ -38,13 +67,13 @@ router.post("/subadmins", requireRole("SUPER_ADMIN"), async (req, res) => {
     const password_hash = await bcrypt.hash(password, 10);
     const permJson = JSON.stringify(permissions);
 
-    const ins = await require("../db").run(
+    const ins = await run(
       `INSERT INTO users (name,email,password_hash,role,status,balance,permissions,created_at)
        VALUES (?,?,?,?,?,?,?,?)`,
       [name, email, password_hash, "SUB_ADMIN", "ACTIVE", 0, permJson, now]
     );
 
-    const created = await require("../db").get(
+    const created = await get(
       "SELECT id,name,email,role,status,permissions FROM users WHERE id=?",
       [ins.lastID]
     );
@@ -54,16 +83,30 @@ router.post("/subadmins", requireRole("SUPER_ADMIN"), async (req, res) => {
       permissions: JSON.parse(created.permissions || "[]"),
     });
   } catch (e) {
-    if ((e.message || "").includes("UNIQUE")) return res.status(409).json({ error: "Email already exists" });
+    if ((e.message || "").includes("UNIQUE")) {
+      return res.status(409).json({ error: "Email already exists" });
+    }
     res.status(500).json({ error: "Failed to create sub-admin" });
   }
 });
 
 router.get("/subadmins", requireRole("SUPER_ADMIN"), async (req, res) => {
-  const rows = await require("../db").all(
+  const rows = await all(
     "SELECT id,name,email,role,status,permissions FROM users WHERE role='SUB_ADMIN' ORDER BY id DESC"
   );
-  res.json(rows.map(r => ({ ...r, permissions: (()=>{try{return JSON.parse(r.permissions||"[]")}catch{return []}})() })));
+
+  res.json(
+    rows.map((r) => ({
+      ...r,
+      permissions: (() => {
+        try {
+          return JSON.parse(r.permissions || "[]");
+        } catch {
+          return [];
+        }
+      })(),
+    }))
+  );
 });
 
 router.patch("/subadmins/:id", requireRole("SUPER_ADMIN"), async (req, res) => {
@@ -77,75 +120,84 @@ router.patch("/subadmins/:id", requireRole("SUPER_ADMIN"), async (req, res) => {
 
     const updates = [];
     const params = [];
-    if (name) { updates.push("name=?"); params.push(name); }
-    if (permissions) { updates.push("permissions=?"); params.push(JSON.stringify(permissions)); }
-    if (status === "ACTIVE" || status === "DISABLED") { updates.push("status=?"); params.push(status); }
+
+    if (name) {
+      updates.push("name=?");
+      params.push(name);
+    }
+
+    if (permissions) {
+      updates.push("permissions=?");
+      params.push(JSON.stringify(permissions));
+    }
+
+    if (status === "ACTIVE" || status === "DISABLED") {
+      updates.push("status=?");
+      params.push(status);
+    }
 
     if (!updates.length) return res.status(400).json({ error: "no changes" });
 
     params.push(id);
-    await require("../db").run(`UPDATE users SET ${updates.join(", ")} WHERE id=?`, params);
+    await run(`UPDATE users SET ${updates.join(", ")} WHERE id=?`, params);
 
-    const row = await require("../db").get(
+    const row = await get(
       "SELECT id,name,email,role,status,permissions FROM users WHERE id=?",
       [id]
     );
 
-    res.json({ ...row, permissions: (()=>{try{return JSON.parse(row.permissions||"[]")}catch{return []}})() });
+    res.json({
+      ...row,
+      permissions: (() => {
+        try {
+          return JSON.parse(row.permissions || "[]");
+        } catch {
+          return [];
+        }
+      })(),
+    });
   } catch {
     res.status(500).json({ error: "Failed to update sub-admin" });
   }
 });
 
-// Only SUPER_ADMIN can edit race times (delays etc.)
+// Only SUPER_ADMIN can edit race times
 router.patch("/races/:raceId/datetime", requireRole("SUPER_ADMIN"), async (req, res) => {
   try {
     const raceId = Number(req.params.raceId);
     const race_datetime = (req.body?.race_datetime || "").trim();
-    if (!raceId || !race_datetime) return res.status(400).json({ error: "race_datetime required" });
+
+    if (!raceId || !race_datetime) {
+      return res.status(400).json({ error: "race_datetime required" });
+    }
 
     const dt = new Date(race_datetime);
-    if (!isFinite(dt.getTime())) return res.status(400).json({ error: "invalid race_datetime" });
+    if (!isFinite(dt.getTime())) {
+      return res.status(400).json({ error: "invalid race_datetime" });
+    }
 
-    await require("../db").run("UPDATE races SET race_datetime=? WHERE id=?", [dt.toISOString(), raceId]);
-    const updated = await require("../db").get(
+    await run("UPDATE races SET race_datetime=? WHERE id=?", [dt.toISOString(), raceId]);
+
+    const updated = await get(
       "SELECT id, race_number, race_datetime, status FROM races WHERE id=?",
       [raceId]
     );
+
     res.json(updated);
   } catch {
     res.status(500).json({ error: "Failed to update race time" });
   }
 });
-=======
->>>>>>> 89dd2c76ad1d3d904330befbf4d1100e97157183
-const { get, all, run } = require("../db");
 
-function normalizeCode(code) {
-  const c = String(code || "").trim().toUpperCase();
-  if (/^[A-Z]{2}$/.test(c)) return c;
-  return "";
-}
-function inferCountryCodeFromName(name) {
-  const n = String(name || "").trim().toLowerCase();
-  const map = {
-    "south africa": "ZA", "sa": "ZA",
-    "united kingdom": "GB", "uk": "GB",
-    "united states": "US", "usa": "US",
-    "australia": "AU", "ireland": "IE", "france": "FR",
-    "qatar": "QA", "new zealand": "NZ", "canada": "CA", "india": "IN",
-    "united arab emirates": "AE", "uae": "AE",
-  };
-  return map[n] || "";
-}
+/* ---------------- SPORTS ---------------- */
 
-/* SPORTS */
 router.get("/sports", async (req, res) => {
   const rows = await all("SELECT id, code, name FROM sports ORDER BY id ASC");
   res.json(rows);
 });
 
-/* COUNTRIES */
+/* ---------------- COUNTRIES ---------------- */
+
 router.get("/sports/:sportId/countries", async (req, res) => {
   const sportId = Number(req.params.sportId);
   const rows = await all(
@@ -161,7 +213,10 @@ router.post("/sports/:sportId/countries", async (req, res) => {
     const name = (req.body?.name || "").trim();
     let country_code = normalizeCode(req.body?.country_code);
 
-    if (!sportId || !name) return res.status(400).json({ error: "sportId and name required" });
+    if (!sportId || !name) {
+      return res.status(400).json({ error: "sportId and name required" });
+    }
+
     if (!country_code) country_code = inferCountryCodeFromName(name);
 
     const exists = await get(
@@ -175,6 +230,7 @@ router.post("/sports/:sportId/countries", async (req, res) => {
       "INSERT INTO countries (sport_id, name, country_code, created_at) VALUES (?,?,?,?)",
       [sportId, name, country_code, now]
     );
+
     const created = await get(
       "SELECT id, sport_id, name, country_code FROM countries WHERE id=?",
       [ins.lastID]
@@ -190,22 +246,38 @@ router.patch("/countries/:countryId", async (req, res) => {
     const countryId = Number(req.params.countryId);
     const name = (req.body?.name || "").trim();
     let country_code = normalizeCode(req.body?.country_code);
-    if (!countryId || !name) return res.status(400).json({ error: "name required" });
+
+    if (!countryId || !name) {
+      return res.status(400).json({ error: "name required" });
+    }
 
     if (!country_code) country_code = inferCountryCodeFromName(name);
 
-    await run("UPDATE countries SET name=?, country_code=? WHERE id=?", [name, country_code, countryId]);
-    const updated = await get("SELECT id, sport_id, name, country_code FROM countries WHERE id=?", [countryId]);
+    await run("UPDATE countries SET name=?, country_code=? WHERE id=?", [
+      name,
+      country_code,
+      countryId,
+    ]);
+
+    const updated = await get(
+      "SELECT id, sport_id, name, country_code FROM countries WHERE id=?",
+      [countryId]
+    );
+
     res.json(updated);
   } catch {
     res.status(500).json({ error: "Failed to update country" });
   }
 });
 
-/* COURSES */
+/* ---------------- COURSES ---------------- */
+
 router.get("/countries/:countryId/courses", async (req, res) => {
   const countryId = Number(req.params.countryId);
-  const rows = await all("SELECT id, country_id, name FROM courses WHERE country_id=? ORDER BY name ASC", [countryId]);
+  const rows = await all(
+    "SELECT id, country_id, name FROM courses WHERE country_id=? ORDER BY name ASC",
+    [countryId]
+  );
   res.json(rows);
 });
 
@@ -213,7 +285,10 @@ router.post("/countries/:countryId/courses", async (req, res) => {
   try {
     const countryId = Number(req.params.countryId);
     const name = (req.body?.name || "").trim();
-    if (!countryId || !name) return res.status(400).json({ error: "countryId and name required" });
+
+    if (!countryId || !name) {
+      return res.status(400).json({ error: "countryId and name required" });
+    }
 
     const exists = await get(
       "SELECT id FROM courses WHERE country_id=? AND LOWER(name)=LOWER(?)",
@@ -222,8 +297,14 @@ router.post("/countries/:countryId/courses", async (req, res) => {
     if (exists) return res.status(409).json({ error: "Course already exists" });
 
     const now = new Date().toISOString();
-    const ins = await run("INSERT INTO courses (country_id, name, created_at) VALUES (?,?,?)", [countryId, name, now]);
-    const created = await get("SELECT id, country_id, name FROM courses WHERE id=?", [ins.lastID]);
+    const ins = await run(
+      "INSERT INTO courses (country_id, name, created_at) VALUES (?,?,?)",
+      [countryId, name, now]
+    );
+
+    const created = await get("SELECT id, country_id, name FROM courses WHERE id=?", [
+      ins.lastID,
+    ]);
     res.json(created);
   } catch {
     res.status(500).json({ error: "Failed to add course" });
@@ -234,17 +315,24 @@ router.patch("/courses/:courseId", async (req, res) => {
   try {
     const courseId = Number(req.params.courseId);
     const name = (req.body?.name || "").trim();
-    if (!courseId || !name) return res.status(400).json({ error: "name required" });
+
+    if (!courseId || !name) {
+      return res.status(400).json({ error: "name required" });
+    }
 
     await run("UPDATE courses SET name=? WHERE id=?", [name, courseId]);
-    const updated = await get("SELECT id, country_id, name FROM courses WHERE id=?", [courseId]);
+
+    const updated = await get("SELECT id, country_id, name FROM courses WHERE id=?", [
+      courseId,
+    ]);
     res.json(updated);
   } catch {
     res.status(500).json({ error: "Failed to update course" });
   }
 });
 
-/* RACE DAYS */
+/* ---------------- RACE DAYS ---------------- */
+
 router.get("/courses/:courseId/race-days", async (req, res) => {
   const courseId = Number(req.params.courseId);
   const rows = await all(
@@ -258,14 +346,26 @@ router.post("/courses/:courseId/race-days", async (req, res) => {
   try {
     const courseId = Number(req.params.courseId);
     const race_date = (req.body?.race_date || "").trim();
-    if (!courseId || !race_date) return res.status(400).json({ error: "race_date required" });
 
-    const exists = await get("SELECT id FROM race_days WHERE course_id=? AND race_date=?", [courseId, race_date]);
+    if (!courseId || !race_date) {
+      return res.status(400).json({ error: "race_date required" });
+    }
+
+    const exists = await get(
+      "SELECT id FROM race_days WHERE course_id=? AND race_date=?",
+      [courseId, race_date]
+    );
     if (exists) return res.status(409).json({ error: "Race day already exists" });
 
     const now = new Date().toISOString();
-    const ins = await run("INSERT INTO race_days (course_id, race_date, created_at) VALUES (?,?,?)", [courseId, race_date, now]);
-    const created = await get("SELECT id, course_id, race_date FROM race_days WHERE id=?", [ins.lastID]);
+    const ins = await run(
+      "INSERT INTO race_days (course_id, race_date, created_at) VALUES (?,?,?)",
+      [courseId, race_date, now]
+    );
+
+    const created = await get("SELECT id, course_id, race_date FROM race_days WHERE id=?", [
+      ins.lastID,
+    ]);
     res.json(created);
   } catch {
     res.status(500).json({ error: "Failed to add race day" });
@@ -276,17 +376,24 @@ router.patch("/race-days/:raceDayId", async (req, res) => {
   try {
     const raceDayId = Number(req.params.raceDayId);
     const race_date = (req.body?.race_date || "").trim();
-    if (!raceDayId || !race_date) return res.status(400).json({ error: "race_date required" });
+
+    if (!raceDayId || !race_date) {
+      return res.status(400).json({ error: "race_date required" });
+    }
 
     await run("UPDATE race_days SET race_date=? WHERE id=?", [race_date, raceDayId]);
-    const updated = await get("SELECT id, course_id, race_date FROM race_days WHERE id=?", [raceDayId]);
+
+    const updated = await get("SELECT id, course_id, race_date FROM race_days WHERE id=?", [
+      raceDayId,
+    ]);
     res.json(updated);
   } catch {
     res.status(500).json({ error: "Failed to update race day" });
   }
 });
 
-/* RACES */
+/* ---------------- RACES ---------------- */
+
 router.get("/race-days/:raceDayId/races", async (req, res) => {
   const raceDayId = Number(req.params.raceDayId);
   const rows = await all(
@@ -308,7 +415,9 @@ router.post("/race-days/:raceDayId/races/bulk", async (req, res) => {
     }
 
     const startMs = new Date(start_datetime).getTime();
-    if (!Number.isFinite(startMs)) return res.status(400).json({ error: "Invalid start_datetime" });
+    if (!Number.isFinite(startMs)) {
+      return res.status(400).json({ error: "Invalid start_datetime" });
+    }
 
     const now = new Date().toISOString();
 
@@ -337,7 +446,10 @@ router.patch("/races/:raceId/status", async (req, res) => {
   try {
     const raceId = Number(req.params.raceId);
     const status = (req.body?.status || "").trim().toUpperCase();
-    if (!raceId || !["OPEN", "CLOSED"].includes(status)) return res.status(400).json({ error: "status must be OPEN or CLOSED" });
+
+    if (!raceId || !["OPEN", "CLOSED"].includes(status)) {
+      return res.status(400).json({ error: "status must be OPEN or CLOSED" });
+    }
 
     const now = new Date().toISOString();
     if (status === "CLOSED") {
@@ -346,19 +458,24 @@ router.patch("/races/:raceId/status", async (req, res) => {
       await run("UPDATE races SET status='OPEN', closed_at=NULL WHERE id=?", [raceId]);
     }
 
-    const updated = await get("SELECT id, race_number, race_datetime, status FROM races WHERE id=?", [raceId]);
+    const updated = await get("SELECT id, race_number, race_datetime, status FROM races WHERE id=?", [
+      raceId,
+    ]);
     res.json(updated);
   } catch {
     res.status(500).json({ error: "Failed to update race status" });
   }
 });
 
-/* HORSES */
+/* ---------------- HORSES ---------------- */
+
 router.get("/races/:raceId/horses", async (req, res) => {
   const raceId = Number(req.params.raceId);
   const rows = await all(
     `SELECT id, race_id, horse_number, name, win_num, win_den, place_num, place_den, jockey, trainer, age, notes
-     FROM horses WHERE race_id=? ORDER BY horse_number ASC`,
+     FROM horses
+     WHERE race_id=?
+     ORDER BY horse_number ASC`,
     [raceId]
   );
   res.json(rows);
@@ -380,14 +497,18 @@ router.post("/races/:raceId/horses", async (req, res) => {
     const age = Number(req.body?.age || 0);
     const notes = (req.body?.notes || "").trim();
 
-    if (!raceId || !horse_number || !name) return res.status(400).json({ error: "raceId, horse_number, name required" });
+    if (!raceId || !horse_number || !name) {
+      return res.status(400).json({ error: "raceId, horse_number, name required" });
+    }
 
     const now = new Date().toISOString();
     const ins = await run(
-      `INSERT INTO horses (race_id,horse_number,name,win_num,win_den,place_num,place_den,jockey,trainer,age,notes,created_at)
+      `INSERT INTO horses
+       (race_id,horse_number,name,win_num,win_den,place_num,place_den,jockey,trainer,age,notes,created_at)
        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
       [raceId, horse_number, name, win_num, win_den, place_num, place_den, jockey, trainer, age, notes, now]
     );
+
     const created = await get("SELECT * FROM horses WHERE id=?", [ins.lastID]);
     res.json(created);
   } catch {
@@ -408,7 +529,9 @@ router.patch("/horses/:horseId", async (req, res) => {
     const notes = (req.body?.notes || "").trim();
 
     await run(
-      `UPDATE horses SET name=?, horse_number=?, jockey=?, trainer=?, age=?, notes=? WHERE id=?`,
+      `UPDATE horses
+       SET name=?, horse_number=?, jockey=?, trainer=?, age=?, notes=?
+       WHERE id=?`,
       [name, horse_number, jockey, trainer, age, notes, horseId]
     );
 
@@ -429,7 +552,11 @@ router.patch("/horses/:horseId/odds", async (req, res) => {
     const place_num = Number(req.body?.place_num || 0);
     const place_den = Number(req.body?.place_den || 0);
 
-    await run("UPDATE horses SET win_num=?, win_den=?, place_num=?, place_den=? WHERE id=?", [win_num, win_den, place_num, place_den, horseId]);
+    await run(
+      "UPDATE horses SET win_num=?, win_den=?, place_num=?, place_den=? WHERE id=?",
+      [win_num, win_den, place_num, place_den, horseId]
+    );
+
     const updated = await get("SELECT * FROM horses WHERE id=?", [horseId]);
     res.json(updated);
   } catch {
@@ -437,10 +564,25 @@ router.patch("/horses/:horseId/odds", async (req, res) => {
   }
 });
 
-/* USERS */
+/* ---------------- USERS ---------------- */
+
 router.get("/users", async (req, res) => {
-  const rows = await all("SELECT id, name, email, role, status, balance FROM users ORDER BY id ASC");
-  res.json(rows);
+  const rows = await all(
+    "SELECT id, name, email, role, status, balance, permissions FROM users ORDER BY id ASC"
+  );
+
+  res.json(
+    rows.map((r) => ({
+      ...r,
+      permissions: (() => {
+        try {
+          return JSON.parse(r.permissions || "[]");
+        } catch {
+          return [];
+        }
+      })(),
+    }))
+  );
 });
 
 router.post("/users", async (req, res) => {
@@ -448,20 +590,33 @@ router.post("/users", async (req, res) => {
     const name = (req.body?.name || "").trim();
     const email = (req.body?.email || "").trim().toLowerCase();
     const balance = Number(req.body?.balance || 0);
-    if (!name || !email) return res.status(400).json({ error: "name and email required" });
 
-    const placeholderHash = await require("bcrypt").hash("player", 10);
+    if (!name || !email) {
+      return res.status(400).json({ error: "name and email required" });
+    }
+
+    const placeholderHash = await bcrypt.hash("player", 10);
     const now = new Date().toISOString();
 
     const ins = await run(
-      `INSERT INTO users (name,email,password_hash,role,status,balance,created_at)
-       VALUES (?,?,?,?,?,?,?)`,
-      [name, email, placeholderHash, "PLAYER", "ACTIVE", balance, now]
+      `INSERT INTO users (name,email,password_hash,role,status,balance,permissions,created_at)
+       VALUES (?,?,?,?,?,?,?,?)`,
+      [name, email, placeholderHash, "PLAYER", "ACTIVE", balance, "[]", now]
     );
-    const created = await get("SELECT id, name, email, role, status, balance FROM users WHERE id=?", [ins.lastID]);
-    res.json(created);
+
+    const created = await get(
+      "SELECT id, name, email, role, status, balance, permissions FROM users WHERE id=?",
+      [ins.lastID]
+    );
+
+    res.json({
+      ...created,
+      permissions: [],
+    });
   } catch (e) {
-    if ((e.message || "").includes("UNIQUE")) return res.status(409).json({ error: "Email already exists" });
+    if ((e.message || "").includes("UNIQUE")) {
+      return res.status(409).json({ error: "Email already exists" });
+    }
     res.status(500).json({ error: "Failed to add user" });
   }
 });
@@ -471,11 +626,28 @@ router.patch("/users/:userId", async (req, res) => {
     const userId = Number(req.params.userId);
     const name = (req.body?.name || "").trim();
     const balance = Number(req.body?.balance);
-    if (!userId || !name || Number.isNaN(balance)) return res.status(400).json({ error: "name and balance required" });
+
+    if (!userId || !name || Number.isNaN(balance)) {
+      return res.status(400).json({ error: "name and balance required" });
+    }
 
     await run("UPDATE users SET name=?, balance=? WHERE id=?", [name, balance, userId]);
-    const updated = await get("SELECT id, name, email, role, status, balance FROM users WHERE id=?", [userId]);
-    res.json(updated);
+
+    const updated = await get(
+      "SELECT id, name, email, role, status, balance, permissions FROM users WHERE id=?",
+      [userId]
+    );
+
+    res.json({
+      ...updated,
+      permissions: (() => {
+        try {
+          return JSON.parse(updated.permissions || "[]");
+        } catch {
+          return [];
+        }
+      })(),
+    });
   } catch {
     res.status(500).json({ error: "Failed to update user" });
   }
