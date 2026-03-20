@@ -3,55 +3,55 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET || "demo_super_secret_change_me";
 
 function signToken(payload) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 }
 
 function authMiddleware(req, res, next) {
-  const header = req.headers.authorization || "";
-  const [type, token] = header.split(" ");
+const header = req.headers.authorization || "";
+const [type, token] = header.split(" ");
 
-  if (type !== "Bearer" || !token) {
-    return res.status(401).json({ error: "missing token" });
-  }
+if (type !== "Bearer" || !token) {
+return res.status(401).json({ error: "missing token" });
+}
 
-  try {
-    req.user = jwt.verify(token, JWT_SECRET);
-    next();
-  } catch {
-    return res.status(401).json({ error: "invalid token" });
-  }
+try {
+req.user = jwt.verify(token, JWT_SECRET);
+next();
+} catch {
+return res.status(401).json({ error: "invalid token" });
+}
 }
 
 function requireRole(...roles) {
-  return (req, res, next) => {
-    const role = req.user?.role;
-    if (!role) return res.status(401).json({ error: "unauthorized" });
-    if (!roles.includes(role)) return res.status(403).json({ error: "forbidden" });
-    next();
-  };
+return (req, res, next) => {
+const role = req.user?.role;
+if (!role) return res.status(401).json({ error: "unauthorized" });
+if (!roles.includes(role)) return res.status(403).json({ error: "forbidden" });
+next();
+};
 }
 
 function hasPerm(user, perm) {
-  if (!user) return false;
-  if (user.role === "SUPER_ADMIN") return true;
+if (!user) return false;
+if (user.role === "SUPER_ADMIN") return true;
 
-  const perms = Array.isArray(user.permissions) ? user.permissions : [];
-  if (perms.includes("*")) return true;
+const perms = Array.isArray(user.permissions) ? user.permissions : [];
+if (perms.includes("*")) return true;
 
-  return perms.includes(perm);
+return perms.includes(perm);
 }
 
 function requirePerm(perm) {
-  return (req, res, next) => {
-    if (hasPerm(req.user, perm)) return next();
-    return res.status(403).json({ error: "permission denied" });
-  };
+return (req, res, next) => {
+if (hasPerm(req.user, perm)) return next();
+return res.status(403).json({ error: "permission denied" });
+};
 }
 
 module.exports = {
-  signToken,
-  authMiddleware,
-  requireRole,
-  requirePerm,
-  hasPerm,
+signToken,
+authMiddleware,
+requireRole,
+requirePerm,
+hasPerm,
 };
