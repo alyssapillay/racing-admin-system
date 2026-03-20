@@ -6,287 +6,170 @@
   <title>Racing Admin Demo</title>
   <style>
     :root{
-      --bg0:#05070c;
-      --bg1:rgba(255,255,255,.06);
-      --bg2:rgba(255,255,255,.09);
-      --stroke:rgba(255,255,255,.14);
-      --text:#eaf1ff;
-      --muted:rgba(234,241,255,.70);
+      --bg:#070a12;
+      --panel:rgba(255,255,255,.06);
+      --panel2:rgba(255,255,255,.08);
+      --stroke:rgba(255,255,255,.12);
+      --text:#eef4ff;
+      --muted:rgba(238,244,255,.68);
 
       --blue:#2f6bff;
-      --green:#22c55e;
+      --green:#20c46b;
       --red:#ef4444;
       --amber:#f59e0b;
 
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
-      --r16:16px; --r20:20px; --r24:24px;
+      --shadow:0 20px 60px rgba(0,0,0,.42);
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       color:var(--text);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
       background:
-        radial-gradient(900px 600px at 20% 10%, rgba(47,107,255,.18), transparent 60%),
-        radial-gradient(900px 600px at 80% 0%, rgba(34,197,94,.14), transparent 60%),
-        radial-gradient(900px 900px at 50% 120%, rgba(255,255,255,.06), transparent 60%),
-        var(--bg0);
+        radial-gradient(900px 500px at 10% 0%, rgba(47,107,255,.17), transparent 60%),
+        radial-gradient(900px 500px at 100% 0%, rgba(32,196,107,.12), transparent 60%),
+        linear-gradient(180deg,#060912,var(--bg));
       overflow-x:hidden;
     }
 
-    a{color:inherit}
-    button, input, select, textarea{font:inherit}
+    button,input,select{font:inherit}
     .hidden{display:none !important}
 
-    /* App shell */
-    .app{
-      min-height:100%;
-      display:flex;
-      flex-direction:column;
-    }
-
+    .app{min-height:100%}
     .topbar{
-      position:sticky; top:0; z-index:50;
-      backdrop-filter: blur(14px);
-      background: rgba(5,7,12,.55);
-      border-bottom: 1px solid rgba(255,255,255,.10);
+      position:sticky; top:0; z-index:40;
+      backdrop-filter:blur(16px);
+      background:rgba(7,10,18,.72);
+      border-bottom:1px solid var(--stroke);
     }
-
     .topbar-inner{
+      max-width:1180px;
+      margin:0 auto;
+      padding:14px;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
-      padding:14px 14px;
-      max-width:1100px;
-      margin:0 auto;
+      gap:14px;
     }
-
-    .brand{
-      display:flex; align-items:center; gap:10px;
-    }
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
     .logo{
-      width:36px;height:36px;border-radius:12px;
-      background: linear-gradient(135deg, rgba(47,107,255,.8), rgba(34,197,94,.75));
-      box-shadow: 0 10px 30px rgba(47,107,255,.20);
-      border: 1px solid rgba(255,255,255,.18);
+      width:40px;height:40px;border-radius:14px;
+      background:linear-gradient(135deg,rgba(47,107,255,.95),rgba(32,196,107,.75));
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 10px 30px rgba(47,107,255,.24);
+      flex:0 0 auto;
     }
     .brand h1{
       margin:0;
       font-size:15px;
+      font-weight:900;
       letter-spacing:.2px;
-      font-weight:800;
-      line-height:1.1;
     }
     .brand small{
       display:block;
-      font-weight:600;
-      color:var(--muted);
       margin-top:2px;
+      color:var(--muted);
       font-size:12px;
+      font-weight:700;
     }
 
-    .top-actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+    .top-actions{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;
+    }
     .pill{
       display:inline-flex; align-items:center; gap:8px;
-      padding:9px 12px;
-      border-radius:999px;
-      background: var(--bg1);
-      border:1px solid rgba(255,255,255,.10);
-      color:var(--muted);
-      font-weight:700;
-      font-size:12px;
-    }
-    .btn{
-      appearance:none;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.08);
-      color:var(--text);
-      border-radius:14px;
       padding:10px 12px;
+      border-radius:999px;
+      background:var(--panel);
+      border:1px solid var(--stroke);
+      color:var(--muted);
+      font-size:12px;
       font-weight:800;
-      cursor:pointer;
-      transition: transform .08s ease, background .18s ease, border-color .18s ease;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-    .btn:hover{background: rgba(255,255,255,.11)}
-    .btn:active{transform: translateY(1px)}
-    .btn.primary{
-      border-color: rgba(47,107,255,.35);
-      background: linear-gradient(135deg, rgba(47,107,255,.95), rgba(47,107,255,.55));
-    }
-    .btn.green{
-      border-color: rgba(34,197,94,.35);
-      background: linear-gradient(135deg, rgba(34,197,94,.95), rgba(34,197,94,.55));
-    }
-    .btn.ghost{
-      background: transparent;
-      border-color: rgba(255,255,255,.16);
-      box-shadow:none;
-    }
-    .btn.small{padding:8px 10px; border-radius:12px; font-size:12px}
-    .btn.danger{
-      border-color: rgba(239,68,68,.35);
-      background: linear-gradient(135deg, rgba(239,68,68,.95), rgba(239,68,68,.55));
     }
 
+    .btn{
+      appearance:none;
+      border:1px solid var(--stroke);
+      background:var(--panel2);
+      color:var(--text);
+      border-radius:14px;
+      padding:11px 14px;
+      font-weight:900;
+      cursor:pointer;
+      transition:transform .08s ease, opacity .15s ease, background .15s ease;
+      box-shadow:0 10px 28px rgba(0,0,0,.22);
+      white-space:nowrap;
+    }
+    .btn:hover{opacity:.96}
+    .btn:active{transform:translateY(1px)}
+    .btn.small{padding:9px 11px;font-size:12px;border-radius:12px;box-shadow:none}
+    .btn.blue{background:linear-gradient(135deg,rgba(47,107,255,.95),rgba(47,107,255,.55));border-color:rgba(47,107,255,.42)}
+    .btn.green{background:linear-gradient(135deg,rgba(32,196,107,.95),rgba(32,196,107,.55));border-color:rgba(32,196,107,.40)}
+    .btn.red{background:linear-gradient(135deg,rgba(239,68,68,.95),rgba(239,68,68,.55));border-color:rgba(239,68,68,.40)}
+    .btn.ghost{background:transparent;box-shadow:none}
+
     .container{
-      width:100%;
-      max-width:1100px;
+      max-width:1180px;
       margin:0 auto;
       padding:16px 14px 110px;
     }
 
-    /* Login */
-    .login-wrap{
-      max-width:520px;
-      margin: 34px auto 0;
-    }
+    .login-wrap{max-width:520px;margin:42px auto 0}
     .card{
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: var(--r24);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
+      background:var(--panel);
+      border:1px solid var(--stroke);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(16px);
+      overflow:hidden;
     }
     .card.pad{padding:16px}
     .card.pad-lg{padding:20px}
     .card + .card{margin-top:12px}
 
-    .title{
-      margin:0 0 6px;
-      font-size:20px;
-      letter-spacing:.2px;
-      font-weight:900;
-    }
-    .sub{
-      margin:0;
-      color: var(--muted);
-      font-weight:650;
-      line-height:1.35;
-      font-size:13px;
-    }
+    .title{margin:0 0 6px;font-size:22px;font-weight:950}
+    .sub{margin:0;color:var(--muted);font-size:13px;font-weight:700;line-height:1.4}
 
-    .field{
-      margin-top:12px;
-    }
+    .field{margin-top:12px}
     .label{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      font-size:12px;
-      font-weight:800;
-      color: var(--muted);
+      display:flex;align-items:center;justify-content:space-between;
       margin-bottom:6px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:850;
       letter-spacing:.2px;
     }
-    .hint{font-weight:750; opacity:.9; font-size:11px}
+    .hint{font-size:11px}
     .input{
       width:100%;
-      padding:12px 12px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.22);
-      color: var(--text);
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.22);
+      color:var(--text);
       outline:none;
+      border-radius:14px;
+      padding:12px 12px;
     }
     .input:focus{
-      border-color: rgba(47,107,255,.55);
-      box-shadow: 0 0 0 4px rgba(47,107,255,.15);
-    }
-    .row{display:flex; gap:10px}
-    .row > *{flex:1}
-
-    .note{
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px dashed rgba(255,255,255,.18);
-      background: rgba(255,255,255,.04);
-      color: var(--muted);
-      font-weight:650;
-      font-size:12px;
-      line-height:1.35;
+      border-color:rgba(47,107,255,.55);
+      box-shadow:0 0 0 4px rgba(47,107,255,.14);
     }
 
-    /* Main layout */
     .grid{
       display:grid;
-      grid-template-columns: 1fr;
-      gap:12px;
+      grid-template-columns:1fr;
+      gap:14px;
     }
-    @media(min-width: 920px){
+    @media(min-width:980px){
       .grid{
-        grid-template-columns: 420px 1fr; /* roughly half/half feel */
-        gap:14px;
+        grid-template-columns:360px 1fr;
       }
-      .container{padding-bottom:30px}
+      .container{padding-bottom:24px}
     }
 
-    .side{
-      position:relative;
-    }
-
-    /* Big square nav buttons */
-    .big-nav{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-      margin-top:12px;
-    }
-    .tile{
-      border-radius: 22px;
-      padding:14px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      backdrop-filter: blur(14px);
-      box-shadow: var(--shadow);
-      cursor:pointer;
-      transition: transform .08s ease, background .18s ease, border-color .18s ease;
-      min-height:108px;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      position:relative;
-      overflow:hidden;
-    }
-    .tile:hover{background: rgba(255,255,255,.08)}
-    .tile:active{transform: translateY(1px)}
-    .tile.disabled{
-      opacity:.55;
-      cursor:not-allowed;
-      filter:saturate(.9);
-    }
-
-    .tile .icon{
-      width:44px;height:44px;border-radius:16px;
-      border:1px solid rgba(255,255,255,.14);
-      display:flex;align-items:center;justify-content:center;
-      background: rgba(0,0,0,.22);
-      font-size:20px;
-    }
-    .tile .t1{font-weight:950; font-size:14px; margin-top:10px}
-    .tile .t2{color:var(--muted); font-weight:700; font-size:12px; margin-top:4px; line-height:1.25}
-    .glow{
-      position:absolute; inset:-40px -40px auto auto;
-      width:140px;height:140px;border-radius:999px;
-      background: radial-gradient(circle at 30% 30%, rgba(47,107,255,.30), transparent 62%);
-      pointer-events:none;
-      filter: blur(2px);
-    }
-    .glow.g2{
-      inset:auto auto -50px -50px;
-      background: radial-gradient(circle at 30% 30%, rgba(34,197,94,.26), transparent 62%);
-    }
-
-    /* List cards */
     .section-h{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:10px;
+      display:flex;align-items:flex-end;justify-content:space-between;gap:10px;
       padding:14px 14px 10px;
     }
     .section-h .h{
@@ -298,225 +181,377 @@
     .section-h .crumb{
       margin:6px 0 0;
       font-size:12px;
-      color: var(--muted);
+      color:var(--muted);
       font-weight:750;
-      line-height:1.25;
+      line-height:1.3;
     }
     .section-body{padding:0 14px 14px}
 
-    .list{display:flex; flex-direction:column; gap:10px}
+    .big-nav{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:12px;
+    }
+    .tile{
+      min-height:112px;
+      border-radius:22px;
+      padding:14px;
+      border:1px solid var(--stroke);
+      background:var(--panel);
+      backdrop-filter:blur(14px);
+      box-shadow:var(--shadow);
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+      transition:transform .08s ease, background .15s ease;
+    }
+    .tile:active{transform:translateY(1px)}
+    .tile.disabled{opacity:.5;cursor:not-allowed}
+    .tile .icon{
+      width:46px;height:46px;border-radius:16px;
+      display:flex;align-items:center;justify-content:center;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.24);
+      font-size:22px;
+    }
+    .tile .t1{margin-top:10px;font-size:14px;font-weight:950}
+    .tile .t2{margin-top:4px;font-size:12px;color:var(--muted);font-weight:700;line-height:1.25}
+    .glow{
+      position:absolute; right:-34px; top:-34px;
+      width:120px;height:120px;border-radius:999px;
+      background:radial-gradient(circle at 30% 30%, rgba(47,107,255,.28), transparent 62%);
+      pointer-events:none;
+    }
+
+    .divider{height:1px;background:rgba(255,255,255,.10);margin:12px 0}
+    .form-grid{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:560px){
+      .form-grid.cols2{grid-template-columns:1fr 1fr}
+      .form-grid.cols3{grid-template-columns:1fr 1fr 1fr}
+      .form-grid.cols4{grid-template-columns:1fr 1fr 1fr 1fr}
+    }
+    .form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .mini{font-size:11px;color:var(--muted);font-weight:700;line-height:1.35}
+
+    .list{display:flex;flex-direction:column;gap:10px}
     .item{
-      border-radius: 18px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
+      border-radius:18px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.18);
       padding:12px;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
+      gap:12px;
     }
-    .left{
-      min-width:0;
-      display:flex; align-items:center; gap:10px;
-    }
+    .left{min-width:0;display:flex;align-items:center;gap:10px}
     .flag{
-      width:44px; height:44px;
-      border-radius:16px;
-      display:flex; align-items:center; justify-content:center;
+      width:44px;height:44px;border-radius:16px;
+      display:flex;align-items:center;justify-content:center;
       border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
+      background:rgba(255,255,255,.06);
       font-size:22px;
-      flex: 0 0 auto;
+      flex:0 0 auto;
     }
     .meta{min-width:0}
     .meta .name{
-      font-weight:950; font-size:14px; margin:0;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      margin:0;
+      font-size:14px;
+      font-weight:950;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
     }
     .meta .desc{
       margin:3px 0 0;
+      font-size:12px;
       color:var(--muted);
       font-weight:700;
-      font-size:12px;
       line-height:1.25;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
     }
+    .right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 
-    .right{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex: 0 0 auto;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
     .badge{
       padding:6px 10px;
-      border-radius: 999px;
-      font-weight:900;
-      font-size:11px;
-      letter-spacing:.3px;
+      border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: var(--muted);
+      background:rgba(255,255,255,.06);
+      color:var(--muted);
+      font-size:11px;
+      font-weight:950;
+      letter-spacing:.25px;
       white-space:nowrap;
     }
-    .badge.open{border-color: rgba(34,197,94,.35); color: rgba(203,255,223,.95); background: rgba(34,197,94,.12)}
-    .badge.closed{border-color: rgba(239,68,68,.35); color: rgba(255,214,214,.95); background: rgba(239,68,68,.12)}
-    .badge.soon{border-color: rgba(245,158,11,.35); color: rgba(255,240,210,.95); background: rgba(245,158,11,.12)}
+    .badge.open{border-color:rgba(32,196,107,.34);color:#cbffdf;background:rgba(32,196,107,.12)}
+    .badge.closed{border-color:rgba(239,68,68,.34);color:#ffd7d7;background:rgba(239,68,68,.12)}
+    .badge.soon{border-color:rgba(245,158,11,.34);color:#ffe8ba;background:rgba(245,158,11,.12)}
 
-    .divider{
-      height:1px;
-      background: rgba(255,255,255,.10);
-      margin:10px 0;
+    .racing-shell{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:14px;
+    }
+    @media(min-width:760px){
+      .racing-shell{
+        grid-template-columns: 1.1fr .9fr;
+      }
     }
 
-    /* Forms compact */
-    .form-grid{
+    .hero{
+      border:1px solid var(--stroke);
+      border-radius:24px;
+      background:
+        linear-gradient(135deg, rgba(47,107,255,.18), rgba(32,196,107,.10)),
+        rgba(255,255,255,.04);
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      min-height:190px;
+    }
+    .hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .hero .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      font-size:11px;font-weight:900;color:var(--muted)
+    }
+    .hero h2{margin:0;font-size:22px;line-height:1.05;font-weight:1000;letter-spacing:.2px}
+    .hero p{margin:6px 0 0;color:var(--muted);font-size:13px;font-weight:700;line-height:1.35}
+    .hero-stats{
       display:grid;
-      grid-template-columns: 1fr;
+      grid-template-columns:1fr 1fr 1fr;
       gap:10px;
     }
-    @media(min-width:520px){
-      .form-grid.cols2{grid-template-columns: 1fr 1fr}
-      .form-grid.cols3{grid-template-columns: 1fr 1fr 1fr}
+    .hero-stat{
+      border-radius:18px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.20);
+      padding:12px;
     }
-    .form-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
-    .mini{
-      font-size:11px;
-      color:var(--muted);
-      font-weight:700;
-      line-height:1.35;
-      margin-top:8px;
+    .hero-stat .k{font-size:11px;color:var(--muted);font-weight:850}
+    .hero-stat .v{margin-top:6px;font-size:17px;font-weight:1000}
+    .hero-wallet{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      border-radius:18px;
+      border:1px solid rgba(32,196,107,.34);
+      background:rgba(32,196,107,.12);
+      padding:12px;
     }
+    .hero-wallet .k{font-size:11px;color:#d8ffe9;font-weight:850}
+    .hero-wallet .v{margin-top:6px;font-size:20px;font-weight:1000;color:#fff}
 
-    /* Horses layout */
-    .horse-row{
-      align-items:flex-start;
+    .horse-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
     }
-    .horse-info .desc{white-space:normal}
-    .odds{
-      display:flex; gap:8px; align-items:center;
+    .horse-card{
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.18);
+      border-radius:22px;
+      padding:14px;
+      box-shadow:var(--shadow);
     }
-    .odds-box{
-      min-width:84px;
-      padding:8px 10px;
-      border-radius:14px;
+    .horse-top{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+    }
+    .horse-head{
+      display:flex;align-items:flex-start;gap:10px;min-width:0;
+    }
+    .horse-no{
+      width:42px;height:42px;border-radius:16px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.08);
       border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
+      font-weight:1000;font-size:14px;flex:0 0 auto;
+    }
+    .horse-name{
+      margin:0;
+      font-size:16px;
+      font-weight:1000;
+      letter-spacing:.15px;
+      line-height:1.05;
+    }
+    .horse-meta{
+      margin-top:5px;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:750;
+      line-height:1.35;
+    }
+    .status-col{
+      display:flex;flex-direction:column;gap:8px;align-items:flex-end;flex:0 0 auto;
+    }
+
+    .odds-strip{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    .odds-tile{
+      border-radius:18px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.05);
+      padding:12px;
+    }
+    .odds-tile.win{border-color:rgba(32,196,107,.28)}
+    .odds-tile.place{border-color:rgba(47,107,255,.28)}
+    .odds-tile .k{font-size:10px;color:var(--muted);font-weight:950;letter-spacing:.4px}
+    .odds-tile .v{margin-top:6px;font-size:22px;font-weight:1000;line-height:1}
+    .odds-tile .s{margin-top:4px;font-size:11px;color:var(--muted);font-weight:800}
+
+    .stake-row{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      margin-top:12px;
+    }
+    .stake-btn{
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.07);
+      color:var(--text);
+      padding:12px 10px;
+      font-weight:1000;
       text-align:center;
+      cursor:pointer;
     }
-    .odds-box .k{display:block; font-size:10px; font-weight:900; color:var(--muted); letter-spacing:.25px}
-    .odds-box .v{display:block; margin-top:2px; font-size:13px; font-weight:950}
-    .odds-box.win{border-color: rgba(34,197,94,.28)}
-    .odds-box.place{border-color: rgba(47,107,255,.26)}
-    .odds-box .v.muted{color:var(--muted); font-weight:900}
+    .stake-btn:active{transform:translateY(1px)}
+    .bet-actions{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:8px;
+      margin-top:12px;
+    }
 
-    /* Bottom nav for mobile */
+    .bets-wrap{
+      border-radius:22px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.04);
+      overflow:hidden;
+      min-height:100%;
+    }
+    .bets-head{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:12px 14px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .bets-head .t{font-size:13px;font-weight:1000}
+    .bets-list{
+      padding:12px;
+      display:flex;flex-direction:column;gap:8px;
+      max-height:720px;
+      overflow:auto;
+    }
+    .bet-line{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+      padding:10px;
+    }
+    .bet-line .a{min-width:0}
+    .bet-line .a .t1{
+      font-size:12px;font-weight:950;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .bet-line .a .t2{
+      margin-top:3px;font-size:11px;color:var(--muted);font-weight:750;line-height:1.25
+    }
+    .bet-line .b{text-align:right;flex:0 0 auto}
+    .bet-line .b .t1{font-size:12px;font-weight:1000}
+    .bet-line .b .t2{margin-top:3px;font-size:11px;color:var(--muted);font-weight:850}
+
     .bottom-nav{
-      position:fixed; left:0; right:0; bottom:0;
-      z-index:60;
+      position:fixed;left:0;right:0;bottom:0;z-index:50;
       padding:10px 12px;
-      backdrop-filter: blur(14px);
-      background: rgba(5,7,12,.65);
-      border-top: 1px solid rgba(255,255,255,.10);
-      display:flex;
-      justify-content:center;
+      backdrop-filter:blur(16px);
+      background:rgba(7,10,18,.72);
+      border-top:1px solid var(--stroke);
+      display:flex;justify-content:center;
     }
-    .bottom-inner{
-      width: min(1100px, 100%);
-      display:flex; gap:10px;
-    }
-    @media(min-width: 920px){
-      .bottom-nav{display:none}
-    }
-
+    .bottom-inner{width:min(1180px,100%);display:flex;gap:10px}
+    @media(min-width:980px){.bottom-nav{display:none}}
     .tabbtn{
       flex:1;
       border-radius:18px;
-      padding:12px 12px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.08);
-      color: var(--muted);
-      font-weight:950;
+      padding:12px;
+      border:1px solid var(--stroke);
+      background:var(--panel2);
+      color:var(--muted);
+      font-weight:1000;
       cursor:pointer;
-      display:flex; align-items:center; justify-content:center; gap:8px;
+      display:flex;align-items:center;justify-content:center;gap:8px;
     }
     .tabbtn.active{
-      color: var(--text);
-      border-color: rgba(47,107,255,.35);
-      background: rgba(47,107,255,.16);
+      color:var(--text);
+      border-color:rgba(47,107,255,.34);
+      background:rgba(47,107,255,.16);
     }
 
-    /* Modal */
     .modal-back{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.55);
-      display:flex;
-      align-items:flex-end;
-      justify-content:center;
+      position:fixed; inset:0; z-index:100;
+      background:rgba(0,0,0,.58);
+      display:flex; align-items:flex-end; justify-content:center;
       padding:12px;
-      z-index:100;
     }
-    @media(min-width: 560px){
-      .modal-back{align-items:center}
-    }
+    @media(min-width:600px){.modal-back{align-items:center}}
     .modal{
-      width:min(640px, 100%);
-      border-radius: 24px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(10,14,24,.90);
-      backdrop-filter: blur(18px);
-      box-shadow: var(--shadow);
+      width:min(760px,100%);
+      border-radius:24px;
+      border:1px solid var(--stroke);
+      background:rgba(10,14,24,.94);
+      backdrop-filter:blur(18px);
+      box-shadow:var(--shadow);
       overflow:hidden;
     }
     .modal-h{
-      padding:14px 14px 10px;
-      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+      padding:14px;
+      display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
       border-bottom:1px solid rgba(255,255,255,.10);
     }
-    .modal-h h3{margin:0; font-size:14px; font-weight:950}
-    .modal-h p{margin:6px 0 0; color:var(--muted); font-weight:700; font-size:12px; line-height:1.25}
+    .modal-h h3{margin:0;font-size:15px;font-weight:1000}
+    .modal-h p{margin:6px 0 0;font-size:12px;color:var(--muted);font-weight:700;line-height:1.35}
     .modal-b{padding:14px}
+
     .toast{
-      position:fixed;
-      left:50%; transform:translateX(-50%);
-      bottom: 86px;
-      z-index:120;
-      max-width: min(640px, calc(100% - 24px));
-      background: rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.14);
-      backdrop-filter: blur(14px);
-      border-radius: 16px;
+      position:fixed; left:50%; transform:translateX(-50%);
+      bottom:86px; z-index:120;
+      max-width:min(760px,calc(100% - 24px));
+      background:rgba(255,255,255,.10);
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      backdrop-filter:blur(14px);
+      color:var(--text);
       padding:10px 12px;
-      color: var(--text);
-      box-shadow: var(--shadow);
-      font-weight:800;
+      box-shadow:var(--shadow);
       font-size:12px;
+      font-weight:900;
       display:none;
     }
     .toast.show{display:block}
-    .toast small{display:block; color:var(--muted); font-weight:700; margin-top:2px}
+    .toast small{display:block;margin-top:2px;color:var(--muted);font-weight:750}
 
     .kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New";
-      font-weight:800;
-      font-size:11px;
-      color: rgba(234,241,255,.78);
-      background: rgba(255,255,255,.08);
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      font-size:11px;font-weight:850;
       border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.08);
+      color:rgba(238,244,255,.82);
       padding:2px 6px;
       border-radius:8px;
     }
   </style>
 </head>
-
 <body>
 <div class="app">
   <div class="topbar">
     <div class="topbar-inner">
       <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
+        <div class="logo"></div>
         <div>
           <h1>Racing Admin Demo</h1>
           <small id="whoami">Not signed in</small>
@@ -524,126 +559,100 @@
       </div>
 
       <div class="top-actions">
-        <span class="pill" id="envPill">API: <span class="kbd" id="apiBase"></span></span>
+        <span class="pill">API: <span class="kbd" id="apiBase"></span></span>
         <button class="btn small ghost" id="btnRefresh" type="button">Refresh</button>
-        <button class="btn small danger hidden" id="btnLogout" type="button">Logout</button>
+        <button class="btn small red hidden" id="btnLogout" type="button">Logout</button>
       </div>
     </div>
   </div>
 
-  <!-- LOGIN -->
   <div class="container" id="loginView">
     <div class="login-wrap">
       <div class="card pad-lg">
         <h2 class="title">Login</h2>
-        <p class="sub">Super Admin only for this demo. Once you’re in, you can add countries, courses, race days, races, horses, and users.</p>
+        <p class="sub">Sign in as Super Admin or Sub Admin. This version focuses on a premium horse-racing betting experience.</p>
 
         <div class="field">
           <div class="label">Email</div>
-          <input class="input" id="loginEmail" type="email" placeholder="you@example.com" autocomplete="username" />
+          <input class="input" id="loginEmail" type="email" placeholder="admin@demo.com">
         </div>
 
         <div class="field">
           <div class="label">Password</div>
-          <input class="input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password" />
+          <input class="input" id="loginPass" type="password" placeholder="admin123">
         </div>
 
         <div class="form-actions">
-          <button class="btn primary" id="btnLogin" type="button">Sign in</button>
+          <button class="btn blue" id="btnLogin" type="button">Sign in</button>
           <button class="btn ghost" id="btnUseDemo" type="button">Use demo credentials</button>
         </div>
 
-        <div class="note">
-          Tip: Your Render free instance can take ~30–60 seconds to “wake up” if it was sleeping.
+        <div class="mini" style="margin-top:12px">
+          Demo flow: Country → Course → Race Day → Race → Horses → Place Bet → Wallet drops instantly.
         </div>
-      </div>
-
-      <div class="card pad">
-        <p class="sub" style="margin:0">
-          Demo flow: Horse Racing → Countries → Courses → Race Days → Races → Horses.
-          Users tab lets you add player balances (e.g. Alyssa, Kiruben).
-        </p>
       </div>
     </div>
   </div>
 
-  <!-- APP -->
   <div class="container hidden" id="appView">
     <div class="grid">
-      <!-- LEFT / NAV -->
-      <div class="side">
+      <div>
         <div class="card">
           <div class="section-h">
             <div>
               <p class="h">Control Panel</p>
-              <p class="crumb">Choose a module, then drill down.</p>
+              <p class="crumb">Navigate the racing admin structure.</p>
             </div>
           </div>
           <div class="section-body">
             <div class="big-nav">
               <div class="tile" id="tileHorse">
-                <div class="glow"></div><div class="glow g2"></div>
+                <div class="glow"></div>
                 <div class="icon">🏇</div>
                 <div>
                   <div class="t1">Horse Racing</div>
-                  <div class="t2">Countries → Courses → Race Days → Races → Horses</div>
-                </div>
-              </div>
-              <div class="tile" id="tileUsers">
-                <div class="glow"></div><div class="glow g2"></div>
-                <div class="icon">👥</div>
-                <div>
-                  <div class="t1">Users</div>
-                  <div class="t2">Add players + set balances for betting demo</div>
+                  <div class="t2">Countries, courses, race days, races, horses, betting</div>
                 </div>
               </div>
 
-              <div class="tile disabled" title="Coming later" aria-disabled="true">
-                <div class="glow"></div><div class="glow g2"></div>
+              <div class="tile" id="tileUsers">
+                <div class="glow"></div>
+                <div class="icon">👥</div>
+                <div>
+                  <div class="t1">Users & Wallets</div>
+                  <div class="t2">Player balances and wallet controls</div>
+                </div>
+              </div>
+
+              <div class="tile disabled">
+                <div class="glow"></div>
                 <div class="icon">⚽</div>
                 <div>
                   <div class="t1">Soccer</div>
-                  <div class="t2">Coming later (same structure)</div>
+                  <div class="t2">Reserved for next module</div>
                 </div>
               </div>
-              <div class="tile disabled" title="Coming later" aria-disabled="true">
-                <div class="glow"></div><div class="glow g2"></div>
+
+              <div class="tile disabled">
+                <div class="glow"></div>
                 <div class="icon">🏏</div>
                 <div>
                   <div class="t1">Cricket</div>
-                  <div class="t2">Coming later (same structure)</div>
+                  <div class="t2">Reserved for next module</div>
                 </div>
               </div>
             </div>
 
             <div class="divider"></div>
 
-            <div class="card" style="background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10); box-shadow:none">
-              <div class="section-h" style="padding-bottom:0">
-                <div>
-                  <p class="h" style="font-size:13px">Quick Help</p>
-                  <p class="crumb">Best demo sequence</p>
-                </div>
-              </div>
-              <div class="section-body">
-                <div class="mini">
-                  1) Add a Country (name auto-generates flag if known).<br/>
-                  2) Add a Course under that country (e.g. Turffontein, Greyville).<br/>
-                  3) Add a Race Day (date).<br/>
-                  4) Bulk-add races (count + start time + interval).<br/>
-                  5) Add horses + Win/Place odds per horse.<br/>
-                  6) Add Users + balances for the demo.
-                </div>
-              </div>
+            <div class="mini">
+              Use the left panel to manage the admin structure. Use the racing screen to create a proper betting demo with live countdowns, horse cards, wallet betting, and recent bet activity.
             </div>
-
           </div>
         </div>
       </div>
 
-      <!-- RIGHT / CONTENT -->
-      <div class="main">
-        <!-- HORSE RACING VIEW -->
+      <div>
         <div class="card" id="horseView">
           <div class="section-h">
             <div>
@@ -655,103 +664,90 @@
               <button class="btn small ghost" id="btnBackHorse" type="button">Back</button>
             </div>
           </div>
-
           <div class="section-body">
-            <!-- Countries -->
+
             <div id="panelCountries">
-              <div class="card pad" style="box-shadow:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10)">
-                <div class="label">Add Country <span class="hint">Flag auto-fills if name is known (e.g. South Africa → ZA)</span></div>
+              <div class="card pad" style="box-shadow:none;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.10)">
+                <div class="label">Add Country <span class="hint">Flag auto-fills from ISO code</span></div>
                 <div class="form-grid cols2">
-                  <input class="input" id="countryName" placeholder="Country name (e.g. South Africa)" />
-                  <input class="input" id="countryCode" placeholder="ISO code (optional, e.g. ZA)" maxlength="2" />
+                  <input class="input" id="countryName" placeholder="South Africa">
+                  <input class="input" id="countryCode" maxlength="2" placeholder="ZA">
                 </div>
                 <div class="form-actions">
                   <button class="btn green" id="btnAddCountry" type="button">Add Country</button>
                 </div>
               </div>
-
               <div class="divider"></div>
               <div class="list" id="countriesList"></div>
             </div>
 
-            <!-- Courses -->
             <div id="panelCourses" class="hidden">
-              <div class="card pad" style="box-shadow:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10)">
-                <div class="label">Add Course <span class="hint">Example: Turffontein, Greyville, Kenilworth</span></div>
+              <div class="card pad" style="box-shadow:none;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.10)">
+                <div class="label">Add Course</div>
                 <div class="form-grid cols2">
-                  <input class="input" id="courseName" placeholder="Course name" />
+                  <input class="input" id="courseName" placeholder="Turffontein">
                   <button class="btn green" id="btnAddCourse" type="button">Add Course</button>
                 </div>
               </div>
-
               <div class="divider"></div>
               <div class="list" id="coursesList"></div>
             </div>
 
-            <!-- Race Days -->
             <div id="panelRaceDays" class="hidden">
-              <div class="card pad" style="box-shadow:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10)">
-                <div class="label">Add Race Day <span class="hint">Pick a date (YYYY-MM-DD)</span></div>
+              <div class="card pad" style="box-shadow:none;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.10)">
+                <div class="label">Add Race Day</div>
                 <div class="form-grid cols2">
-                  <input class="input" id="raceDayDate" type="date" />
+                  <input class="input" id="raceDayDate" type="date">
                   <button class="btn green" id="btnAddRaceDay" type="button">Add Race Day</button>
                 </div>
               </div>
-
               <div class="divider"></div>
               <div class="list" id="raceDaysList"></div>
             </div>
 
-            <!-- Races -->
             <div id="panelRaces" class="hidden">
-              <div class="card pad" style="box-shadow:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10)">
-                <div class="label">Add Races (Bulk) <span class="hint">Times are locked once created</span></div>
+              <div class="card pad" style="box-shadow:none;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.10)">
+                <div class="label">Create Races <span class="hint">Times auto-close bets at race time</span></div>
                 <div class="form-grid cols3">
-                  <input class="input" id="raceCount" type="number" min="1" max="20" placeholder="Count (e.g. 8)" />
-                  <input class="input" id="raceStart" type="datetime-local" />
-                  <input class="input" id="raceInterval" type="number" min="1" max="180" placeholder="Interval mins (e.g. 35)" />
+                  <input class="input" id="raceCount" type="number" min="1" max="20" placeholder="Race count">
+                  <input class="input" id="raceStart" type="datetime-local">
+                  <input class="input" id="raceInterval" type="number" min="1" max="180" placeholder="Interval mins">
                 </div>
                 <div class="form-actions">
                   <button class="btn green" id="btnBulkRaces" type="button">Create Races</button>
-                  <button class="btn ghost" id="btnMakeDemoTimes" type="button">Auto-set: 2 open + 2 closed</button>
-                </div>
-                <div class="mini">
-                  “2 open + 2 closed” sets the bulk start time so two races fall within the next 72 hours, and two are already past.
+                  <button class="btn ghost" id="btnMakeDemoTimes" type="button">2 open + 2 closed</button>
                 </div>
               </div>
-
               <div class="divider"></div>
               <div class="list" id="racesList"></div>
             </div>
 
-            <!-- Horses -->
             <div id="panelHorses" class="hidden">
-              <div class="card pad" style="box-shadow:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10)">
-                <div class="label">Add Horse <span class="hint">Includes Win + Place odds and horse info</span></div>
-
+              <div class="card pad" style="box-shadow:none;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.10)">
+                <div class="label">Add Horse</div>
                 <div class="form-grid cols3">
-                  <input class="input" id="horseNum" type="number" min="1" max="99" placeholder="Horse #" />
-                  <input class="input" id="horseName" placeholder="Horse name" />
-                  <input class="input" id="horseAge" type="number" min="0" max="20" placeholder="Age (optional)" />
+                  <input class="input" id="horseNum" type="number" min="1" max="99" placeholder="Horse #">
+                  <input class="input" id="horseName" placeholder="Horse name">
+                  <input class="input" id="horseAge" type="number" min="0" max="20" placeholder="Age">
                 </div>
 
                 <div class="form-grid cols2" style="margin-top:10px">
-                  <input class="input" id="horseJockey" placeholder="Jockey (optional)" />
-                  <input class="input" id="horseTrainer" placeholder="Trainer (optional)" />
+                  <input class="input" id="horseJockey" placeholder="Jockey">
+                  <input class="input" id="horseTrainer" placeholder="Trainer">
                 </div>
 
                 <div class="form-grid" style="margin-top:10px">
-                  <input class="input" id="horseNotes" placeholder="Notes (optional) e.g. 60kgs, good draw, etc." />
+                  <input class="input" id="horseNotes" placeholder="Notes">
                 </div>
 
                 <div class="divider"></div>
 
-                <div class="label">Odds (editable) <span class="hint">Fractional style (Win / Place)</span></div>
-                <div class="form-grid cols4" style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:10px">
-                  <input class="input" id="winNum" type="number" step="0.01" placeholder="Win num" />
-                  <input class="input" id="winDen" type="number" step="0.01" placeholder="Win den" />
-                  <input class="input" id="placeNum" type="number" step="0.01" placeholder="Place num" />
-                  <input class="input" id="placeDen" type="number" step="0.01" placeholder="Place den" />
+                <div class="label">Odds</div>
+                <div class="form-grid cols4">
+                  <input class="input" id="winNum" type="number" step="0.01" placeholder="Win num">
+                  <input class="input" id="winDen" type="number" step="0.01" placeholder="Win den">
+                  <input class="input" id="placeNum" type="number" step="0.01" placeholder="Place num">
+                  <input class="input" id="placeDen" type="number" step="0.01" placeholder="Place den">
                 </div>
 
                 <div class="form-actions">
@@ -760,35 +756,93 @@
               </div>
 
               <div class="divider"></div>
-              <div class="list" id="horsesList"></div>
+
+              <div class="racing-shell">
+                <div>
+                  <div class="hero">
+                    <div class="hero-top">
+                      <div>
+                        <div class="eyebrow" id="raceEyebrow">LIVE BETTING</div>
+                        <h2 id="raceHeroTitle">Race</h2>
+                        <p id="raceHeroSub">Select a race to view live betting cards.</p>
+                      </div>
+                      <div class="status-col">
+                        <span class="badge" id="raceStatusBadge">--</span>
+                        <span class="badge" id="raceCountdownBadge">--:--:--</span>
+                      </div>
+                    </div>
+
+                    <div class="hero-stats">
+                      <div class="hero-stat">
+                        <div class="k">COUNTRY</div>
+                        <div class="v" id="heroCountry">—</div>
+                      </div>
+                      <div class="hero-stat">
+                        <div class="k">COURSE</div>
+                        <div class="v" id="heroCourse">—</div>
+                      </div>
+                      <div class="hero-stat">
+                        <div class="k">RACE DAY</div>
+                        <div class="v" id="heroDay">—</div>
+                      </div>
+                    </div>
+
+                    <div class="hero-wallet">
+                      <div>
+                        <div class="k">SELECTED WALLET</div>
+                        <div class="v" id="selectedWalletName">No player selected</div>
+                      </div>
+                      <div style="text-align:right">
+                        <div class="k">BALANCE</div>
+                        <div class="v" id="selectedWalletBalance">R0</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="divider"></div>
+                  <div class="horse-grid" id="horsesGrid"></div>
+                </div>
+
+                <div>
+                  <div class="bets-wrap">
+                    <div class="bets-head">
+                      <div class="t">Recent Bets</div>
+                      <div class="right">
+                        <button class="btn small ghost" id="btnRefreshBets" type="button">Refresh</button>
+                      </div>
+                    </div>
+                    <div class="bets-list" id="betsList">
+                      <div class="mini">No bets yet.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
           </div>
         </div>
 
-        <!-- USERS VIEW -->
         <div class="card hidden" id="usersView">
           <div class="section-h">
             <div>
-              <p class="h">Users</p>
-              <p class="crumb">Add players + balances (demo credit wallet)</p>
+              <p class="h">Users & Wallets</p>
+              <p class="crumb">Players, balances, and wallet selection for betting</p>
             </div>
             <div class="right">
               <button class="btn small ghost" id="btnReloadUsers" type="button">Reload</button>
             </div>
           </div>
-
           <div class="section-body">
-            <div class="card pad" style="box-shadow:none; background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.10)">
-              <div class="label">Add User <span class="hint">Example: Alyssa, Kiruben</span></div>
+            <div class="card pad" style="box-shadow:none;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.10)">
+              <div class="label">Add Player</div>
               <div class="form-grid cols3">
-                <input class="input" id="userName" placeholder="Name (e.g. Alyssa)" />
-                <input class="input" id="userEmail" type="email" placeholder="Email (must be unique)" />
-                <input class="input" id="userBalance" type="number" step="0.01" placeholder="Balance (e.g. 10000)" />
+                <input class="input" id="userName" placeholder="Alyssa">
+                <input class="input" id="userEmail" type="email" placeholder="alyssa@demo.local">
+                <input class="input" id="userBalance" type="number" step="0.01" placeholder="10000">
               </div>
               <div class="form-actions">
-                <button class="btn green" id="btnAddUser" type="button">Add User</button>
-                <button class="btn ghost" id="btnAddSampleUsers" type="button">Add sample users</button>
+                <button class="btn green" id="btnAddUser" type="button">Add Player</button>
+                <button class="btn ghost" id="btnAddSampleUsers" type="button">Add Alyssa + Kiruben</button>
               </div>
             </div>
 
@@ -801,17 +855,14 @@
     </div>
   </div>
 
-  <!-- Bottom nav (mobile) -->
   <div class="bottom-nav hidden" id="bottomNav">
     <div class="bottom-inner">
       <button class="tabbtn active" id="tabHorse" type="button">🏇 Horse Racing</button>
       <button class="tabbtn" id="tabUsers" type="button">👥 Users</button>
     </div>
   </div>
-
 </div>
 
-<!-- Modal -->
 <div class="modal-back hidden" id="modalBack">
   <div class="modal">
     <div class="modal-h">
@@ -828,29 +879,34 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // ---------- Config ----------
-  const API_BASE = ""; // same origin (Render or local). Leave blank.
+  const API_BASE = "";
   document.getElementById("apiBase").textContent = API_BASE || window.location.origin;
 
-  // ---------- State ----------
   const S = {
     token: localStorage.getItem("token") || "",
     me: JSON.parse(localStorage.getItem("me") || "null"),
-    sportId: null,
+    permissions: JSON.parse(localStorage.getItem("permissions") || "[]"),
 
-    // selection chain
+    sportId: null,
     country: null,
     course: null,
     raceDay: null,
     race: null,
 
-    // live tick
     timer: null,
     clockTimer: null,
+
+    betUsers: [],
+    selectedBetUserId: null
   };
 
-  // ---------- Helpers ----------
   const $ = (id) => document.getElementById(id);
+
+  function escapeHtml(s){
+    return String(s ?? "").replace(/[&<>"']/g, (c)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[c]));
+  }
 
   function toast(msg, sub=""){
     const el = $("toast");
@@ -859,36 +915,64 @@
     setTimeout(()=>el.classList.remove("show"), 2600);
   }
 
-  function escapeHtml(s){
-    return String(s ?? "").replace(/[&<>"']/g, (c)=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[c]));
-  }
-
   function apiHeaders(){
     const h = { "Content-Type":"application/json" };
     if (S.token) h["Authorization"] = "Bearer " + S.token;
     return h;
   }
 
-  async function api(path, opts={}){
+  async function api(path, opts = {}){
     const res = await fetch((API_BASE || "") + path, {
       ...opts,
-      headers: { ...apiHeaders(), ...(opts.headers||{}) }
+      headers: { ...apiHeaders(), ...(opts.headers || {}) }
     });
     const text = await res.text();
     let data = null;
     try { data = text ? JSON.parse(text) : null; } catch { data = text; }
-    if (!res.ok){
-      const msg = (data && data.error) ? data.error : ("Request failed: " + res.status);
+    if (!res.ok) {
+      const msg = data?.error || `Request failed: ${res.status}`;
       throw new Error(msg);
     }
     return data;
   }
 
-  function setAuthUI(){
-    $("btnLogout").classList.toggle("hidden", !S.token);
-    $("whoami").textContent = S.me ? (`Signed in: ${S.me.name} (${S.me.role})`) : "Not signed in";
+  function fmtMoney(n){
+    return "R" + new Intl.NumberFormat(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
+    }).format(Number(n || 0));
+  }
+
+  function fmtDT(iso){
+    if (!iso) return "—";
+    const d = new Date(iso);
+    if (!isFinite(d.getTime())) return iso;
+    return d.toLocaleString(undefined, {
+      year:"numeric",
+      month:"short",
+      day:"2-digit",
+      hour:"2-digit",
+      minute:"2-digit"
+    });
+  }
+
+  function emojiFlagFromCode(code){
+    const c = String(code || "").trim().toUpperCase();
+    if (!/^[A-Z]{2}$/.test(c)) return "🏳️";
+    const A = 0x1F1E6;
+    return String.fromCodePoint(A + (c.charCodeAt(0)-65), A + (c.charCodeAt(1)-65));
+  }
+
+  function remaining(iso){
+    return new Date(iso).getTime() - Date.now();
+  }
+
+  function hhmmss(ms){
+    const s = Math.max(0, Math.floor(ms/1000));
+    const h = String(Math.floor(s/3600)).padStart(2,"0");
+    const m = String(Math.floor((s%3600)/60)).padStart(2,"0");
+    const ss = String(s%60).padStart(2,"0");
+    return `${h}:${m}:${ss}`;
   }
 
   function showLogin(){
@@ -896,6 +980,7 @@
     $("appView").classList.add("hidden");
     $("bottomNav").classList.add("hidden");
   }
+
   function showApp(){
     $("loginView").classList.add("hidden");
     $("appView").classList.remove("hidden");
@@ -908,6 +993,7 @@
     $("tabHorse").classList.add("active");
     $("tabUsers").classList.remove("active");
   }
+
   function showUsers(){
     $("horseView").classList.add("hidden");
     $("usersView").classList.remove("hidden");
@@ -915,57 +1001,9 @@
     $("tabUsers").classList.add("active");
   }
 
-  function emojiFlagFromCode(code){
-    const c = String(code || "").trim().toUpperCase();
-    if (!/^[A-Z]{2}$/.test(c)) return "🏳️";
-    const A = 0x1F1E6;
-    const first = c.charCodeAt(0) - 65 + A;
-    const second = c.charCodeAt(1) - 65 + A;
-    return String.fromCodePoint(first, second);
-  }
-
-  function fmtMoney(n){
-    const x = Number(n || 0);
-    return new Intl.NumberFormat(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(x);
-  }
-
-  function fmtDT(iso){
-    if (!iso) return "—";
-    const d = new Date(iso);
-    if (!isFinite(d.getTime())) return iso;
-    return d.toLocaleString(undefined, { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
-  }
-
-  function remaining(iso){
-    const t = new Date(iso).getTime();
-    const now = Date.now();
-    const ms = t - now;
-    return ms;
-  }
-
-  function hhmmss(ms){
-    const s = Math.max(0, Math.floor(ms/1000));
-    const h = String(Math.floor(s/3600)).padStart(2,"0");
-    const m = String(Math.floor((s%3600)/60)).padStart(2,"0");
-    const ss = String(s%60).padStart(2,"0");
-    return `${h}:${m}:${ss}`;
-  }
-
-  function setCrumb(){
-    const parts = [];
-    parts.push("Horse Racing");
-    if (S.country) parts.push(S.country.name);
-    if (S.course) parts.push(S.course.name);
-    if (S.raceDay) parts.push(S.raceDay.race_date);
-    if (S.race) parts.push("Race " + S.race.race_number);
-    $("crumbHorse").textContent = parts.join(" → ");
-  }
-
-  function showPanel(name){
-    const panels = ["panelCountries","panelCourses","panelRaceDays","panelRaces","panelHorses"];
-    panels.forEach(p => $(p).classList.add("hidden"));
-    $(name).classList.remove("hidden");
-    setCrumb();
+  function setAuthUI(){
+    $("btnLogout").classList.toggle("hidden", !S.token);
+    $("whoami").textContent = S.me ? `Signed in: ${S.me.name} (${S.me.role})` : "Not signed in";
   }
 
   function modalOpen({title, sub, bodyHtml}){
@@ -974,216 +1012,414 @@
     $("modalBody").innerHTML = bodyHtml || "";
     $("modalBack").classList.remove("hidden");
   }
+
   function modalClose(){
     $("modalBack").classList.add("hidden");
     $("modalBody").innerHTML = "";
   }
 
-  // ---------- Login ----------
-  $("btnUseDemo").addEventListener("click", ()=>{
-    // if you seeded a super admin, put it here
-    $("loginEmail").value = $("loginEmail").value || "admin@demo.com";
-    $("loginPass").value = $("loginPass").value || "admin123";
-    toast("Filled demo credentials", "If these don't work, use your real seeded admin login.");
+  function setCrumb(){
+    const parts = ["Horse Racing"];
+    if (S.country) parts.push(S.country.name);
+    if (S.course) parts.push(S.course.name);
+    if (S.raceDay) parts.push(S.raceDay.race_date);
+    if (S.race) parts.push("Race " + S.race.race_number);
+    $("crumbHorse").textContent = parts.join(" → ");
+  }
+
+  function showPanel(name){
+    ["panelCountries","panelCourses","panelRaceDays","panelRaces","panelHorses"].forEach(id => $(id).classList.add("hidden"));
+    $(name).classList.remove("hidden");
+    setCrumb();
+  }
+
+  function canPlaceBet(){
+    return S.me?.role === "SUPER_ADMIN" || (Array.isArray(S.permissions) && S.permissions.includes("PLACE_BET"));
+  }
+
+  function canViewBets(){
+    return S.me?.role === "SUPER_ADMIN" || (Array.isArray(S.permissions) && S.permissions.includes("VIEW_BETS"));
+  }
+
+  function updateSelectedWalletPanel(){
+    const user = S.betUsers.find(u => Number(u.id) === Number(S.selectedBetUserId));
+    $("selectedWalletName").textContent = user ? user.name : "No player selected";
+    $("selectedWalletBalance").textContent = user ? fmtMoney(user.balance) : "R0";
+  }
+
+  function updateRaceHero(){
+    if (!S.race) {
+      $("raceHeroTitle").textContent = "Race";
+      $("raceHeroSub").textContent = "Select a race to view live betting cards.";
+      $("raceStatusBadge").textContent = "--";
+      $("raceCountdownBadge").textContent = "--:--:--";
+      $("heroCountry").textContent = "—";
+      $("heroCourse").textContent = "—";
+      $("heroDay").textContent = "—";
+      return;
+    }
+
+    $("raceHeroTitle").textContent = `Race ${S.race.race_number}`;
+    $("raceHeroSub").textContent = `${fmtDT(S.race.race_datetime)}`;
+    $("heroCountry").textContent = S.country?.name || "—";
+    $("heroCourse").textContent = S.course?.name || "—";
+    $("heroDay").textContent = S.raceDay?.race_date || "—";
+
+    const ms = remaining(S.race.race_datetime);
+    const status = String(S.race.status || "").toUpperCase();
+    const effectiveOpen = status === "OPEN" && ms > 0;
+
+    $("raceStatusBadge").className = "badge " + (effectiveOpen ? (ms < 15*60*1000 ? "soon" : "open") : "closed");
+    $("raceStatusBadge").textContent = effectiveOpen ? "OPEN" : "CLOSED";
+    $("raceCountdownBadge").textContent = effectiveOpen ? hhmmss(ms) : "00:00:00";
+  }
+
+  async function loadBetUsers(){
+    if (!canPlaceBet()) {
+      S.betUsers = [];
+      S.selectedBetUserId = null;
+      updateSelectedWalletPanel();
+      return;
+    }
+
+    try {
+      const users = await api("/api/booker/users");
+      S.betUsers = Array.isArray(users) ? users : [];
+
+      if (!S.selectedBetUserId && S.betUsers.length) {
+        S.selectedBetUserId = S.betUsers[0].id;
+      } else if (S.selectedBetUserId) {
+        const exists = S.betUsers.some(u => Number(u.id) === Number(S.selectedBetUserId));
+        if (!exists) S.selectedBetUserId = S.betUsers[0]?.id || null;
+      }
+
+      updateSelectedWalletPanel();
+    } catch (e) {
+      S.betUsers = [];
+      S.selectedBetUserId = null;
+      updateSelectedWalletPanel();
+    }
+  }
+
+  async function loadRecentBets(){
+    const list = $("betsList");
+    if (!canViewBets()) {
+      list.innerHTML = `<div class="mini">You do not have permission to view bets.</div>`;
+      return;
+    }
+
+    try {
+      const rows = await api("/api/booker/bets/recent");
+      list.innerHTML = "";
+
+      if (!rows.length) {
+        list.innerHTML = `<div class="mini">No bets yet.</div>`;
+        return;
+      }
+
+      rows.forEach(b => {
+        const el = document.createElement("div");
+        el.className = "bet-line";
+        el.innerHTML = `
+          <div class="a">
+            <div class="t1">${escapeHtml(b.user_name)} • Race ${escapeHtml(b.race_number)} • #${escapeHtml(b.horse_number)} ${escapeHtml(b.horse_name)}</div>
+            <div class="t2">${escapeHtml(fmtDT(b.created_at))}</div>
+          </div>
+          <div class="b">
+            <div class="t1">${escapeHtml(fmtMoney(b.stake))}</div>
+            <div class="t2">${escapeHtml((b.race_status || "").toUpperCase())}</div>
+          </div>
+        `;
+        list.appendChild(el);
+      });
+    } catch (e) {
+      list.innerHTML = `<div class="mini">Could not load bets: ${escapeHtml(e.message)}</div>`;
+    }
+  }
+
+  async function openStakeBetModal(horse, prefillStake){
+    await loadBetUsers();
+
+    if (!canPlaceBet()) {
+      toast("No permission", "This login cannot place bets.");
+      return;
+    }
+
+    if (!S.betUsers.length) {
+      toast("No players found", "Go to Users and add wallets first.");
+      return;
+    }
+
+    const options = S.betUsers.map(u =>
+      `<option value="${u.id}" ${Number(u.id) === Number(S.selectedBetUserId) ? "selected" : ""}>${escapeHtml(u.name)} (${escapeHtml(fmtMoney(u.balance))})</option>`
+    ).join("");
+
+    modalOpen({
+      title: "Place Bet",
+      sub: `Race ${S.race.race_number} • #${horse.horse_number} ${horse.name}`,
+      bodyHtml: `
+        <div class="field">
+          <div class="label">Player wallet</div>
+          <select class="input" id="mBetUser">${options}</select>
+        </div>
+        <div class="field">
+          <div class="label">Stake</div>
+          <input class="input" id="mBetStake" type="number" step="0.01" value="${escapeHtml(prefillStake || "")}" placeholder="1000">
+        </div>
+        <div class="form-actions">
+          <button class="btn green" id="mPlaceBet" type="button">Confirm Bet</button>
+          <button class="btn ghost" id="mCancel" type="button">Cancel</button>
+        </div>
+        <div class="mini">Wallet balance will reduce immediately if the race is still open.</div>
+      `
+    });
+
+    $("mCancel").onclick = modalClose;
+    $("mPlaceBet").onclick = async () => {
+      try {
+        const user_id = Number($("mBetUser").value);
+        const stake = Number($("mBetStake").value);
+
+        if (!user_id) return toast("Select a wallet");
+        if (!stake || stake <= 0) return toast("Enter a valid stake");
+
+        const out = await api("/api/booker/bets", {
+          method: "POST",
+          body: JSON.stringify({
+            user_id,
+            horse_id: horse.id,
+            stake
+          })
+        });
+
+        modalClose();
+        S.selectedBetUserId = user_id;
+        toast("Bet placed", `${out.wallet.name} new balance: ${fmtMoney(out.wallet.balance)}`);
+
+        await loadBetUsers();
+        await loadRecentBets();
+
+        if (!$("usersView").classList.contains("hidden")) {
+          await loadUsers();
+        }
+      } catch (e) {
+        toast("Bet failed", e.message);
+      }
+    };
+  }
+
+  // Login
+  $("btnUseDemo").addEventListener("click", () => {
+    $("loginEmail").value = "admin@demo.com";
+    $("loginPass").value = "admin123";
   });
 
-  $("btnLogin").addEventListener("click", async ()=>{
-    try{
+  $("btnLogin").addEventListener("click", async () => {
+    try {
       const email = $("loginEmail").value.trim();
       const password = $("loginPass").value;
-      if(!email || !password) return toast("Please enter email + password");
+      if (!email || !password) return toast("Please enter email and password");
 
       const out = await api("/api/auth/login", {
-        method:"POST",
+        method: "POST",
         body: JSON.stringify({ email, password })
       });
 
       S.token = out.token;
       S.me = { name: out.name, role: out.role, email };
+      S.permissions = Array.isArray(out.permissions) ? out.permissions : [];
+
       localStorage.setItem("token", S.token);
       localStorage.setItem("me", JSON.stringify(S.me));
+      localStorage.setItem("permissions", JSON.stringify(S.permissions));
+
       setAuthUI();
       showApp();
       await boot();
-      toast("Signed in", "Welcome back.");
-    }catch(e){
+      toast("Signed in");
+    } catch (e) {
       toast("Login failed", e.message);
     }
   });
 
-  $("btnLogout").addEventListener("click", ()=>{
+  $("btnLogout").addEventListener("click", () => {
     localStorage.removeItem("token");
     localStorage.removeItem("me");
+    localStorage.removeItem("permissions");
     S.token = "";
     S.me = null;
+    S.permissions = [];
     setAuthUI();
     showLogin();
   });
 
-  // ---------- Top actions ----------
-  $("btnRefresh").addEventListener("click", async ()=>{
-    if(!S.token) return toast("Not signed in");
+  $("btnRefresh").addEventListener("click", async () => {
+    if (!S.token) return;
     await refreshCurrent();
   });
 
-  // ---------- Mobile tabs ----------
   $("tabHorse").addEventListener("click", showHorse);
-  $("tabUsers").addEventListener("click", async ()=>{
+  $("tabUsers").addEventListener("click", async () => {
     showUsers();
     await loadUsers();
   });
 
-  // ---------- Left tiles ----------
-  $("tileHorse").addEventListener("click", async ()=>{
+  $("tileHorse").addEventListener("click", async () => {
     showHorse();
-    // if user was deep somewhere, keep them; otherwise load countries
     if (!S.country) await loadCountries();
   });
 
-  $("tileUsers").addEventListener("click", async ()=>{
+  $("tileUsers").addEventListener("click", async () => {
     showUsers();
     await loadUsers();
   });
 
-  // ---------- Back button logic ----------
-  $("btnBackHorse").addEventListener("click", async ()=>{
-    if (S.race){
+  $("btnBackHorse").addEventListener("click", async () => {
+    if (S.race) {
       S.race = null;
+      updateRaceHero();
       showPanel("panelRaces");
       await loadRaces();
       return;
     }
-    if (S.raceDay){
+    if (S.raceDay) {
       S.raceDay = null;
       showPanel("panelRaceDays");
       await loadRaceDays();
       return;
     }
-    if (S.course){
+    if (S.course) {
       S.course = null;
       showPanel("panelCourses");
       await loadCourses();
       return;
     }
-    if (S.country){
+    if (S.country) {
       S.country = null;
       showPanel("panelCountries");
       await loadCountries();
       return;
     }
-    showPanel("panelCountries");
-    await loadCountries();
   });
 
-  // ---------- Data loaders ----------
   async function boot(){
-    // sport id for Horse Racing
     const sports = await api("/api/admin/sports");
     const hr = sports.find(s => (s.code || "").toUpperCase() === "HORSE_RACING") || sports[0];
-    S.sportId = hr ? hr.id : null;
+    S.sportId = hr?.id || null;
 
-    // reset selection to top
-    S.country = null; S.course = null; S.raceDay = null; S.race = null;
+    S.country = null;
+    S.course = null;
+    S.raceDay = null;
+    S.race = null;
+
     showHorse();
     showPanel("panelCountries");
     await loadCountries();
+    await loadBetUsers();
+    await loadRecentBets();
+    updateRaceHero();
 
-    // live timers
     if (S.timer) clearInterval(S.timer);
-    S.timer = setInterval(()=>{
-      // update race countdown badges without re-fetch
+    S.timer = setInterval(() => {
       updateRaceCountdowns();
+      updateRaceHero();
     }, 1000);
 
     if (S.clockTimer) clearInterval(S.clockTimer);
-    S.clockTimer = setInterval(()=>{
-      const now = new Date();
-      $("clockBadge").textContent = now.toLocaleTimeString(undefined, { hour12:false });
+    S.clockTimer = setInterval(() => {
+      $("clockBadge").textContent = new Date().toLocaleTimeString(undefined, { hour12: false });
     }, 500);
   }
 
   async function refreshCurrent(){
-    if ($("usersView").classList.contains("hidden")){
-      if (S.race) return loadHorses();
+    if ($("usersView").classList.contains("hidden")) {
+      if (S.race) {
+        await loadHorses();
+        await loadBetUsers();
+        await loadRecentBets();
+        return;
+      }
       if (S.raceDay) return loadRaces();
       if (S.course) return loadRaceDays();
       if (S.country) return loadCourses();
       return loadCountries();
-    }else{
-      return loadUsers();
     }
+    return loadUsers();
   }
 
-  // ---------- Countries ----------
-  $("btnAddCountry").addEventListener("click", async ()=>{
-    try{
+  // Countries
+  $("btnAddCountry").addEventListener("click", async () => {
+    try {
       const name = $("countryName").value.trim();
       const country_code = $("countryCode").value.trim().toUpperCase();
       if (!name) return toast("Enter a country name");
+
       await api(`/api/admin/sports/${S.sportId}/countries`, {
-        method:"POST",
+        method: "POST",
         body: JSON.stringify({ name, country_code })
       });
+
       $("countryName").value = "";
       $("countryCode").value = "";
       toast("Country added");
       await loadCountries();
-    }catch(e){
+    } catch (e) {
       toast("Could not add country", e.message);
     }
   });
 
   async function loadCountries(){
-    if (!S.sportId) return;
     const rows = await api(`/api/admin/sports/${S.sportId}/countries`);
     const list = $("countriesList");
     list.innerHTML = "";
-    if (!rows.length){
-      list.innerHTML = `<div class="mini">No countries yet. Add one above.</div>`;
+
+    if (!rows.length) {
+      list.innerHTML = `<div class="mini">No countries yet.</div>`;
       return;
     }
 
-    rows.forEach(c=>{
-      const flag = emojiFlagFromCode(c.country_code);
+    rows.forEach(c => {
       const el = document.createElement("div");
       el.className = "item";
       el.innerHTML = `
         <div class="left" style="cursor:pointer">
-          <div class="flag">${flag}</div>
+          <div class="flag">${emojiFlagFromCode(c.country_code)}</div>
           <div class="meta">
             <p class="name">${escapeHtml(c.name)}</p>
-            <p class="desc">Code: <span class="kbd">${escapeHtml((c.country_code||"").toUpperCase() || "—")}</span></p>
+            <p class="desc">Code: <span class="kbd">${escapeHtml((c.country_code || "").toUpperCase() || "—")}</span></p>
           </div>
         </div>
         <div class="right">
           <button class="btn small ghost" data-edit>Edit</button>
-          <button class="btn small primary" data-open>Open</button>
+          <button class="btn small blue" data-open>Open</button>
         </div>
       `;
-      el.querySelector("[data-open]").addEventListener("click", async ()=>{
+
+      const open = async () => {
         S.country = c;
-        S.course = null; S.raceDay = null; S.race = null;
+        S.course = null;
+        S.raceDay = null;
+        S.race = null;
+        updateRaceHero();
         showPanel("panelCourses");
         await loadCourses();
-      });
-      el.querySelector(".left").addEventListener("click", async ()=>{
-        S.country = c;
-        S.course = null; S.raceDay = null; S.race = null;
-        showPanel("panelCourses");
-        await loadCourses();
-      });
-      el.querySelector("[data-edit]").addEventListener("click", ()=>{
+      };
+
+      el.querySelector(".left").addEventListener("click", open);
+      el.querySelector("[data-open]").addEventListener("click", open);
+
+      el.querySelector("[data-edit]").addEventListener("click", () => {
         modalOpen({
           title: "Edit Country",
-          sub: "Update name and/or ISO code (ZA, GB, US…). Flag updates automatically.",
+          sub: "Update country name or ISO code.",
           bodyHtml: `
             <div class="field">
               <div class="label">Country name</div>
-              <input class="input" id="mCountryName" value="${escapeHtml(c.name)}" />
+              <input class="input" id="mCountryName" value="${escapeHtml(c.name)}">
             </div>
             <div class="field">
-              <div class="label">Country code (2 letters)</div>
-              <input class="input" id="mCountryCode" maxlength="2" value="${escapeHtml((c.country_code||"").toUpperCase())}" />
+              <div class="label">Country code</div>
+              <input class="input" id="mCountryCode" maxlength="2" value="${escapeHtml((c.country_code || "").toUpperCase())}">
             </div>
             <div class="form-actions">
               <button class="btn green" id="mSaveCountry" type="button">Save</button>
@@ -1191,20 +1427,20 @@
             </div>
           `
         });
+
         $("mCancel").onclick = modalClose;
-        $("mSaveCountry").onclick = async ()=>{
-          try{
+        $("mSaveCountry").onclick = async () => {
+          try {
             const name = $("mCountryName").value.trim();
             const country_code = $("mCountryCode").value.trim().toUpperCase();
-            if(!name) return toast("Name required");
             await api(`/api/admin/countries/${c.id}`, {
-              method:"PATCH",
+              method: "PATCH",
               body: JSON.stringify({ name, country_code })
             });
             modalClose();
             toast("Country updated");
             await loadCountries();
-          }catch(e){
+          } catch (e) {
             toast("Update failed", e.message);
           }
         };
@@ -1214,19 +1450,21 @@
     });
   }
 
-  // ---------- Courses ----------
-  $("btnAddCourse").addEventListener("click", async ()=>{
-    try{
+  // Courses
+  $("btnAddCourse").addEventListener("click", async () => {
+    try {
       const name = $("courseName").value.trim();
-      if(!name) return toast("Enter a course name");
+      if (!name) return toast("Enter a course name");
+
       await api(`/api/admin/countries/${S.country.id}/courses`, {
-        method:"POST",
+        method: "POST",
         body: JSON.stringify({ name })
       });
+
       $("courseName").value = "";
       toast("Course added");
       await loadCourses();
-    }catch(e){
+    } catch (e) {
       toast("Could not add course", e.message);
     }
   });
@@ -1236,12 +1474,12 @@
     const list = $("coursesList");
     list.innerHTML = "";
 
-    if(!rows.length){
-      list.innerHTML = `<div class="mini">No courses yet. Add one above (e.g. Turffontein, Greyville).</div>`;
+    if (!rows.length) {
+      list.innerHTML = `<div class="mini">No courses yet.</div>`;
       return;
     }
 
-    rows.forEach(course=>{
+    rows.forEach(course => {
       const el = document.createElement("div");
       el.className = "item";
       el.innerHTML = `
@@ -1249,35 +1487,35 @@
           <div class="flag">🏟️</div>
           <div class="meta">
             <p class="name">${escapeHtml(course.name)}</p>
-            <p class="desc">Race meetings for ${escapeHtml(S.country.name)}</p>
+            <p class="desc">${escapeHtml(S.country.name)}</p>
           </div>
         </div>
         <div class="right">
           <button class="btn small ghost" data-edit>Edit</button>
-          <button class="btn small primary" data-open>Open</button>
+          <button class="btn small blue" data-open>Open</button>
         </div>
       `;
 
-      el.querySelector("[data-open]").addEventListener("click", async ()=>{
+      const open = async () => {
         S.course = course;
-        S.raceDay = null; S.race = null;
+        S.raceDay = null;
+        S.race = null;
+        updateRaceHero();
         showPanel("panelRaceDays");
         await loadRaceDays();
-      });
-      el.querySelector(".left").addEventListener("click", async ()=>{
-        S.course = course;
-        S.raceDay = null; S.race = null;
-        showPanel("panelRaceDays");
-        await loadRaceDays();
-      });
-      el.querySelector("[data-edit]").addEventListener("click", ()=>{
+      };
+
+      el.querySelector(".left").addEventListener("click", open);
+      el.querySelector("[data-open]").addEventListener("click", open);
+
+      el.querySelector("[data-edit]").addEventListener("click", () => {
         modalOpen({
           title: "Edit Course",
-          sub: "Rename the racecourse / venue.",
+          sub: "Rename racecourse.",
           bodyHtml: `
             <div class="field">
               <div class="label">Course name</div>
-              <input class="input" id="mCourseName" value="${escapeHtml(course.name)}" />
+              <input class="input" id="mCourseName" value="${escapeHtml(course.name)}">
             </div>
             <div class="form-actions">
               <button class="btn green" id="mSaveCourse" type="button">Save</button>
@@ -1285,16 +1523,19 @@
             </div>
           `
         });
+
         $("mCancel").onclick = modalClose;
-        $("mSaveCourse").onclick = async ()=>{
-          try{
+        $("mSaveCourse").onclick = async () => {
+          try {
             const name = $("mCourseName").value.trim();
-            if(!name) return toast("Name required");
-            await api(`/api/admin/courses/${course.id}`, { method:"PATCH", body: JSON.stringify({ name }) });
+            await api(`/api/admin/courses/${course.id}`, {
+              method: "PATCH",
+              body: JSON.stringify({ name })
+            });
             modalClose();
             toast("Course updated");
             await loadCourses();
-          }catch(e){
+          } catch (e) {
             toast("Update failed", e.message);
           }
         };
@@ -1304,18 +1545,20 @@
     });
   }
 
-  // ---------- Race Days ----------
-  $("btnAddRaceDay").addEventListener("click", async ()=>{
-    try{
+  // Race days
+  $("btnAddRaceDay").addEventListener("click", async () => {
+    try {
       const race_date = $("raceDayDate").value;
-      if(!race_date) return toast("Choose a date");
+      if (!race_date) return toast("Choose a date");
+
       await api(`/api/admin/courses/${S.course.id}/race-days`, {
-        method:"POST",
+        method: "POST",
         body: JSON.stringify({ race_date })
       });
+
       toast("Race day added");
       await loadRaceDays();
-    }catch(e){
+    } catch (e) {
       toast("Could not add race day", e.message);
     }
   });
@@ -1325,12 +1568,12 @@
     const list = $("raceDaysList");
     list.innerHTML = "";
 
-    if(!rows.length){
-      list.innerHTML = `<div class="mini">No race days yet. Add one above.</div>`;
+    if (!rows.length) {
+      list.innerHTML = `<div class="mini">No race days yet.</div>`;
       return;
     }
 
-    rows.forEach(rd=>{
+    rows.forEach(rd => {
       const el = document.createElement("div");
       el.className = "item";
       el.innerHTML = `
@@ -1343,30 +1586,29 @@
         </div>
         <div class="right">
           <button class="btn small ghost" data-edit>Edit</button>
-          <button class="btn small primary" data-open>Open</button>
+          <button class="btn small blue" data-open>Open</button>
         </div>
       `;
 
-      el.querySelector("[data-open]").addEventListener("click", async ()=>{
+      const open = async () => {
         S.raceDay = rd;
         S.race = null;
+        updateRaceHero();
         showPanel("panelRaces");
         await loadRaces();
-      });
-      el.querySelector(".left").addEventListener("click", async ()=>{
-        S.raceDay = rd;
-        S.race = null;
-        showPanel("panelRaces");
-        await loadRaces();
-      });
-      el.querySelector("[data-edit]").addEventListener("click", ()=>{
+      };
+
+      el.querySelector(".left").addEventListener("click", open);
+      el.querySelector("[data-open]").addEventListener("click", open);
+
+      el.querySelector("[data-edit]").addEventListener("click", () => {
         modalOpen({
           title: "Edit Race Day",
-          sub: "You can rename the date if needed (demo-friendly).",
+          sub: "Change race day date.",
           bodyHtml: `
             <div class="field">
-              <div class="label">Race day date</div>
-              <input class="input" id="mRaceDayDate" type="date" value="${escapeHtml(rd.race_date)}" />
+              <div class="label">Race day</div>
+              <input class="input" id="mRaceDayDate" type="date" value="${escapeHtml(rd.race_date)}">
             </div>
             <div class="form-actions">
               <button class="btn green" id="mSaveRaceDay" type="button">Save</button>
@@ -1374,16 +1616,19 @@
             </div>
           `
         });
+
         $("mCancel").onclick = modalClose;
-        $("mSaveRaceDay").onclick = async ()=>{
-          try{
+        $("mSaveRaceDay").onclick = async () => {
+          try {
             const race_date = $("mRaceDayDate").value;
-            if(!race_date) return toast("Date required");
-            await api(`/api/admin/race-days/${rd.id}`, { method:"PATCH", body: JSON.stringify({ race_date }) });
+            await api(`/api/admin/race-days/${rd.id}`, {
+              method: "PATCH",
+              body: JSON.stringify({ race_date })
+            });
             modalClose();
             toast("Race day updated");
             await loadRaceDays();
-          }catch(e){
+          } catch (e) {
             toast("Update failed", e.message);
           }
         };
@@ -1393,47 +1638,44 @@
     });
   }
 
-  // ---------- Races ----------
-  $("btnBulkRaces").addEventListener("click", async ()=>{
-    try{
+  // Races
+  $("btnBulkRaces").addEventListener("click", async () => {
+    try {
       const count = Number($("raceCount").value);
-      const startLocal = $("raceStart").value; // datetime-local
+      const startLocal = $("raceStart").value;
       const interval_minutes = Number($("raceInterval").value || 35);
 
-      if(!count || count < 1) return toast("Enter race count");
-      if(!startLocal) return toast("Select start date/time");
-      if(!interval_minutes || interval_minutes < 1) return toast("Enter interval minutes");
+      if (!count || count < 1) return toast("Enter race count");
+      if (!startLocal) return toast("Select start date/time");
+      if (!interval_minutes || interval_minutes < 1) return toast("Enter interval minutes");
 
-      // Convert local datetime-local to ISO
       const start = new Date(startLocal);
-      if(!isFinite(start.getTime())) return toast("Invalid start time");
+      if (!isFinite(start.getTime())) return toast("Invalid start time");
 
       await api(`/api/admin/race-days/${S.raceDay.id}/races/bulk`, {
-        method:"POST",
-        body: JSON.stringify({ count, start_datetime: start.toISOString(), interval_minutes })
+        method: "POST",
+        body: JSON.stringify({
+          count,
+          start_datetime: start.toISOString(),
+          interval_minutes
+        })
       });
 
-      toast("Races created", "Times are locked once created.");
+      toast("Races created");
       await loadRaces();
-    }catch(e){
+    } catch (e) {
       toast("Could not create races", e.message);
     }
   });
 
-  $("btnMakeDemoTimes").addEventListener("click", ()=>{
-    // This just sets the form values in a demo-friendly way.
-    // Two closed: start time in the past; two open: within next 72h.
+  $("btnMakeDemoTimes").addEventListener("click", () => {
     const now = new Date();
-    const start = new Date(now.getTime() - (2 * 60 * 60 * 1000)); // 2 hours ago
+    const start = new Date(now.getTime() - 2 * 60 * 60 * 1000);
+    const pad = (n) => String(n).padStart(2, "0");
     $("raceCount").value = 4;
     $("raceInterval").value = 30;
-
-    // datetime-local expects local format yyyy-mm-ddThh:mm
-    const pad = (n)=>String(n).padStart(2,"0");
-    const dtLocal = `${start.getFullYear()}-${pad(start.getMonth()+1)}-${pad(start.getDate())}T${pad(start.getHours())}:${pad(start.getMinutes())}`;
-    $("raceStart").value = dtLocal;
-
-    toast("Demo times prepared", "Click “Create Races” to generate 4 races.");
+    $("raceStart").value = `${start.getFullYear()}-${pad(start.getMonth()+1)}-${pad(start.getDate())}T${pad(start.getHours())}:${pad(start.getMinutes())}`;
+    toast("Prepared demo times");
   });
 
   async function loadRaces(){
@@ -1441,21 +1683,20 @@
     const list = $("racesList");
     list.innerHTML = "";
 
-    if(!rows.length){
-      list.innerHTML = `<div class="mini">No races yet. Use “Add Races (Bulk)” above.</div>`;
+    if (!rows.length) {
+      list.innerHTML = `<div class="mini">No races yet.</div>`;
       return;
     }
 
-    rows.forEach(r=>{
+    rows.forEach(r => {
       const ms = remaining(r.race_datetime);
-      const isPast = ms <= 0;
-      const status = (r.status || (isPast ? "CLOSED" : "OPEN")).toUpperCase();
-      const badgeClass = status === "OPEN" ? (ms < 15*60*1000 ? "soon" : "open") : "closed";
-      const badgeText = status === "OPEN" ? (ms < 15*60*1000 ? "OPEN • SOON" : "OPEN") : "CLOSED";
+      const status = String(r.status || "").toUpperCase();
+      const effectiveOpen = status === "OPEN" && ms > 0;
+      const badgeClass = effectiveOpen ? (ms < 15*60*1000 ? "soon" : "open") : "closed";
+      const badgeText = effectiveOpen ? "OPEN" : "CLOSED";
 
       const el = document.createElement("div");
       el.className = "item";
-      el.dataset.raceId = r.id;
       el.dataset.raceTime = r.race_datetime;
       el.dataset.raceStatus = status;
 
@@ -1464,37 +1705,26 @@
           <div class="flag">🏁</div>
           <div class="meta">
             <p class="name">Race ${escapeHtml(r.race_number)}</p>
-            <p class="desc">${escapeHtml(fmtDT(r.race_datetime))} • <span data-countdown>${status === "OPEN" ? ("Closes in " + hhmmss(ms)) : "Closed"}</span></p>
+            <p class="desc">${escapeHtml(fmtDT(r.race_datetime))} • <span data-countdown>${effectiveOpen ? hhmmss(ms) : "00:00:00"}</span></p>
           </div>
         </div>
         <div class="right">
           <span class="badge ${badgeClass}">${badgeText}</span>
-          <button class="btn small ghost" data-toggle>${status === "OPEN" ? "Close" : "Re-open"}</button>
-          <button class="btn small primary" data-open>Horses</button>
+          <button class="btn small blue" data-open>Betting View</button>
         </div>
       `;
 
-      el.querySelector("[data-open]").addEventListener("click", async ()=>{
+      const open = async () => {
         S.race = r;
+        updateRaceHero();
         showPanel("panelHorses");
+        await loadBetUsers();
+        await loadRecentBets();
         await loadHorses();
-      });
-      el.querySelector(".left").addEventListener("click", async ()=>{
-        S.race = r;
-        showPanel("panelHorses");
-        await loadHorses();
-      });
+      };
 
-      el.querySelector("[data-toggle]").addEventListener("click", async ()=>{
-        try{
-          const next = status === "OPEN" ? "CLOSED" : "OPEN";
-          await api(`/api/admin/races/${r.id}/status`, { method:"PATCH", body: JSON.stringify({ status: next })});
-          toast("Race updated", `Race ${r.race_number} is now ${next}`);
-          await loadRaces();
-        }catch(e){
-          toast("Could not update race", e.message);
-        }
-      });
+      el.querySelector(".left").addEventListener("click", open);
+      el.querySelector("[data-open]").addEventListener("click", open);
 
       list.appendChild(el);
     });
@@ -1503,275 +1733,173 @@
   }
 
   function updateRaceCountdowns(){
-    const list = $("racesList");
-    if (!list || list.classList.contains("hidden")) return;
-    const items = list.querySelectorAll(".item[data-race-id]");
-    items.forEach(el=>{
-      const iso = el.dataset.raceTime;
-      const status = (el.dataset.raceStatus || "").toUpperCase();
-      const ms = remaining(iso);
+    const items = $("racesList").querySelectorAll(".item[data-race-time]");
+    items.forEach(el => {
+      const ms = remaining(el.dataset.raceTime);
+      const status = String(el.dataset.raceStatus || "").toUpperCase();
       const cd = el.querySelector("[data-countdown]");
       if (!cd) return;
-
-      if (status === "OPEN"){
-        if (ms <= 0){
-          cd.textContent = "Closes in 00:00:00";
-        } else {
-          cd.textContent = "Closes in " + hhmmss(ms);
-        }
-      } else {
-        cd.textContent = "Closed";
-      }
+      if (status === "OPEN" && ms > 0) cd.textContent = hhmmss(ms);
+      else cd.textContent = "00:00:00";
     });
   }
 
-  // ---------- Horses ----------
-  $("btnAddHorse").addEventListener("click", async ()=>{
-    try{
+  // Horses
+  $("btnAddHorse").addEventListener("click", async () => {
+    try {
       const horse_number = Number($("horseNum").value);
       const name = $("horseName").value.trim();
       const age = Number($("horseAge").value || 0);
       const jockey = $("horseJockey").value.trim();
       const trainer = $("horseTrainer").value.trim();
       const notes = $("horseNotes").value.trim();
-
       const win_num = Number($("winNum").value || 0);
       const win_den = Number($("winDen").value || 0);
       const place_num = Number($("placeNum").value || 0);
       const place_den = Number($("placeDen").value || 0);
 
-      if(!horse_number) return toast("Horse # required");
-      if(!name) return toast("Horse name required");
+      if (!horse_number) return toast("Horse # required");
+      if (!name) return toast("Horse name required");
 
       await api(`/api/admin/races/${S.race.id}/horses`, {
-        method:"POST",
-        body: JSON.stringify({ horse_number, name, age, jockey, trainer, notes, win_num, win_den, place_num, place_den })
+        method: "POST",
+        body: JSON.stringify({
+          horse_number, name, age, jockey, trainer, notes,
+          win_num, win_den, place_num, place_den
+        })
       });
 
-      // clear
-      $("horseNum").value = "";
-      $("horseName").value = "";
-      $("horseAge").value = "";
-      $("horseJockey").value = "";
-      $("horseTrainer").value = "";
-      $("horseNotes").value = "";
-      $("winNum").value = ""; $("winDen").value = ""; $("placeNum").value = ""; $("placeDen").value = "";
+      ["horseNum","horseName","horseAge","horseJockey","horseTrainer","horseNotes","winNum","winDen","placeNum","placeDen"]
+        .forEach(id => $(id).value = "");
 
       toast("Horse added");
       await loadHorses();
-    }catch(e){
+    } catch (e) {
       toast("Could not add horse", e.message);
     }
   });
 
   async function loadHorses(){
     const rows = await api(`/api/admin/races/${S.race.id}/horses`);
+    const grid = $("horsesGrid");
     const list = $("horsesList");
+    grid.innerHTML = "";
     list.innerHTML = "";
 
-    if(!rows.length){
-      list.innerHTML = `<div class="mini">No horses yet. Add one above.</div>`;
+    if (!rows.length) {
+      grid.innerHTML = `<div class="mini">No horses yet. Add one above.</div>`;
       return;
     }
 
-    rows.forEach(h=>{
-      const win = (Number(h.win_num)||0) && (Number(h.win_den)||0) ? `${h.win_num}/${h.win_den}` : "—";
-      const place = (Number(h.place_num)||0) && (Number(h.place_den)||0) ? `${h.place_num}/${h.place_den}` : "—";
+    rows.forEach(h => {
+      const win = (Number(h.win_num)||0) || (Number(h.win_den)||0) ? `${h.win_num}/${h.win_den}` : "—";
+      const place = (Number(h.place_num)||0) || (Number(h.place_den)||0) ? `${h.place_num}/${h.place_den}` : "—";
 
-      const infoBits = [];
-      if (h.jockey) infoBits.push(`Jockey: ${h.jockey}`);
-      if (h.trainer) infoBits.push(`Trainer: ${h.trainer}`);
-      if (Number(h.age||0)) infoBits.push(`Age: ${h.age}`);
-      if (h.notes) infoBits.push(h.notes);
+      const metaBits = [];
+      if (h.jockey) metaBits.push(`Jockey: ${h.jockey}`);
+      if (h.trainer) metaBits.push(`Trainer: ${h.trainer}`);
+      if (Number(h.age || 0)) metaBits.push(`Age: ${h.age}`);
+      if (h.notes) metaBits.push(h.notes);
 
-      const desc = infoBits.length ? infoBits.join(" • ") : "No extra info yet";
-
-      const el = document.createElement("div");
-      el.className = "item horse-row";
-      el.innerHTML = `
-        <div class="left horse-info" style="cursor:pointer">
-          <div class="flag">#${escapeHtml(h.horse_number)}</div>
-          <div class="meta">
-            <p class="name">${escapeHtml(h.name)}</p>
-            <p class="desc">${escapeHtml(desc)}</p>
+      const card = document.createElement("div");
+      card.className = "horse-card";
+      card.innerHTML = `
+        <div class="horse-top">
+          <div class="horse-head">
+            <div class="horse-no">#${escapeHtml(h.horse_number)}</div>
+            <div style="min-width:0">
+              <p class="horse-name">${escapeHtml(h.name)}</p>
+              <div class="horse-meta">${escapeHtml(metaBits.join(" • ") || "No extra info yet")}</div>
+            </div>
+          </div>
+          <div class="status-col">
+            <span class="badge ${String(S.race.status).toUpperCase()==='OPEN' && remaining(S.race.race_datetime)>0 ? 'open' : 'closed'}">
+              ${String(S.race.status).toUpperCase()==='OPEN' && remaining(S.race.race_datetime)>0 ? 'OPEN' : 'CLOSED'}
+            </span>
           </div>
         </div>
-        <div class="right">
-          <div class="odds">
-            <div class="odds-box win" title="Win">
-              <span class="k">WIN</span>
-              <span class="v ${win==="—" ? "muted":""}">${escapeHtml(win)}</span>
-            </div>
-            <div class="odds-box place" title="Place">
-              <span class="k">PLACE</span>
-              <span class="v ${place==="—" ? "muted":""}">${escapeHtml(place)}</span>
-            </div>
+
+        <div class="odds-strip">
+          <div class="odds-tile win">
+            <div class="k">WIN</div>
+            <div class="v">${escapeHtml(win)}</div>
+            <div class="s">Main odds</div>
           </div>
-          <button class="btn small ghost" data-edit>Details</button>
-          <button class="btn small primary" data-odds>Odds</button>
+          <div class="odds-tile place">
+            <div class="k">PLACE</div>
+            <div class="v">${escapeHtml(place)}</div>
+            <div class="s">Place odds</div>
+          </div>
+        </div>
+
+        <div class="stake-row">
+          <div class="stake-btn" data-stake="100">R100</div>
+          <div class="stake-btn" data-stake="500">R500</div>
+          <div class="stake-btn" data-stake="1000">R1000</div>
+        </div>
+
+        <div class="bet-actions">
+          <button class="btn green" data-bet>Place Bet</button>
         </div>
       `;
 
-      el.querySelector("[data-edit]").addEventListener("click", ()=>{
-        modalOpen({
-          title: "Edit Horse Details",
-          sub: "Update horse number, name, and information (jockey/trainer/age/notes).",
-          bodyHtml: `
-            <div class="form-grid cols2">
-              <div class="field">
-                <div class="label">Horse #</div>
-                <input class="input" id="mHNum" type="number" min="1" max="99" value="${escapeHtml(h.horse_number)}" />
-              </div>
-              <div class="field">
-                <div class="label">Name</div>
-                <input class="input" id="mHName" value="${escapeHtml(h.name)}" />
-              </div>
-            </div>
-
-            <div class="form-grid cols2">
-              <div class="field">
-                <div class="label">Jockey</div>
-                <input class="input" id="mHJockey" value="${escapeHtml(h.jockey||"")}" />
-              </div>
-              <div class="field">
-                <div class="label">Trainer</div>
-                <input class="input" id="mHTrainer" value="${escapeHtml(h.trainer||"")}" />
-              </div>
-            </div>
-
-            <div class="form-grid cols2">
-              <div class="field">
-                <div class="label">Age</div>
-                <input class="input" id="mHAge" type="number" min="0" max="20" value="${escapeHtml(h.age||0)}" />
-              </div>
-              <div class="field">
-                <div class="label">Notes</div>
-                <input class="input" id="mHNotes" value="${escapeHtml(h.notes||"")}" />
-              </div>
-            </div>
-
-            <div class="form-actions">
-              <button class="btn green" id="mSaveHorse" type="button">Save</button>
-              <button class="btn ghost" id="mCancel" type="button">Cancel</button>
-            </div>
-          `
-        });
-        $("mCancel").onclick = modalClose;
-        $("mSaveHorse").onclick = async ()=>{
-          try{
-            const horse_number = Number($("mHNum").value);
-            const name = $("mHName").value.trim();
-            const jockey = $("mHJockey").value.trim();
-            const trainer = $("mHTrainer").value.trim();
-            const age = Number($("mHAge").value || 0);
-            const notes = $("mHNotes").value.trim();
-
-            if(!horse_number) return toast("Horse # required");
-            if(!name) return toast("Name required");
-
-            await api(`/api/admin/horses/${h.id}`, {
-              method:"PATCH",
-              body: JSON.stringify({ horse_number, name, jockey, trainer, age, notes })
-            });
-            modalClose();
-            toast("Horse updated");
-            await loadHorses();
-          }catch(e){
-            toast("Update failed", e.message);
-          }
-        };
+      card.querySelectorAll("[data-stake]").forEach(btn => {
+        btn.addEventListener("click", () => openStakeBetModal(h, btn.dataset.stake));
       });
 
-      el.querySelector("[data-odds]").addEventListener("click", ()=>{
-        modalOpen({
-          title: "Edit Odds (Win / Place)",
-          sub: "These odds show beside each horse. Use fractions (num/den).",
-          bodyHtml: `
-            <div class="form-grid cols2">
-              <div class="field">
-                <div class="label">Win (num / den)</div>
-                <div class="row">
-                  <input class="input" id="mWinNum" type="number" step="0.01" value="${escapeHtml(h.win_num || 0)}" />
-                  <input class="input" id="mWinDen" type="number" step="0.01" value="${escapeHtml(h.win_den || 0)}" />
-                </div>
-              </div>
-              <div class="field">
-                <div class="label">Place (num / den)</div>
-                <div class="row">
-                  <input class="input" id="mPlaceNum" type="number" step="0.01" value="${escapeHtml(h.place_num || 0)}" />
-                  <input class="input" id="mPlaceDen" type="number" step="0.01" value="${escapeHtml(h.place_den || 0)}" />
-                </div>
-              </div>
-            </div>
+      card.querySelector("[data-bet]").addEventListener("click", () => openStakeBetModal(h, ""));
 
-            <div class="form-actions">
-              <button class="btn green" id="mSaveOdds" type="button">Save Odds</button>
-              <button class="btn ghost" id="mCancel" type="button">Cancel</button>
-            </div>
-          `
-        });
-        $("mCancel").onclick = modalClose;
-        $("mSaveOdds").onclick = async ()=>{
-          try{
-            const win_num = Number($("mWinNum").value || 0);
-            const win_den = Number($("mWinDen").value || 0);
-            const place_num = Number($("mPlaceNum").value || 0);
-            const place_den = Number($("mPlaceDen").value || 0);
-
-            await api(`/api/admin/horses/${h.id}/odds`, {
-              method:"PATCH",
-              body: JSON.stringify({ win_num, win_den, place_num, place_den })
-            });
-            modalClose();
-            toast("Odds updated");
-            await loadHorses();
-          }catch(e){
-            toast("Update failed", e.message);
-          }
-        };
-      });
-
-      list.appendChild(el);
+      grid.appendChild(card);
     });
   }
 
-  // ---------- Users ----------
+  // Users
   $("btnReloadUsers").addEventListener("click", loadUsers);
 
-  $("btnAddUser").addEventListener("click", async ()=>{
-    try{
+  $("btnAddUser").addEventListener("click", async () => {
+    try {
       const name = $("userName").value.trim();
       const email = $("userEmail").value.trim().toLowerCase();
       const balance = Number($("userBalance").value || 0);
-      if(!name) return toast("Name required");
-      if(!email) return toast("Email required");
+
+      if (!name) return toast("Name required");
+      if (!email) return toast("Email required");
 
       await api("/api/admin/users", {
-        method:"POST",
+        method: "POST",
         body: JSON.stringify({ name, email, balance })
       });
+
       $("userName").value = "";
       $("userEmail").value = "";
       $("userBalance").value = "";
-      toast("User added");
+
+      toast("Player added");
       await loadUsers();
-    }catch(e){
+      await loadBetUsers();
+    } catch (e) {
       toast("Could not add user", e.message);
     }
   });
 
-  $("btnAddSampleUsers").addEventListener("click", async ()=>{
+  $("btnAddSampleUsers").addEventListener("click", async () => {
+    const stamp = Date.now();
     const samples = [
-      { name:"Alyssa", email:"alyssa+"+Date.now()+"@demo.local", balance: 10000 },
-      { name:"Kiruben", email:"kiruben+"+Date.now()+"@demo.local", balance: 10000 }
+      { name: "Alyssa", email: `alyssa.${stamp}@demo.local`, balance: 10000 },
+      { name: "Kiruben", email: `kiruben.${stamp}@demo.local`, balance: 10000 }
     ];
-    try{
-      for (const u of samples){
-        await api("/api/admin/users", { method:"POST", body: JSON.stringify(u) });
+
+    try {
+      for (const u of samples) {
+        await api("/api/admin/users", {
+          method: "POST",
+          body: JSON.stringify(u)
+        });
       }
-      toast("Sample users added");
+      toast("Sample players added");
       await loadUsers();
-    }catch(e){
+      await loadBetUsers();
+    } catch (e) {
       toast("Could not add sample users", e.message);
     }
   });
@@ -1781,12 +1909,15 @@
     const list = $("usersList");
     list.innerHTML = "";
 
-    if(!rows.length){
-      list.innerHTML = `<div class="mini">No users yet. Add one above.</div>`;
+    const players = rows.filter(r => String(r.role).toUpperCase() === "PLAYER");
+
+    if (!players.length) {
+      list.innerHTML = `<div class="mini">No players yet.</div>`;
       return;
     }
 
-    rows.forEach(u=>{
+    players.forEach(u => {
+      const selected = Number(S.selectedBetUserId) === Number(u.id);
       const el = document.createElement("div");
       el.className = "item";
       el.innerHTML = `
@@ -1798,21 +1929,30 @@
           </div>
         </div>
         <div class="right">
-          <button class="btn small primary" data-edit>Edit</button>
+          <button class="btn small ${selected ? 'green' : 'ghost'}" data-select>${selected ? 'Selected' : 'Select Wallet'}</button>
+          <button class="btn small blue" data-edit>Edit</button>
         </div>
       `;
-      el.querySelector("[data-edit]").addEventListener("click", ()=>{
+
+      el.querySelector("[data-select]").addEventListener("click", async () => {
+        S.selectedBetUserId = u.id;
+        updateSelectedWalletPanel();
+        await loadUsers();
+        toast("Wallet selected", `${u.name} is now the active betting wallet`);
+      });
+
+      el.querySelector("[data-edit]").addEventListener("click", () => {
         modalOpen({
-          title: "Edit User Balance",
-          sub: "Adjust the demo wallet balance (super-admin controlled).",
+          title: "Edit Wallet",
+          sub: "Update player name and balance.",
           bodyHtml: `
             <div class="field">
               <div class="label">Name</div>
-              <input class="input" id="mUName" value="${escapeHtml(u.name)}" />
+              <input class="input" id="mUName" value="${escapeHtml(u.name)}">
             </div>
             <div class="field">
               <div class="label">Balance</div>
-              <input class="input" id="mUBalance" type="number" step="0.01" value="${escapeHtml(u.balance)}" />
+              <input class="input" id="mUBalance" type="number" step="0.01" value="${escapeHtml(u.balance)}">
             </div>
             <div class="form-actions">
               <button class="btn green" id="mSaveUser" type="button">Save</button>
@@ -1820,17 +1960,24 @@
             </div>
           `
         });
+
         $("mCancel").onclick = modalClose;
-        $("mSaveUser").onclick = async ()=>{
-          try{
+        $("mSaveUser").onclick = async () => {
+          try {
             const name = $("mUName").value.trim();
             const balance = Number($("mUBalance").value || 0);
-            if(!name) return toast("Name required");
-            await api(`/api/admin/users/${u.id}`, { method:"PATCH", body: JSON.stringify({ name, balance }) });
+            if (!name) return toast("Name required");
+
+            await api(`/api/admin/users/${u.id}`, {
+              method: "PATCH",
+              body: JSON.stringify({ name, balance })
+            });
+
             modalClose();
-            toast("User updated");
+            toast("Wallet updated");
             await loadUsers();
-          }catch(e){
+            await loadBetUsers();
+          } catch (e) {
             toast("Update failed", e.message);
           }
         };
@@ -1838,29 +1985,30 @@
 
       list.appendChild(el);
     });
+
+    updateSelectedWalletPanel();
   }
 
-  // ---------- Modal close ----------
+  $("btnRefreshBets").addEventListener("click", loadRecentBets);
+
   $("modalClose").addEventListener("click", modalClose);
-  $("modalBack").addEventListener("click", (e)=>{
+  $("modalBack").addEventListener("click", (e) => {
     if (e.target === $("modalBack")) modalClose();
   });
 
-  // ---------- Init ----------
   (async function init(){
     setAuthUI();
 
-    if (!S.token){
+    if (!S.token) {
       showLogin();
       return;
     }
 
-    try{
+    try {
       showApp();
       await boot();
-    }catch(e){
-      toast("Could not load admin app", e.message);
-      // if token expired
+    } catch (e) {
+      toast("Could not load app", e.message);
       showLogin();
     }
   })();
